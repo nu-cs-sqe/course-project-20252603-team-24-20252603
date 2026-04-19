@@ -4,8 +4,10 @@
 # PROJECT NAME
 
 ## Contributors
-- PERSON
-- PERSON
+- Jonathan Fang
+- Justin Min
+- Prashant Ghimere
+- David Park
 
 ## Dependencies
 - JDK 11
