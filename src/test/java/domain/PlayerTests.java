@@ -92,4 +92,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 5);
         assertThrows(IllegalArgumentException.class, () -> player.decreaseArmiesToPlace(6));
     }
+
+    @Test
+    public void DecreaseArmiesToPlace_CountOfZero_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 5);
+        assertThrows(IllegalArgumentException.class, () -> player.decreaseArmiesToPlace(0));
+    }
 }
