@@ -22,4 +22,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Jovy", 35);
         assertEquals("Jovy", player.getName());
     }
+
+    @Test
+    public void GetArmiesToPlace_PlayerWithZeroArmies_ReturnsZero() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 0);
+        assertEquals(0, player.getArmiesToPlace());
+    }
 }
