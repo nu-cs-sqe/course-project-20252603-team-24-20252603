@@ -47,4 +47,8 @@ class WorldMap {
     int getArmies(TerritoryName territory) {
         return territories.get(territory).getArmies();
     }
+
+    void claim(TerritoryName territory, PlayerColor color) {
+        territories.get(territory).claim(color);
+    }
 }
