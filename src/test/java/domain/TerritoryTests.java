@@ -84,4 +84,11 @@ public class TerritoryTests {
         territory.claim(PlayerColor.RED);
         assertThrows(IllegalStateException.class, () -> territory.claim(PlayerColor.RED));
     }
+
+    @Test
+    public void Claim_AlreadyClaimedByDifferentPlayer_ThrowsIllegalStateException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.claim(PlayerColor.RED);
+        assertThrows(IllegalStateException.class, () -> territory.claim(PlayerColor.BLUE));
+    }
 }
