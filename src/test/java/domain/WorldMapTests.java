@@ -134,4 +134,17 @@ public class WorldMapTests {
 
         assertEquals(0, map.getArmies(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void GetArmies_TerritoryWithOneArmy_ReturnsOne() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockAlaska.getArmies()).andStubReturn(1);
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertEquals(1, map.getArmies(TerritoryName.ALASKA));
+    }
 }
