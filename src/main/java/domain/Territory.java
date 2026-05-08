@@ -28,9 +28,11 @@ class Territory {
     }
 
     void claim(PlayerColor color) {
+        if (owner != null) {
+            throw new IllegalStateException("Territory is already claimed");
+        }
         this.owner = color;
     }
-
     boolean isOwnedBy(PlayerColor color) {
         return color == owner;
     }
