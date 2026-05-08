@@ -51,4 +51,8 @@ class WorldMap {
     void claim(TerritoryName territory, PlayerColor color) {
         territories.get(territory).claim(color);
     }
+
+    void addArmies(TerritoryName territory, int count) {
+        territories.get(territory).addArmies(count);
+    }
 }
