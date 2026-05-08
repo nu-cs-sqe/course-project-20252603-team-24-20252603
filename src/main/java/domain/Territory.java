@@ -16,4 +16,8 @@ class Territory {
     int getArmies() {
         return armies;
     }
+
+    void addArmies(int count) {
+        this.armies += count;
+    }
 }
