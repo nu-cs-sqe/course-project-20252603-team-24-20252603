@@ -91,4 +91,11 @@ public class TerritoryTests {
         territory.claim(PlayerColor.RED);
         assertThrows(IllegalStateException.class, () -> territory.claim(PlayerColor.BLUE));
     }
+
+    @Test
+    public void AddArmies_TerritoryWithZeroArmies_AddFive_ReturnsFive() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(5);
+        assertEquals(5, territory.getArmies());
+    }
 }
