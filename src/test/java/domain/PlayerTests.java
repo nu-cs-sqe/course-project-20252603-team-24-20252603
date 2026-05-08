@@ -72,4 +72,11 @@ public class PlayerTests {
         player.decreaseArmiesToPlace(1);
         assertEquals(34, player.getArmiesToPlace());
     }
+
+    @Test
+    public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_DecreaseByFive_ReturnsThirty() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        player.decreaseArmiesToPlace(5);
+        assertEquals(30, player.getArmiesToPlace());
+    }
 }
