@@ -16,4 +16,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.CYAN, "Jovy", 35);
         assertEquals(PlayerColor.CYAN, player.getColor());
     }
+
+    @Test
+    public void GetName_PlayerConstructedWithJovy_ReturnsJovy() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        assertEquals("Jovy", player.getName());
+    }
 }
