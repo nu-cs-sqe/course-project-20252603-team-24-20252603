@@ -36,4 +36,10 @@ public class TerritoryTests {
         territory.addArmies(5);
         assertEquals(5, territory.getArmies());
     }
+
+    @Test
+    public void IsUnclaimed_NewTerritory_ReturnsTrue() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertTrue(territory.isUnclaimed());
+    }
 }
