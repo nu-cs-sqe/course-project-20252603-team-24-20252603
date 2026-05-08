@@ -38,4 +38,14 @@ public class WorldMapTests {
 
         assertTrue(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA));
     }
+
+    @Test
+    public void AreNeighbors_AlaskaAndBrazil_ReturnsFalse() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertFalse(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.BRAZIL));
+    }
 }
