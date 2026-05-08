@@ -55,4 +55,11 @@ public class TerritoryTests {
         Territory territory = new Territory(TerritoryName.ALASKA);
         assertFalse(territory.isOwnedBy(PlayerColor.RED));
     }
+
+    @Test
+    public void IsOwnedBy_TerritoryClaimedByRed_WithRed_ReturnsTrue() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.claim(PlayerColor.RED);
+        assertTrue(territory.isOwnedBy(PlayerColor.RED));
+    }
 }
