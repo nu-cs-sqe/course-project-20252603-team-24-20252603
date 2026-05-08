@@ -32,6 +32,6 @@ class Territory {
     }
 
     boolean isOwnedBy(PlayerColor color) {
-        return false;
+        return color == owner;
     }
 }
