@@ -7,13 +7,13 @@ public class PlayerTests {
 
     @Test
     public void GetColor_PlayerConstructedWithRed_ReturnsRed() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
         assertEquals(PlayerColor.RED, player.getColor());
     }
 
     @Test
     public void GetColor_PlayerConstructedWithCyan_ReturnsCyan() {
-        Player player = new Player(PlayerColor.CYAN, "Jovy", 35);
+        Player player = new Player(PlayerColor.CYAN, "Justin", 35);
         assertEquals(PlayerColor.CYAN, player.getColor());
     }
 
@@ -25,25 +25,31 @@ public class PlayerTests {
 
     @Test
     public void GetArmiesToPlace_PlayerWithZeroArmies_ReturnsZero() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 0);
+        Player player = new Player(PlayerColor.RED, "Justin", 0);
         assertEquals(0, player.getArmiesToPlace());
     }
 
     @Test
     public void GetArmiesToPlace_PlayerWithOneArmy_ReturnsOne() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 1);
+        Player player = new Player(PlayerColor.RED, "Justin", 1);
         assertEquals(1, player.getArmiesToPlace());
     }
 
     @Test
     public void GetArmiesToPlace_PlayerWithThirtyFiveArmies_ReturnsThirtyFive() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
         assertEquals(35, player.getArmiesToPlace());
     }
 
     @Test
     public void HasArmiesToPlace_PlayerWithZeroArmies_ReturnsFalse() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 0);
+        Player player = new Player(PlayerColor.RED, "Justin", 0);
         assertFalse(player.hasArmiesToPlace());
+    }
+
+    @Test
+    public void HasArmiesToPlace_PlayerWithOneArmy_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 1);
+        assertTrue(player.hasArmiesToPlace());
     }
 }
