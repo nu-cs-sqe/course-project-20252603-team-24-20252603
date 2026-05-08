@@ -22,4 +22,8 @@ class Player {
     int getArmiesToPlace() {
         return armiesToPlace;
     }
+
+    boolean hasArmiesToPlace() {
+        return false;
+    }
 }
