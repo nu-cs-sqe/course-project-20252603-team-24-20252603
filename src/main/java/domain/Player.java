@@ -18,4 +18,8 @@ class Player {
     String getName() {
         return name;
     }
+
+    int getArmiesToPlace() {
+        return armiesToPlace;
+    }
 }
