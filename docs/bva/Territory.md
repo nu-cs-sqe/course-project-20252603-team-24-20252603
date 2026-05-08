@@ -1,53 +1,53 @@
 # BVA Analysis for Territory
 ## Method: `TerritoryName getName()`
 
-- **TC1: Get name of first territory** ( ❌ )
+- **TC1: Get name of first territory** ( :white_check_mark: )
     - **State of the system**: territory constructed with ALASKA
     - **Expected output**: ALASKA
 
-- **TC2: Get name of last territory** ( ❌ )
+- **TC2: Get name of last territory** ( :white_check_mark: )
     - **State of the system**: territory constructed with INDONESIA
     - **Expected output**: INDONESIA
 
 ## Method: `int getArmies()`
 
-- **TC3: Get armies on territory with 0 armies** ( ❌ )
+- **TC3: Get armies on territory with 0 armies** ( :white_check_mark: )
     - **State of the system**: territory with armies = 0
     - **Expected output**: 0
 
-- **TC4: Get armies on territory with 1 army** ( ❌ )
+- **TC4: Get armies on territory with 1 army** ( :white_check_mark: )
     - **State of the system**: territory with armies = 1
     - **Expected output**: 1
 
-- **TC5: Get armies on territory with more than 1 army** ( ❌ )
+- **TC5: Get armies on territory with more than 1 army** ( :white_check_mark: )
     - **State of the system**: territory with armies = 5
     - **Expected output**: 5
 
 ## Method: `boolean isUnclaimed()`
 
-- **TC6: Check unclaimed territory** ( ❌ )
+- **TC6: Check unclaimed territory** ( :white_check_mark: )
     - **State of the system**: territory with no owner
     - **Expected output**: true
 
-- **TC7: Check claimed territory** ( ❌ )
+- **TC7: Check claimed territory** ( :white_check_mark: )
     - **State of the system**: territory claimed by RED
     - **Expected output**: false
 
 ## Method: `boolean isOwnedBy(PlayerColor color)`
 
-- **TC8: Check ownership on unclaimed territory** ( ❌ )
+- **TC8: Check ownership on unclaimed territory** ( :white_check_mark: )
     - **State of the system**:
         - territory with no owner
         - color: RED
     - **Expected output**: false
 
-- **TC9: Check ownership with matching owner** ( ❌ )
+- **TC9: Check ownership with matching owner** ( :white_check_mark: )
     - **State of the system**:
         - territory claimed by RED
         - color: RED
     - **Expected output**: true
 
-- **TC10: Check ownership with different owner** ( ❌ )
+- **TC10: Check ownership with different owner** ( :white_check_mark: )
     - **State of the system**:
         - territory claimed by RED
         - color: BLUE
@@ -55,7 +55,7 @@
 
 ## Method: `void claim(PlayerColor color)`
 
-- **TC11: Claim an unclaimed territory** ( ❌ )
+- **TC11: Claim an unclaimed territory** ( :white_check_mark: )
     - **State of the system**:
         - territory with no owner
         - color: RED
@@ -63,13 +63,13 @@
         - territory is no longer unclaimed
         - territory is owned by RED
 
-- **TC12: Claim territory already claimed by same player** ( ❌ )
+- **TC12: Claim territory already claimed by same player** ( :white_check_mark: )
     - **State of the system**:
         - territory already claimed by RED
         - color: RED
     - **Expected output**: throw IllegalStateException
 
-- **TC13: Claim territory already claimed by different player** ( ❌ )
+- **TC13: Claim territory already claimed by different player** ( :white_check_mark: )
     - **State of the system**:
         - territory already claimed by RED
         - color: BLUE
@@ -77,43 +77,43 @@
 
 ## Method: `void addArmies(int count)`
 
-- **TC14: Add 1 army to territory with 0 armies** ( ❌ )
+- **TC14: Add 1 army to territory with 0 armies** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 0
         - count: 1
     - **Expected output**: territory armies = 1
 
-- **TC15: Add more than 1 army to territory with 0 armies** ( ❌ )
+- **TC15: Add more than 1 army to territory with 0 armies** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 0
         - count: 5
     - **Expected output**: territory armies = 5
 
-- **TC16: Add 1 army to territory with 1 army** ( ❌ )
+- **TC16: Add 1 army to territory with 1 army** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 1
         - count: 1
     - **Expected output**: territory armies = 2
 
-- **TC17: Add 1 army to territory with more than 1 army** ( ❌ )
+- **TC17: Add 1 army to territory with more than 1 army** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 3
         - count: 1
     - **Expected output**: territory armies = 4
 
-- **TC18: Add more than 1 army to territory with more than 1 army** ( ❌ )
+- **TC18: Add more than 1 army to territory with more than 1 army** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 3
         - count: 5
     - **Expected output**: territory armies = 8
 
-- **TC19: Add 0 armies** ( ❌ )
+- **TC19: Add 0 armies** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 3
         - count: 0
     - **Expected output**: throw IllegalArgumentException
 
-- **TC20: Add negative armies** ( ❌ )
+- **TC20: Add negative armies** ( :white_check_mark: )
     - **State of the system**:
         - territory with armies = 3
         - count: -1
