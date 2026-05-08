@@ -306,4 +306,19 @@ public class WorldMapTests {
         assertThrows(IllegalArgumentException.class, () -> map.addArmies(TerritoryName.ALASKA, -1));
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void CountTerritoriesOwnedBy_PlayerOwnsNone_ReturnsZero() {
+        Map<TerritoryName, Territory> territories = new HashMap<>();
+        for (TerritoryName name : TerritoryName.values()) {
+            Territory mock = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mock.isOwnedBy(PlayerColor.RED)).andStubReturn(false);
+            EasyMock.replay(mock);
+            territories.put(name, mock);
+        }
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertEquals(0, map.countTerritoriesOwnedBy(PlayerColor.RED));
+    }
 }
