@@ -40,4 +40,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Jovy", 35);
         assertEquals(35, player.getArmiesToPlace());
     }
+
+    @Test
+    public void HasArmiesToPlace_PlayerWithZeroArmies_ReturnsFalse() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 0);
+        assertFalse(player.hasArmiesToPlace());
+    }
 }
