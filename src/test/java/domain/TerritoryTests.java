@@ -77,4 +77,11 @@ public class TerritoryTests {
         assertFalse(territory.isUnclaimed());
         assertTrue(territory.isOwnedBy(PlayerColor.RED));
     }
+
+    @Test
+    public void Claim_AlreadyClaimedBySamePlayer_ThrowsIllegalStateException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.claim(PlayerColor.RED);
+        assertThrows(IllegalStateException.class, () -> territory.claim(PlayerColor.RED));
+    }
 }
