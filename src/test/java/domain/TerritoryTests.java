@@ -22,4 +22,11 @@ public class TerritoryTests {
         Territory territory = new Territory(TerritoryName.ALASKA);
         assertEquals(0, territory.getArmies());
     }
+
+    @Test
+    public void GetArmies_TerritoryWithOneArmy_ReturnsOne() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(1);
+        assertEquals(1, territory.getArmies());
+    }
 }
