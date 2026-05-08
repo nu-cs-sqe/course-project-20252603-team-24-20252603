@@ -12,6 +12,8 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    // Source: https://mvnrepository.com/artifact/org.easymock/easymock
+    testImplementation("org.easymock:easymock:5.4.0")
 }
 
 java {
