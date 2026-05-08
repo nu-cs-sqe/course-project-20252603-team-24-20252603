@@ -43,4 +43,8 @@ class WorldMap {
     boolean isUnclaimed(TerritoryName territory) {
         return territories.get(territory).isUnclaimed();
     }
+
+    int getArmies(TerritoryName territory) {
+        return territories.get(territory).getArmies();
+    }
 }

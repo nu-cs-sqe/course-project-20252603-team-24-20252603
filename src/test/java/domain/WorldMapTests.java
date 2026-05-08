@@ -121,4 +121,17 @@ public class WorldMapTests {
 
         assertFalse(map.isUnclaimed(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void GetArmies_TerritoryWithZeroArmies_ReturnsZero() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockAlaska.getArmies()).andStubReturn(0);
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertEquals(0, map.getArmies(TerritoryName.ALASKA));
+    }
 }
