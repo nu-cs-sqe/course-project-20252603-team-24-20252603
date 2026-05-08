@@ -35,4 +35,8 @@ class WorldMap {
 
     private void initializeNeighbors() {
     }
+
+    boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
+        return territories.get(territory).isOwnedBy(color);
+    }
 }
