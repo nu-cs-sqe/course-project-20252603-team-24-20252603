@@ -128,4 +128,10 @@ public class TerritoryTests {
         Territory territory = new Territory(TerritoryName.ALASKA);
         assertThrows(IllegalArgumentException.class, () -> territory.addArmies(0));
     }
+
+    @Test
+    public void AddArmies_NegativeCount_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertThrows(IllegalArgumentException.class, () -> territory.addArmies(-1));
+    }
 }
