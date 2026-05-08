@@ -122,4 +122,10 @@ public class TerritoryTests {
         territory.addArmies(5);
         assertEquals(8, territory.getArmies());
     }
+
+    @Test
+    public void AddArmies_CountOfZero_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertThrows(IllegalArgumentException.class, () -> territory.addArmies(0));
+    }
 }
