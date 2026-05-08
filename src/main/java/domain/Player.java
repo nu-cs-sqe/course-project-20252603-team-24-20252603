@@ -26,4 +26,8 @@ class Player {
     boolean hasArmiesToPlace() {
         return armiesToPlace > 0;
     }
+
+    void decreaseArmiesToPlace(int count) {
+        this.armiesToPlace -= count;
+    }
 }
