@@ -56,4 +56,19 @@ public class WorldMapTests {
 
         assertFalse(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALASKA));
     }
+
+    @Test
+    public void IsOwnedBy_UnclaimedTerritory_ReturnsFalse() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockAlaska.isOwnedBy(PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertFalse(map.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED));
+    }
 }
