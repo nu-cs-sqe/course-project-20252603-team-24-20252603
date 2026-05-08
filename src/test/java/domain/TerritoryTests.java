@@ -16,4 +16,10 @@ public class TerritoryTests {
         Territory territory = new Territory(TerritoryName.INDONESIA);
         assertEquals(TerritoryName.INDONESIA, territory.getName());
     }
+
+    @Test
+    public void GetArmies_NewTerritory_ReturnsZero() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertEquals(0, territory.getArmies());
+    }
 }
