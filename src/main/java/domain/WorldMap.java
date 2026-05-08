@@ -39,4 +39,8 @@ class WorldMap {
     boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
         return territories.get(territory).isOwnedBy(color);
     }
+
+    boolean isUnclaimed(TerritoryName territory) {
+        return territories.get(territory).isUnclaimed();
+    }
 }
