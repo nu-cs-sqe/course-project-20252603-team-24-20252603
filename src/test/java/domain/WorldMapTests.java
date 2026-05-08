@@ -278,4 +278,18 @@ public class WorldMapTests {
 
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void AddArmies_CountOfZero_ThrowsIllegalArgumentException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.addArmies(0);
+        EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalArgumentException.class, () -> map.addArmies(TerritoryName.ALASKA, 0));
+        EasyMock.verify(mockAlaska);
+    }
 }
