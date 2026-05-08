@@ -24,6 +24,9 @@ class Territory {
     }
 
     void addArmies(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("count must be at least 1");
+        }
         this.armies += count;
     }
 
