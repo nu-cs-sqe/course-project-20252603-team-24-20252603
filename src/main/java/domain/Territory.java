@@ -20,4 +20,8 @@ class Territory {
     void addArmies(int count) {
         this.armies += count;
     }
+
+    boolean isUnclaimed() {
+        return true;
+    }
 }
