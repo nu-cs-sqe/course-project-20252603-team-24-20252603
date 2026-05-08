@@ -160,4 +160,19 @@ public class WorldMapTests {
 
         assertEquals(5, map.getArmies(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void Claim_UnclaimedTerritory_ClaimIsCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.claim(PlayerColor.RED);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.claim(TerritoryName.ALASKA, PlayerColor.RED);
+
+        EasyMock.verify(mockAlaska);
+    }
 }
