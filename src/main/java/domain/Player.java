@@ -24,6 +24,6 @@ class Player {
     }
 
     boolean hasArmiesToPlace() {
-        return false;
+        return armiesToPlace > 0;
     }
 }
