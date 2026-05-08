@@ -49,4 +49,10 @@ public class TerritoryTests {
         territory.claim(PlayerColor.RED);
         assertFalse(territory.isUnclaimed());
     }
+
+    @Test
+    public void IsOwnedBy_UnclaimedTerritory_ReturnsFalse() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertFalse(territory.isOwnedBy(PlayerColor.RED));
+    }
 }

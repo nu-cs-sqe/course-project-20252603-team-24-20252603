@@ -30,4 +30,8 @@ class Territory {
     void claim(PlayerColor color) {
         this.owner = color;
     }
+
+    boolean isOwnedBy(PlayerColor color) {
+        return false;
+    }
 }
