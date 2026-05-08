@@ -175,4 +175,18 @@ public class WorldMapTests {
 
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void Claim_AlreadyClaimedBySamePlayer_ThrowsIllegalStateException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.claim(PlayerColor.RED);
+        EasyMock.expectLastCall().andThrow(new IllegalStateException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalStateException.class, () -> map.claim(TerritoryName.ALASKA, PlayerColor.RED));
+        EasyMock.verify(mockAlaska);
+    }
 }
