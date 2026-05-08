@@ -93,6 +93,13 @@ public class TerritoryTests {
     }
 
     @Test
+    public void AddArmies_TerritoryWithZeroArmies_AddOne_ReturnsOne() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(1);
+        assertEquals(1, territory.getArmies());
+    }
+
+    @Test
     public void AddArmies_TerritoryWithZeroArmies_AddFive_ReturnsFive() {
         Territory territory = new Territory(TerritoryName.ALASKA);
         territory.addArmies(5);
