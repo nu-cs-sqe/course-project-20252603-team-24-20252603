@@ -14,4 +14,8 @@ class Player {
     PlayerColor getColor() {
         return color;
     }
+
+    String getName() {
+        return name;
+    }
 }
