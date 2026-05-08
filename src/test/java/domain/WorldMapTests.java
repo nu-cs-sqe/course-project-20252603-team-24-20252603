@@ -218,4 +218,19 @@ public class WorldMapTests {
 
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void AddArmies_TerritoryWithZeroArmies_AddFive_AddArmiesCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.addArmies(5);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.addArmies(TerritoryName.ALASKA, 5);
+
+        EasyMock.verify(mockAlaska);
+    }
 }
