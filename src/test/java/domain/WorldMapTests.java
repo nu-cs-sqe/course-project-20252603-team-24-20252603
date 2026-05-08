@@ -425,4 +425,21 @@ public class WorldMapTests {
         assertEquals(3, result.size());
         assertTrue(result.containsAll(ownedByRed));
     }
+
+    @Test
+    public void GetTerritoriesOwnedBy_PlayerOwnsAll_ReturnsAllFortyTwo() {
+        Map<TerritoryName, Territory> territories = new HashMap<>();
+        for (TerritoryName name : TerritoryName.values()) {
+            Territory mock = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mock.isOwnedBy(PlayerColor.RED)).andStubReturn(true);
+            EasyMock.replay(mock);
+            territories.put(name, mock);
+        }
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        WorldMap map = new WorldMap(territories, neighbors);
+        Set<TerritoryName> result = map.getTerritoriesOwnedBy(PlayerColor.RED);
+
+        assertEquals(42, result.size());
+        assertTrue(result.containsAll(Set.of(TerritoryName.values())));
+    }
 }
