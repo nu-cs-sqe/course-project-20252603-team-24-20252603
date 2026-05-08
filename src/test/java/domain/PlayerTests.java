@@ -61,29 +61,35 @@ public class PlayerTests {
 
     @Test
     public void DecreaseArmiesToPlace_PlayerWithOneArmy_DecreaseByOne_ReturnsZero() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 1);
+        Player player = new Player(PlayerColor.RED, "Justin", 1);
         player.decreaseArmiesToPlace(1);
         assertEquals(0, player.getArmiesToPlace());
     }
 
     @Test
     public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_DecreaseByOne_ReturnsThirtyFour() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
         player.decreaseArmiesToPlace(1);
         assertEquals(34, player.getArmiesToPlace());
     }
 
     @Test
     public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_DecreaseByFive_ReturnsThirty() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
         player.decreaseArmiesToPlace(5);
         assertEquals(30, player.getArmiesToPlace());
     }
 
     @Test
     public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_DecreaseByThirtyFive_ReturnsZero() {
-        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
         player.decreaseArmiesToPlace(35);
         assertEquals(0, player.getArmiesToPlace());
+    }
+
+    @Test
+    public void DecreaseArmiesToPlace_CountMoreThanAvailable_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 5);
+        assertThrows(IllegalArgumentException.class, () -> player.decreaseArmiesToPlace(6));
     }
 }
