@@ -52,4 +52,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 1);
         assertTrue(player.hasArmiesToPlace());
     }
+
+    @Test
+    public void HasArmiesToPlace_PlayerWithThirtyFiveArmies_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertTrue(player.hasArmiesToPlace());
+    }
 }
