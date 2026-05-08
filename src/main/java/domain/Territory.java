@@ -3,10 +3,12 @@ package domain;
 class Territory {
     private final TerritoryName name;
     private int armies;
+    private PlayerColor owner;
 
     Territory(TerritoryName name) {
         this.name = name;
         this.armies = 0;
+        this.owner = null;
     }
 
     TerritoryName getName() {
@@ -17,11 +19,15 @@ class Territory {
         return armies;
     }
 
+    boolean isUnclaimed() {
+        return owner == null;
+    }
+
     void addArmies(int count) {
         this.armies += count;
     }
 
-    boolean isUnclaimed() {
-        return true;
+    void claim(PlayerColor color) {
+        this.owner = color;
     }
 }
