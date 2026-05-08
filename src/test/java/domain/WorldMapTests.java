@@ -108,4 +108,17 @@ public class WorldMapTests {
 
         assertTrue(map.isUnclaimed(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void IsUnclaimed_ClaimedTerritory_ReturnsFalse() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        EasyMock.expect(mockAlaska.isUnclaimed()).andStubReturn(false);
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertFalse(map.isUnclaimed(TerritoryName.ALASKA));
+    }
 }
