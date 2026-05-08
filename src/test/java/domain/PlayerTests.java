@@ -28,4 +28,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Jovy", 0);
         assertEquals(0, player.getArmiesToPlace());
     }
+
+    @Test
+    public void GetArmiesToPlace_PlayerWithOneArmy_ReturnsOne() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 1);
+        assertEquals(1, player.getArmiesToPlace());
+    }
 }
