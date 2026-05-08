@@ -34,4 +34,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Jovy", 1);
         assertEquals(1, player.getArmiesToPlace());
     }
+
+    @Test
+    public void GetArmiesToPlace_PlayerWithThirtyFiveArmies_ReturnsThirtyFive() {
+        Player player = new Player(PlayerColor.RED, "Jovy", 35);
+        assertEquals(35, player.getArmiesToPlace());
+    }
 }
