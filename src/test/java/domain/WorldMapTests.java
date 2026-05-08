@@ -321,4 +321,22 @@ public class WorldMapTests {
 
         assertEquals(0, map.countTerritoriesOwnedBy(PlayerColor.RED));
     }
+
+    @Test
+    public void CountTerritoriesOwnedBy_PlayerOwnsOne_ReturnsOne() {
+        Map<TerritoryName, Territory> territories = new HashMap<>();
+        for (TerritoryName name : TerritoryName.values()) {
+            Territory mock = EasyMock.createMock(Territory.class);
+            if (name == TerritoryName.ALASKA) {
+                EasyMock.expect(mock.isOwnedBy(PlayerColor.RED)).andStubReturn(true);
+            } else {
+                EasyMock.expect(mock.isOwnedBy(PlayerColor.RED)).andStubReturn(false);
+            }
+            EasyMock.replay(mock);
+            territories.put(name, mock);
+        }
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertEquals(1, map.countTerritoriesOwnedBy(PlayerColor.RED));
+    }
 }
