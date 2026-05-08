@@ -372,4 +372,19 @@ public class WorldMapTests {
 
         assertEquals(42, map.countTerritoriesOwnedBy(PlayerColor.RED));
     }
+
+    @Test
+    public void GetTerritoriesOwnedBy_PlayerOwnsNone_ReturnsEmptySet() {
+        Map<TerritoryName, Territory> territories = new HashMap<>();
+        for (TerritoryName name : TerritoryName.values()) {
+            Territory mock = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mock.isOwnedBy(PlayerColor.RED)).andStubReturn(false);
+            EasyMock.replay(mock);
+            territories.put(name, mock);
+        }
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertTrue(map.getTerritoriesOwnedBy(PlayerColor.RED).isEmpty());
+    }
 }

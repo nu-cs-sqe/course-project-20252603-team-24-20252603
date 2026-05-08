@@ -65,4 +65,14 @@ class WorldMap {
         }
         return count;
     }
+
+    Set<TerritoryName> getTerritoriesOwnedBy(PlayerColor color) {
+        Set<TerritoryName> owned = new HashSet<>();
+        for (Map.Entry<TerritoryName, Territory> entry : territories.entrySet()) {
+            if (entry.getValue().isOwnedBy(color)) {
+                owned.add(entry.getKey());
+            }
+        }
+        return owned;
+    }
 }
