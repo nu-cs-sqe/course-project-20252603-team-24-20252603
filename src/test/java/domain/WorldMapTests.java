@@ -339,4 +339,22 @@ public class WorldMapTests {
         WorldMap map = new WorldMap(territories, neighbors);
         assertEquals(1, map.countTerritoriesOwnedBy(PlayerColor.RED));
     }
+
+    @Test
+    public void CountTerritoriesOwnedBy_PlayerOwnsThree_ReturnsThree() {
+        Map<TerritoryName, Territory> territories = new HashMap<>();
+        Set<TerritoryName> ownedByRed = Set.of(
+                TerritoryName.ALASKA, TerritoryName.ALBERTA, TerritoryName.ONTARIO);
+        for (TerritoryName name : TerritoryName.values()) {
+            Territory mock = EasyMock.createMock(Territory.class);
+            EasyMock.expect(mock.isOwnedBy(PlayerColor.RED))
+                    .andStubReturn(ownedByRed.contains(name));
+            EasyMock.replay(mock);
+            territories.put(name, mock);
+        }
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertEquals(3, map.countTerritoriesOwnedBy(PlayerColor.RED));
+    }
 }
