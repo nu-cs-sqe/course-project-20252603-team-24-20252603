@@ -114,4 +114,12 @@ public class TerritoryTests {
         territory.addArmies(1);
         assertEquals(4, territory.getArmies());
     }
+
+    @Test
+    public void AddArmies_TerritoryWithThreeArmies_AddFive_ReturnsEight() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(3);
+        territory.addArmies(5);
+        assertEquals(8, territory.getArmies());
+    }
 }
