@@ -1,0 +1,33 @@
+package domain;
+
+import org.junit.jupiter.api.Test;
+import org.easymock.EasyMock;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class RiskGameTests {
+
+    private Map<PlayerColor, String> threePlayerMap() {
+        return Map.of(
+                PlayerColor.RED, "Jonathan",
+                PlayerColor.BLUE, "Justin",
+                PlayerColor.GREEN, "Prashant"
+        );
+    }
+
+    private Random stubbedRandom(int returnValue) {
+        Random rand = EasyMock.createMock(Random.class);
+        EasyMock.expect(rand.nextInt(EasyMock.anyInt())).andStubReturn(returnValue);
+        EasyMock.replay(rand);
+        return rand;
+    }
+
+    @Test
+    public void Constructor_ThreePlayers_PhaseIsScramble() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertEquals(GamePhase.SCRAMBLE, game.getPhase());
+    }
+}
