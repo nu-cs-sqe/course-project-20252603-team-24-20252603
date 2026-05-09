@@ -67,6 +67,7 @@ public class RiskGame {
             throw new IllegalStateException("can only claim territories during SCRAMBLE phase");
         }
         worldMap.claim(territory, getCurrentPlayerColor());
+        worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
         if (territoriesClaimed == TOTAL_TERRITORIES) {
