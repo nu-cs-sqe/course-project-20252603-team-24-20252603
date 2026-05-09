@@ -379,4 +379,24 @@ public class RiskGameTests {
         assertEquals(before + 1, game.getArmies(TerritoryName.ALASKA));
     }
 
+    @Test
+    public void PlaceArmy_SkipsPlayerWithNoArmies_AdvancesToNextPlayerWithArmies() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 1);
+        Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 0);
+        Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 1);
+        game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.anyObject())).andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.placeArmy(TerritoryName.ALASKA);
+        assertEquals(PlayerColor.GREEN, game.getCurrentPlayerColor());
+        EasyMock.verify(mockMap);
+    }
+
 }
