@@ -366,4 +366,17 @@ public class RiskGameTests {
         game.claimTerritory(TerritoryName.ALASKA);
         assertTrue(game.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED));
     }
+
+    @Test
+    public void PlaceArmy_OwnedTerritory_ArmyCountIncreases() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.claimTerritory(TerritoryName.ALASKA);
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        int before = game.getArmies(TerritoryName.ALASKA);
+        game.placeArmy(TerritoryName.ALASKA);
+        assertEquals(before + 1, game.getArmies(TerritoryName.ALASKA));
+    }
+
 }
