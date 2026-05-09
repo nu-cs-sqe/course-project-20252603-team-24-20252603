@@ -132,4 +132,13 @@ public class RiskGameTests {
         assertEquals(GamePhase.ATTACK, game.getPhase());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetCurrentPlayerColor_AtGameStart_ReturnsValidColor() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        PlayerColor current = game.getCurrentPlayerColor();
+        assertTrue(current == PlayerColor.RED ||
+                current == PlayerColor.BLUE ||
+                current == PlayerColor.GREEN);
+    }
 }
