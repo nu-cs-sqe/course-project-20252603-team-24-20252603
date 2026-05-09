@@ -92,10 +92,7 @@ public class RiskGame {
         }
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        if (isSetupComplete()) {
-            phase = GamePhase.ATTACK;
-        }
+        advanceToNextPlayer();
     }
 
     public boolean isSetupComplete() {
@@ -111,6 +108,26 @@ public class RiskGame {
 
     public int getArmiesToPlace() {
         return players.get(currentPlayerIndex).getArmiesToPlace();
+    }
+
+    public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
+        return worldMap.isOwnedBy(territory, color);
+    }
+    public boolean isUnclaimed(TerritoryName territory) {
+        return worldMap.isUnclaimed(territory);
+    }
+    public int getArmies(TerritoryName territory) {
+        return worldMap.getArmies(territory);
+    }
+
+    private void advanceToNextPlayer() {
+        if (isSetupComplete()) {
+            phase = GamePhase.ATTACK;
+            return;
+        }
+        do {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        } while (!players.get(currentPlayerIndex).hasArmiesToPlace());
     }
 
     // helpers

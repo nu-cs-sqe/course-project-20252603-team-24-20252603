@@ -350,4 +350,12 @@ public class RiskGameTests {
         assertTrue(game.isSetupComplete());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void ClaimTerritory_UnclaimedTerritory_AddsOneArmy() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.claimTerritory(TerritoryName.ALASKA);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+    }
 }
