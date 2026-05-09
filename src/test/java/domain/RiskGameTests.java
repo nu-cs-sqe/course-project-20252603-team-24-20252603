@@ -84,4 +84,25 @@ public class RiskGameTests {
         Map<PlayerColor, String> players = Map.of();
         assertThrows(IllegalArgumentException.class, () -> new RiskGame(players));
     }
+
+    @Test
+    public void GetPhase_AllTerritoriesClaimed_ReturnsSetup() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
+        mockMap.claim(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expectLastCall().times(42);
+        EasyMock.replay(mockMap);
+
+        game.provideWorldMap(mockMap);
+
+        TerritoryName[] allTerritories = TerritoryName.values();
+        for (int i = 0; i < 42; i++) {
+            game.claimTerritory(allTerritories[i]);
+        }
+
+        assertEquals(GamePhase.SETUP, game.getPhase());
+        EasyMock.verify(mockMap);
+    }
 }
