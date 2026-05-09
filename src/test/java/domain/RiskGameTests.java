@@ -5,16 +5,17 @@ import org.easymock.EasyMock;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.LinkedHashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RiskGameTests {
 
     private Map<PlayerColor, String> threePlayerMap() {
-        return Map.of(
-                PlayerColor.RED, "Jonathan",
-                PlayerColor.BLUE, "Justin",
-                PlayerColor.GREEN, "Prashant"
-        );
+        Map<PlayerColor, String> players = new LinkedHashMap<>();
+        players.put(PlayerColor.RED, "Jonathan");
+        players.put(PlayerColor.BLUE, "Justin");
+        players.put(PlayerColor.GREEN, "Prashant");
+        return players;
     }
 
     private Random stubbedRandom(int returnValue) {

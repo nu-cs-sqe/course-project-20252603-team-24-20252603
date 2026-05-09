@@ -41,6 +41,9 @@ public class RiskGame {
     }
 
     private void validatePlayerCount(Map<PlayerColor, String> playerInfo) {
+        if (playerInfo == null) {
+            throw new IllegalArgumentException("playerInfo cannot be null");
+        }
         if (playerInfo.size() < MIN_PLAYERS || playerInfo.size() > MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
         }
