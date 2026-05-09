@@ -244,8 +244,9 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setCurrentPlayer(PlayerColor.RED);
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
-        EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
         mockMap.claim(TerritoryName.ALASKA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
         EasyMock.expectLastCall();
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
