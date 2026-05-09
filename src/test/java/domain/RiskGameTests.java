@@ -254,4 +254,11 @@ public class RiskGameTests {
         assertEquals(34, game.getArmiesToPlace());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void ClaimTerritory_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.SETUP);
+        assertThrows(IllegalStateException.class, () -> game.claimTerritory(TerritoryName.ALASKA));
+    }
 }
