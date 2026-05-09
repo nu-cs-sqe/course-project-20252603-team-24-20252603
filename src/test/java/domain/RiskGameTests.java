@@ -297,4 +297,16 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertThrows(IllegalStateException.class, () -> game.placeArmy(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void PlaceArmy_TerritoryNotOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        assertThrows(IllegalArgumentException.class, () -> game.placeArmy(TerritoryName.ALASKA));
+    }
 }
