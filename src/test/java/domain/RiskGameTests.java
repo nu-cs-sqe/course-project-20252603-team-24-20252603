@@ -148,4 +148,11 @@ public class RiskGameTests {
         assertNotEquals(before, after);
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetCurrentPlayerName_MatchesCurrentPlayerColor() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals("Justin", game.getCurrentPlayerName());
+    }
 }
