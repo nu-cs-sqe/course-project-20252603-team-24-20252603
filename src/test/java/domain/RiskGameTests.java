@@ -396,5 +396,4 @@ public class RiskGameTests {
         assertEquals(PlayerColor.GREEN, game.getCurrentPlayerColor());
         EasyMock.verify(mockMap);
     }
-
 }
