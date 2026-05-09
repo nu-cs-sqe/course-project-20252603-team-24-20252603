@@ -88,20 +88,16 @@ public class RiskGameTests {
     @Test
     public void GetPhase_AllTerritoriesClaimed_ReturnsSetup() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
         mockMap.claim(EasyMock.anyObject(), EasyMock.anyObject());
         EasyMock.expectLastCall().times(42);
         EasyMock.replay(mockMap);
-
         game.provideWorldMap(mockMap);
-
         TerritoryName[] allTerritories = TerritoryName.values();
         for (int i = 0; i < 42; i++) {
             game.claimTerritory(allTerritories[i]);
         }
-
         assertEquals(GamePhase.SETUP, game.getPhase());
         EasyMock.verify(mockMap);
     }
@@ -109,26 +105,21 @@ public class RiskGameTests {
     @Test
     public void GetPhase_AllArmiesPlaced_ReturnsAttack() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.anyObject())).andStubReturn(true);
         mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
         EasyMock.expectLastCall().times(3);
         EasyMock.replay(mockMap);
-
         Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 1);
         Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 1);
         Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 1);
-
         game.provideWorldMap(mockMap);
         game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
         game.setPhase(GamePhase.SETUP);
         game.setCurrentPlayer(PlayerColor.RED);
-
         game.placeArmy(TerritoryName.ALASKA);
         game.placeArmy(TerritoryName.ALASKA);
         game.placeArmy(TerritoryName.ALASKA);
-
         assertEquals(GamePhase.ATTACK, game.getPhase());
         EasyMock.verify(mockMap);
     }
@@ -138,7 +129,23 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         PlayerColor current = game.getCurrentPlayerColor();
         assertTrue(current == PlayerColor.RED ||
-                current == PlayerColor.BLUE ||
-                current == PlayerColor.GREEN);
+                    current == PlayerColor.BLUE ||
+                    current == PlayerColor.GREEN);
+    }
+
+    @Test
+    public void GetCurrentPlayerColor_AfterTurnEnds_ReturnsDifferentPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
+        mockMap.claim(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        PlayerColor before = game.getCurrentPlayerColor();
+        game.claimTerritory(TerritoryName.ALASKA);
+        PlayerColor after = game.getCurrentPlayerColor();
+        assertNotEquals(before, after);
+        EasyMock.verify(mockMap);
     }
 }
