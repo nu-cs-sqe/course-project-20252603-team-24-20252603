@@ -155,4 +155,11 @@ public class RiskGameTests {
         game.setCurrentPlayer(PlayerColor.RED);
         assertEquals("Justin", game.getCurrentPlayerName());
     }
+
+    @Test
+    public void GetArmiesToPlace_ThreePlayers_Returns35() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(35, game.getArmiesToPlace());
+    }
 }

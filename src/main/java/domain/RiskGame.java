@@ -108,6 +108,10 @@ public class RiskGame {
         return players.get(currentPlayerIndex).getName();
     }
 
+    public int getArmiesToPlace() {
+        return players.get(currentPlayerIndex).getArmiesToPlace();
+    }
+
     // helpers
     void provideWorldMap(WorldMap map) { this.worldMap = map; }
     void providePlayers(List<Player> players) { this.players = players; }
