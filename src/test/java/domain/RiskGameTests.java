@@ -274,4 +274,21 @@ public class RiskGameTests {
         assertThrows(IllegalStateException.class, () -> game.claimTerritory(TerritoryName.ALASKA));
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void PlaceArmy_OwnedTerritoryDuringSetup_PlacesArmyAndAdvancesTurn() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        PlayerColor before = game.getCurrentPlayerColor();
+        game.placeArmy(TerritoryName.ALASKA);
+        assertNotEquals(before, game.getCurrentPlayerColor());
+        EasyMock.verify(mockMap);
+    }
 }
