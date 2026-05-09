@@ -2,7 +2,6 @@ package domain;
 
 import org.junit.jupiter.api.Test;
 import org.easymock.EasyMock;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -153,7 +152,7 @@ public class RiskGameTests {
     public void GetCurrentPlayerName_MatchesCurrentPlayerColor() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setCurrentPlayer(PlayerColor.RED);
-        assertEquals("Justin", game.getCurrentPlayerName());
+        assertEquals("Jonathan", game.getCurrentPlayerName());
     }
 
     @Test
@@ -314,7 +313,7 @@ public class RiskGameTests {
     public void PlaceArmy_NoArmiesLeft_ThrowsIllegalArgumentException() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.SETUP);
-        Player redPlayer = new Player(PlayerColor.RED, "Jovy", 0);
+        Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 0);
         Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 0);
         Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 0);
         game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
@@ -324,5 +323,28 @@ public class RiskGameTests {
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
         assertThrows(IllegalArgumentException.class, () -> game.placeArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void PlaceArmy_LastArmyPlaced_TransitionsToAttackAndSetupComplete() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.anyObject())).andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall().times(3);
+        EasyMock.replay(mockMap);
+        Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 1);
+        Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 1);
+        Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 1);
+        game.provideWorldMap(mockMap);
+        game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.placeArmy(TerritoryName.ALASKA);
+        game.placeArmy(TerritoryName.ALASKA);
+        game.placeArmy(TerritoryName.ALASKA);
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertTrue(game.isSetupComplete());
+        EasyMock.verify(mockMap);
     }
 }
