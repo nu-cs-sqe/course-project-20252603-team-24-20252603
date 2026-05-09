@@ -358,4 +358,12 @@ public class RiskGameTests {
         game.claimTerritory(TerritoryName.ALASKA);
         assertEquals(1, game.getArmies(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void ClaimTerritory_UnclaimedTerritory_TerritoryOwnedByCurrentPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.claimTerritory(TerritoryName.ALASKA);
+        assertTrue(game.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED));
+    }
 }
