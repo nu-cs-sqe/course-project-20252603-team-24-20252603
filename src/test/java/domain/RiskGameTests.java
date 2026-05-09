@@ -166,7 +166,7 @@ public class RiskGameTests {
     @Test
     public void GetArmiesToPlace_FourPlayers_Returns30() {
         Map<PlayerColor, String> fourPlayers = Map.of(
-                PlayerColor.RED, "Jovy",
+                PlayerColor.RED, "JOnathan",
                 PlayerColor.BLUE, "Justin",
                 PlayerColor.GREEN, "Prashant",
                 PlayerColor.ORANGE, "David"
@@ -174,5 +174,19 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(fourPlayers, stubbedRandom(0));
         game.setCurrentPlayer(PlayerColor.RED);
         assertEquals(30, game.getArmiesToPlace());
+    }
+
+    @Test
+    public void GetArmiesToPlace_FivePlayers_Returns25() {
+        Map<PlayerColor, String> fivePlayers = Map.of(
+                PlayerColor.RED, "Jonathan",
+                PlayerColor.BLUE, "Justin",
+                PlayerColor.GREEN, "Prashant",
+                PlayerColor.ORANGE, "David",
+                PlayerColor.PINK, "Bob"
+        );
+        RiskGame game = new RiskGame(fivePlayers, stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(25, game.getArmiesToPlace());
     }
 }
