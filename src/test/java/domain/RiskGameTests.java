@@ -162,4 +162,17 @@ public class RiskGameTests {
         game.setCurrentPlayer(PlayerColor.RED);
         assertEquals(35, game.getArmiesToPlace());
     }
+
+    @Test
+    public void GetArmiesToPlace_FourPlayers_Returns30() {
+        Map<PlayerColor, String> fourPlayers = Map.of(
+                PlayerColor.RED, "Jovy",
+                PlayerColor.BLUE, "Justin",
+                PlayerColor.GREEN, "Prashant",
+                PlayerColor.ORANGE, "David"
+        );
+        RiskGame game = new RiskGame(fourPlayers, stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(30, game.getArmiesToPlace());
+    }
 }
