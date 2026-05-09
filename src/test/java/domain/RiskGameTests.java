@@ -137,8 +137,9 @@ public class RiskGameTests {
     public void GetCurrentPlayerColor_AfterTurnEnds_ReturnsDifferentPlayer() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
-        EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
         mockMap.claim(EasyMock.anyObject(), EasyMock.anyObject());
+        EasyMock.expectLastCall();
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
         EasyMock.expectLastCall();
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
