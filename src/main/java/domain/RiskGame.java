@@ -62,6 +62,23 @@ public class RiskGame {
         }
     }
 
+    public void claimTerritory(TerritoryName territory) {
+        if (phase != GamePhase.SCRAMBLE) {
+            throw new IllegalStateException("can only claim territories during SCRAMBLE phase");
+        }
+        worldMap.claim(territory, getCurrentPlayerColor());
+        players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
+        territoriesClaimed++;
+        if (territoriesClaimed == TOTAL_TERRITORIES) {
+            phase = GamePhase.SETUP;
+        }
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+
+    public PlayerColor getCurrentPlayerColor() {
+        return players.get(currentPlayerIndex).getColor();
+    }
+
     // helpers
     void provideWorldMap(WorldMap map) { this.worldMap = map; }
     void providePlayers(List<Player> players) { this.players = players; }
