@@ -209,18 +209,21 @@ public class RiskGameTests {
     public void GetArmiesToPlace_AfterClaimingOneTerritory_Returns34() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setCurrentPlayer(PlayerColor.RED);
-
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isUnclaimed(EasyMock.anyObject())).andStubReturn(true);
         mockMap.claim(EasyMock.anyObject(), EasyMock.anyObject());
         EasyMock.expectLastCall();
         EasyMock.replay(mockMap);
-
         game.provideWorldMap(mockMap);
         game.claimTerritory(TerritoryName.ALASKA);
         game.setCurrentPlayer(PlayerColor.RED);
-
         assertEquals(34, game.getArmiesToPlace());
         EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void IsSetupComplete_AtGameStart_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertFalse(game.isSetupComplete());
     }
 }
