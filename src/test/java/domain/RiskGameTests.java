@@ -63,10 +63,19 @@ public class RiskGameTests {
                 PlayerColor.BLUE, "Justin",
                 PlayerColor.GREEN, "Prashant",
                 PlayerColor.ORANGE, "David",
-                PlayerColor.PINK, "Alice",
+                PlayerColor.PINK, "Jonathan",
                 PlayerColor.CYAN, "Bob"
         );
         RiskGame game = new RiskGame(players, stubbedRandom(0));
         assertEquals(GamePhase.SCRAMBLE, game.getPhase());
+    }
+
+    @Test
+    public void Constructor_TwoPlayers_ThrowsIllegalArgumentException() {
+        Map<PlayerColor, String> players = Map.of(
+                PlayerColor.RED, "Jonathan",
+                PlayerColor.BLUE, "Justin"
+        );
+        assertThrows(IllegalArgumentException.class, () -> new RiskGame(players));
     }
 }
