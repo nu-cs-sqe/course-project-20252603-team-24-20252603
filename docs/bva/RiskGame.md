@@ -45,16 +45,17 @@
 
 ## Method: `PlayerColor getCurrentPlayerColor()`
 
-- **TC9: Get current player color at game start** ( :white_check_mark: )
+- **TC9: Get current player color at game start with random zero** ( :white_check_mark: )
     - **State of the system**:
-        - game constructed with RED, BLUE, GREEN
-    - **Expected output**: one of RED, BLUE, or GREEN
+        - game constructed with RED, BLUE, GREEN via LinkedHashMap
+        - Random mocked to return 0
+    - **Expected output**: RED
 
 - **TC10: Get current player color after turn ends** ( :white_check_mark: )
     - **State of the system**:
-        - RED claims a territory, turn advances
-        - Random mocked so BLUE goes second
-    - **Expected output**: BLUE
+        - current player claims a territory
+        - turn advances
+    - **Expected output**: current player is different from the previous current player
 
 ## Method: `String getCurrentPlayerName()`
 
@@ -131,9 +132,23 @@
         - all 42 territories claimed
         - phase transitions to SETUP
 
+- **TC23: Claim unclaimed territory adds 1 army** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: SCRAMBLE
+        - territory: ALASKA unclaimed
+        - current player: RED
+    - **Expected output**: ALASKA armies = 1
+
+- **TC24: Claim unclaimed territory owned by current player** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: SCRAMBLE
+        - territory: ALASKA unclaimed
+        - current player: RED
+    - **Expected output**: ALASKA owned by RED
+
 ## Method: `void placeArmy(TerritoryName territory)`
 
-- **TC23: Place army on owned territory during SETUP phase** ( :white_check_mark: )
+- **TC25: Place army on owned territory during SETUP phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
         - ALASKA owned by current player RED
@@ -143,31 +158,44 @@
         - RED armies decrease by 1
         - turn advances to next player
 
-- **TC24: Place army in wrong phase** ( :white_check_mark: )
+- **TC26: Place army in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: SCRAMBLE
         - ALASKA owned by current player
     - **Expected output**: throw IllegalStateException
 
-- **TC25: Place army on territory not owned by current player** ( :white_check_mark: )
+- **TC27: Place army on territory not owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
         - ALASKA owned by BLUE
         - current player is RED
     - **Expected output**: throw IllegalArgumentException
 
-- **TC26: Place army when player has no armies left** ( :white_check_mark: )
+- **TC28: Place army when player has no armies left** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
         - ALASKA owned by current player
         - current player armiesToPlace = 0
     - **Expected output**: throw IllegalArgumentException
 
-- **TC27: Last army placed transitions to ATTACK** ( :white_check_mark: )
+- **TC29: All final armies placed transitions to ATTACK** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
-        - all players have 1 army left
-        - current player places last army
+        - RED, BLUE, and GREEN each have 1 army left
     - **Expected output**:
         - phase transitions to ATTACK
-        - isSetupComplete() returns true
+        - setup is complete
+
+- **TC30: Place army on owned territory increases army count** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: SETUP
+        - ALASKA owned by RED
+        - RED has armies to place
+    - **Expected output**: ALASKA armies increase by 1
+
+- **TC31: Place army skips player with no armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: SETUP
+        - RED has 1 army, BLUE has 0 armies, GREEN has 1 army
+        - current player: RED
+    - **Expected output**: after RED places, current player is GREEN
