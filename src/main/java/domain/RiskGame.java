@@ -79,6 +79,31 @@ public class RiskGame {
         return players.get(currentPlayerIndex).getColor();
     }
 
+    public void placeArmy(TerritoryName territory) {
+        if (phase != GamePhase.SETUP) {
+            throw new IllegalStateException("can only place armies during SETUP phase");
+        }
+        if (!worldMap.isOwnedBy(territory, getCurrentPlayerColor())) {
+            throw new IllegalArgumentException("territory not owned by current player");
+        }
+        if (!players.get(currentPlayerIndex).hasArmiesToPlace()) {
+            throw new IllegalArgumentException("no armies left to place");
+        }
+        worldMap.addArmies(territory, 1);
+        players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        if (isSetupComplete()) {
+            phase = GamePhase.ATTACK;
+        }
+    }
+
+    public boolean isSetupComplete() {
+        for (Player p : players) {
+            if (p.hasArmiesToPlace()) return false;
+        }
+        return true;
+    }
+
     // helpers
     void provideWorldMap(WorldMap map) { this.worldMap = map; }
     void providePlayers(List<Player> players) { this.players = players; }
