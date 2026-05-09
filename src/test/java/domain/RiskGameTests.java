@@ -226,4 +226,14 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertFalse(game.isSetupComplete());
     }
+
+    @Test
+    public void IsSetupComplete_AllArmiesPlaced_ReturnsTrue() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 0);
+        Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 0);
+        Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 0);
+        game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
+        assertTrue(game.isSetupComplete());
+    }
 }
