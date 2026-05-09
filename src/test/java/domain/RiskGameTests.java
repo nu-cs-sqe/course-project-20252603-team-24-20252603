@@ -78,4 +78,10 @@ public class RiskGameTests {
         );
         assertThrows(IllegalArgumentException.class, () -> new RiskGame(players));
     }
+
+    @Test
+    public void Constructor_EmptyMap_ThrowsIllegalArgumentException() {
+        Map<PlayerColor, String> players = Map.of();
+        assertThrows(IllegalArgumentException.class, () -> new RiskGame(players));
+    }
 }
