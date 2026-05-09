@@ -30,4 +30,16 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertEquals(GamePhase.SCRAMBLE, game.getPhase());
     }
+
+    @Test
+    public void Constructor_FourPlayers_PhaseIsScramble() {
+        Map<PlayerColor, String> players = Map.of(
+                PlayerColor.RED, "Jonathan",
+                PlayerColor.BLUE, "Justin",
+                PlayerColor.GREEN, "Prashant",
+                PlayerColor.ORANGE, "David"
+        );
+        RiskGame game = new RiskGame(players, stubbedRandom(0));
+        assertEquals(GamePhase.SCRAMBLE, game.getPhase());
+    }
 }
