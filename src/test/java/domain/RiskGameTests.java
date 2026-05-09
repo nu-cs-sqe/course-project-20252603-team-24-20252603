@@ -126,12 +126,9 @@ public class RiskGameTests {
     }
 
     @Test
-    public void GetCurrentPlayerColor_AtGameStart_ReturnsValidColor() {
+    public void GetCurrentPlayerColor_AtGameStart_WithRandomZero_ReturnsRed() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-        PlayerColor current = game.getCurrentPlayerColor();
-        assertTrue(current == PlayerColor.RED ||
-                    current == PlayerColor.BLUE ||
-                    current == PlayerColor.GREEN);
+        assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
     }
 
     @Test
