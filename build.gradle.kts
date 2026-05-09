@@ -1,5 +1,7 @@
 plugins {
     id("java")
+    id("application")
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 group = "nu.csse.sqe"
@@ -26,4 +28,17 @@ tasks.compileJava {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("nu.csse.sqe.gui.RiskApplication")
+}
+
+javafx {
+    version = "17.0.12"
+    modules = listOf(
+        "javafx.controls",
+        "javafx.fxml",
+        "javafx.graphics",
+    )
 }
