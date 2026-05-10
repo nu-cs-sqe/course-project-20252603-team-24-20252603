@@ -29,7 +29,8 @@ class Player {
 
     void decreaseArmiesToPlace(int count) {
         if (count < 1 || count > armiesToPlace) {
-            throw new IllegalArgumentException("count must be at least 1 and not exceed available armies");
+            throw new IllegalArgumentException(
+                    "count must be at least 1 and not exceed available armies");
         }
         this.armiesToPlace -= count;
     }

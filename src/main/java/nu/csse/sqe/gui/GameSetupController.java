@@ -2,7 +2,6 @@ package nu.csse.sqe.gui;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -52,7 +51,8 @@ public final class GameSetupController {
     }
 
     @FXML
-    private void handleStartGame() {}
+    private void handleStartGame() {
+    }
 
     @FXML
     private void handleQuit() {
