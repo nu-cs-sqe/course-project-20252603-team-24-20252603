@@ -16,14 +16,15 @@ class WorldMap {
         initializeNeighbors();
     }
 
-    WorldMap(Map<TerritoryName, Territory> territories, Map<TerritoryName, Set<TerritoryName>> neighbors) {
+    WorldMap(Map<TerritoryName, Territory> territories, Map<TerritoryName,
+            Set<TerritoryName>> neighbors) {
         this.territories = territories;
         this.neighbors = neighbors;
     }
 
     boolean areNeighbors(TerritoryName first, TerritoryName second) {
-        return neighbors.containsKey(first) &&
-                neighbors.get(first).contains(second);
+        return neighbors.containsKey(first)
+                && neighbors.get(first).contains(second);
     }
 
     private void initializeTerritories() {
