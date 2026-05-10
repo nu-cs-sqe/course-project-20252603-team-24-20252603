@@ -219,10 +219,16 @@
 
     <!-- test methods with underscores suppressed per BVA/TDD naming convention -->
     <module name="MethodName">
-      <property name="format"
-          value="^[a-z][a-z0-9]*([A-Z][a-z0-9]*)*(_[A-Z][a-zA-Z0-9]*)*$"/>
+      <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
       <message key="name.invalidPattern"
              value="Method name ''{0}'' must match pattern ''{1}''."/>
+    </module>
+    
+    <module name="SuppressionXpathSingleFilter">
+      <property name="checks" value="MethodName"/>
+      <property name="query" value="//METHOD_DEF[
+        ./MODIFIERS/ANNOTATION//IDENT[contains(@text, 'Test')]
+    ]/IDENT"/>
     </module>
 
     <module name="EmptyCatchBlock">
