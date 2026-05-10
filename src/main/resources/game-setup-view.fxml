@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefWidth="420.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="nu.csse.sqe.gui.GameSetupController">
+
+    <padding>
+        <Insets bottom="16" left="16" right="16" top="16" />
+    </padding>
+
+    <center>
+        <VBox spacing="10.0">
+            <Label fx:id="headingLabel" />
+
+            <HBox alignment="CENTER_LEFT" spacing="8.0">
+                <Label text="Number of players" />
+                <Spinner fx:id="playerCountSpinner" prefWidth="80.0" />
+            </HBox>
+
+            <Label text="Player names" style="-fx-font-weight: bold;" />
+
+            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
+                        maxHeight="240.0" minViewportHeight="80.0" vbarPolicy="AS_NEEDED">
+                <VBox fx:id="nameFieldsContainer" spacing="6.0">
+                    <padding>
+                        <Insets bottom="4" />
+                    </padding>
+                </VBox>
+            </ScrollPane>
+
+            <Region prefHeight="4.0" />
+        </VBox>
+    </center>
+
+    <bottom>
+        <HBox alignment="CENTER_RIGHT" spacing="8.0">
+            <Button defaultButton="true" onAction="#handleStartGame" text="Start game" />
+            <Button cancelButton="true" onAction="#handleQuit" text="Quit" />
+        </HBox>
+    </bottom>
+
+</BorderPane>

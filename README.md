@@ -6,7 +6,7 @@
 ## Contributors
 - Jonathan Fang
 - Justin Min
-- Prashant Ghimere
+- Prashant Ghimire
 - David Park
 
 ## Dependencies
