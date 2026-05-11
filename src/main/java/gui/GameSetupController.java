@@ -1,4 +1,4 @@
-package nu.csse.sqe.gui;
+package gui;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +26,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
-import nu.csse.sqe.game.PlayerColor;
+import domain.GameConstants;
+import domain.PlayerColor;
 
 /**
  * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
@@ -34,8 +35,6 @@ import nu.csse.sqe.game.PlayerColor;
  */
 public final class GameSetupController {
 
-    private static final int MIN_PLAYERS = 3;
-    private static final int MAX_PLAYERS = 6;
     private static final int DEFAULT_PLAYERS = 3;
 
     /** Last successfully validated start payload; {@code null} until a valid start. */
@@ -59,7 +58,9 @@ public final class GameSetupController {
 
         SpinnerValueFactory.IntegerSpinnerValueFactory factory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                        MIN_PLAYERS, MAX_PLAYERS, DEFAULT_PLAYERS);
+                        GameConstants.MIN_PLAYERS,
+                        GameConstants.MAX_PLAYERS,
+                        DEFAULT_PLAYERS);
         playerCountSpinner.setValueFactory(factory);
         playerCountSpinner.setEditable(false);
         playerCountSpinner.valueProperty().addListener((obs, ignored, next) ->

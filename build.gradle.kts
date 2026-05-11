@@ -31,7 +31,7 @@ tasks.test {
 }
 
 application {
-    mainClass.set("nu.csse.sqe.gui.RiskApplication")
+    mainClass.set("gui.RiskApplication")
 }
 
 javafx {

@@ -13,7 +13,7 @@
 <BorderPane prefWidth="480.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="nu.csse.sqe.gui.GameSetupController">
+            fx:controller="gui.GameSetupController">
 
     <padding>
         <Insets bottom="16" left="16" right="16" top="16" />

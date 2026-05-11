@@ -1,7 +1,7 @@
-package nu.csse.sqe.game;
+package domain;
 
 /**
- * Numeric constants for Risk setup and board size. Full game logic lives in {@code RiskGame} later.
+ * Numeric constants for Risk setup and board size.
  */
 public final class GameConstants {
 
