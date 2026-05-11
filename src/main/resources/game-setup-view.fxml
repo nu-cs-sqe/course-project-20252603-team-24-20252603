@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefWidth="420.0"
+<BorderPane prefWidth="480.0"
             xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="nu.csse.sqe.gui.GameSetupController">
@@ -28,7 +28,7 @@
                 <Spinner fx:id="playerCountSpinner" prefWidth="80.0" />
             </HBox>
 
-            <Label text="Player names" style="-fx-font-weight: bold;" />
+            <Label text="Player names and colors" style="-fx-font-weight: bold;" />
 
             <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
                         maxHeight="240.0" minViewportHeight="80.0" vbarPolicy="AS_NEEDED">
