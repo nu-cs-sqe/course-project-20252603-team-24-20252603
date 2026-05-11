@@ -20,7 +20,7 @@ import javafx.scene.text.FontWeight;
  */
 public final class GameSetupController {
 
-    private static final int MIN_PLAYERS = 2;
+    private static final int MIN_PLAYERS = 3;
     private static final int MAX_PLAYERS = 6;
     private static final int DEFAULT_PLAYERS = 3;
 
