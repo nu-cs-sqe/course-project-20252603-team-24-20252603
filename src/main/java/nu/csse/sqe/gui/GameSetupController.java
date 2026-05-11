@@ -1,11 +1,19 @@
 package nu.csse.sqe.gui;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
@@ -21,13 +29,17 @@ import javafx.scene.text.FontWeight;
 import nu.csse.sqe.game.PlayerColor;
 
 /**
- * FXML controller for the game setup UI (stub only until setup is wired to the domain).
+ * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
+ * payload expected by {@code RiskGame} when the user starts a game.
  */
 public final class GameSetupController {
 
     private static final int MIN_PLAYERS = 3;
     private static final int MAX_PLAYERS = 6;
     private static final int DEFAULT_PLAYERS = 3;
+
+    /** Last successfully validated start payload; {@code null} until a valid start. */
+    private Map<PlayerColor, String> validatedPlayerInfo;
 
     @FXML
     private Label headingLabel;
@@ -56,8 +68,44 @@ public final class GameSetupController {
         rebuildNameFields(factory.getValue());
     }
 
+    /**
+     * Returns the player map from the last successful {@link #handleStartGame()}, or {@code null}.
+     */
+    public Map<PlayerColor, String> getValidatedPlayerInfo() {
+        return validatedPlayerInfo;
+    }
+
     @FXML
-    private void handleStartGame() {}
+    private void handleStartGame() {
+        int count = playerCountSpinner.getValue();
+        if (nameFields.size() != count) {
+            showError("Setup is out of sync with the player count. Try adjusting the number of players.");
+            return;
+        }
+
+        PlayerColor[] colors = PlayerColor.values();
+        Map<PlayerColor, String> map = new LinkedHashMap<>(count);
+        Set<String> seenLower = new HashSet<>(count);
+
+        for (int i = 0; i < count; i++) {
+            PlayerColor color = colors[i];
+            TextField field = nameFields.get(i);
+            String raw = field.getText();
+            String name = raw == null ? "" : raw.trim();
+            if (name.isEmpty()) {
+                showError("Enter a name for " + displayName(color) + " (player " + (i + 1) + ").");
+                return;
+            }
+            String dedupeKey = name.toLowerCase(Locale.ROOT);
+            if (!seenLower.add(dedupeKey)) {
+                showError("Each player must have a different name (duplicate: \"" + name + "\").");
+                return;
+            }
+            map.put(color, name);
+        }
+
+        validatedPlayerInfo = Collections.unmodifiableMap(map);
+    }
 
     @FXML
     private void handleQuit() {
@@ -142,5 +190,13 @@ public final class GameSetupController {
         int g = (int) Math.round(color.getGreen() * 255);
         int b = (int) Math.round(color.getBlue() * 255);
         return String.format("#%02x%02x%02x", r, g, b);
+    }
+
+    private static void showError(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Cannot start game");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
