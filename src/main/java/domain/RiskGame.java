@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class RiskGame {
+public final class RiskGame {
     private static final int MIN_PLAYERS = 3;
     private static final int MAX_PLAYERS = 6;
     private static final int ARMIES_THREE_PLAYERS = 35;
@@ -18,7 +18,6 @@ public class RiskGame {
     private WorldMap worldMap;
     private List<Player> players;
     private int currentPlayerIndex;
-    private Random random;
     private int territoriesClaimed;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
@@ -26,7 +25,6 @@ public class RiskGame {
     }
 
     RiskGame(Map<PlayerColor, String> playerInfo, Random random) {
-        this.random = random;
         validatePlayerCount(playerInfo);
         this.worldMap = new WorldMap();
         this.players = new ArrayList<>();
