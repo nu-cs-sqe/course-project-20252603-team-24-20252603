@@ -36,6 +36,7 @@ class Territory {
         }
         this.owner = color;
     }
+    
     boolean isOwnedBy(PlayerColor color) {
         return color == owner;
     }
