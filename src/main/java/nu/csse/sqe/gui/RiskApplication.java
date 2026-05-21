@@ -19,8 +19,9 @@ public final class RiskApplication extends Application {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Risk — Game setup");
-        stage.setMinWidth(400);
-        stage.setMinHeight(320);
+        stage.setWidth(1100);
+        stage.setHeight(750);
+        stage.setMaximized(false);
         stage.setScene(scene);
         stage.show();
     }
