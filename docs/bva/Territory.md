@@ -118,3 +118,53 @@
         - territory with armies = 3
         - count: -1
     - **Expected output**: throw IllegalArgumentException
+
+## Method: `void removeArmies(int count)`
+
+- **TC21: Remove 1 army from territory with 1 army** ( :x: )
+    - **State of the system**:
+        - territory with armies = 1
+        - count: 1
+    - **Expected output**: territory armies = 0
+
+- **TC22: Remove 1 army from territory with more than 1 army** ( :x: )
+    - **State of the system**:
+        - territory with armies = 3
+        - count: 1
+    - **Expected output**: territory armies = 2
+
+- **TC23: Remove more than 1 army from territory with more than 1 army** ( :x: )
+    - **State of the system**:
+        - territory with armies = 5
+        - count: 3
+    - **Expected output**: territory armies = 2
+
+- **TC24: Remove exact amount territory has** ( :x: )
+    - **State of the system**:
+        - territory with armies = 3
+        - count: 3
+    - **Expected output**: territory armies = 0
+
+- **TC25: Remove more than territory has** ( :x: )
+    - **State of the system**:
+        - territory with armies = 2
+        - count: 3
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC26: Remove 0 armies** ( :x: )
+    - **State of the system**:
+        - territory with armies = 3
+        - count: 0
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC27: Remove negative armies** ( :x: )
+    - **State of the system**:
+        - territory with armies = 3
+        - count: -1
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC28: Remove 1 army from territory with 0 armies** ( :x: )
+    - **State of the system**:
+        - territory with armies = 0
+        - count: 1
+    - **Expected output**: throw IllegalArgumentException
