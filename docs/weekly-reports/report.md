@@ -40,7 +40,7 @@
 5. [in progress] Jonathan: Set up Checkstyle and SpotBugs
 6. [in progress] Jonathan: Set up Jacoco for code coverage and Pitest for mutation testing
 
-# Week 8 (05/18/2026-05/26/2026)
+# Week 8 (05/18/2026-05/24/2026)
 **Planning and Progress Tracking**:
 1. [done] David: Implement BVA for one turn of Risk
 2. [done] Jonathan: Set up Checkstyle and SpotBugs
