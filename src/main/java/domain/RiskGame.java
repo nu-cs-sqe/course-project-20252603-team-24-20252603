@@ -152,6 +152,30 @@ public final class RiskGame {
         phase = GamePhase.FORTIFY;
     }
 
+    public void fortify(TerritoryName from, TerritoryName to, int armies) {
+        if (phase != GamePhase.FORTIFY) {
+            throw new IllegalStateException("can only fortify during FORTIFY phase");
+        }
+        PlayerColor current = getCurrentPlayerColor();
+        if (!worldMap.isOwnedBy(from, current)) {
+            throw new IllegalArgumentException("from territory not owned by current player");
+        }
+        if (!worldMap.isOwnedBy(to, current)) {
+            throw new IllegalArgumentException("to territory not owned by current player");
+        }
+        if (!worldMap.areNeighbors(from, to)) {
+            throw new IllegalArgumentException("territories are not neighbors");
+        }
+        if (armies < 1) {
+            throw new IllegalArgumentException("armies must be at least 1");
+        }
+        if (armies >= worldMap.getArmies(from)) {
+            throw new IllegalArgumentException("must leave at least 1 army behind");
+        }
+        worldMap.removeArmies(from, armies);
+        worldMap.addArmies(to, armies);
+    }
+
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
         return worldMap.isOwnedBy(territory, color);
     }
