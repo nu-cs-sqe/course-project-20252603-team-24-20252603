@@ -13,6 +13,7 @@ public final class RiskGame {
     private static final int ARMIES_FIVE_PLAYERS = 25;
     private static final int ARMIES_SIX_PLAYERS = 20;
     private static final int TOTAL_TERRITORIES = 42;
+    private static final int MIN_DRAFT_ARMIES = 3;
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -109,6 +110,10 @@ public final class RiskGame {
 
     public int getArmiesToPlace() {
         return players.get(currentPlayerIndex).getArmiesToPlace();
+    }
+
+    public int getDraftArmies() {
+        return MIN_DRAFT_ARMIES;
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
