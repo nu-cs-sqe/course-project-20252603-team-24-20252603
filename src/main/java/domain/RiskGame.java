@@ -196,6 +196,15 @@ public final class RiskGame {
         if (defenderLosses > 0) {
             worldMap.removeArmies(to, defenderLosses);
         }
+        if (defenderLosses == defenderArmies) {
+            captureTerritory(from, to, numAttackers);
+        }
+    }
+
+    private void captureTerritory(TerritoryName from, TerritoryName to, int armiesToMove) {
+        worldMap.claim(to, getCurrentPlayerColor());
+        worldMap.removeArmies(from, armiesToMove);
+        worldMap.addArmies(to, armiesToMove);
     }
 
     private int[] rollDiceDescending(int count) {
