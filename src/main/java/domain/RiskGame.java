@@ -227,6 +227,15 @@ public final class RiskGame {
         phase = GamePhase.FORTIFY;
     }
 
+    public PlayerColor getWinner() {
+        for (Player p : players) {
+            if (worldMap.countTerritoriesOwnedBy(p.getColor()) == TOTAL_TERRITORIES) {
+                return p.getColor();
+            }
+        }
+        return null;
+    }
+
     public void endTurn() {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only end turn during FORTIFY phase");
