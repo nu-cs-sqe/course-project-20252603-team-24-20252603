@@ -246,7 +246,7 @@ Returns the number of reinforcement armies the current player has remaining to p
 
 Places 1 draft army on a territory owned by the current player during the `ATTACK` phase.
 
-- **TC36: Place draft army on owned territory** ( :x: )
+- **TC36: Place draft army on owned territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - ALASKA owned by current player RED
@@ -255,7 +255,7 @@ Places 1 draft army on a territory owned by the current player during the `ATTAC
         - ALASKA armies increase by 1
         - draftArmiesRemaining decreases to 2
 
-- **TC37: Place last draft army** ( :x: )
+- **TC37: Place last draft army** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - ALASKA owned by current player RED
@@ -264,12 +264,12 @@ Places 1 draft army on a territory owned by the current player during the `ATTAC
         - ALASKA armies increase by 1
         - isDraftComplete() returns true
 
-- **TC38: Place draft army in wrong phase** ( :x: )
+- **TC38: Place draft army in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
     - **Expected output**: throw IllegalStateException
 
-- **TC39: Place draft army on territory not owned by current player** ( :x: )
+- **TC39: Place draft army on territory not owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - ALASKA owned by BLUE
@@ -277,7 +277,7 @@ Places 1 draft army on a territory owned by the current player during the `ATTAC
         - draftArmiesRemaining = 3
     - **Expected output**: throw IllegalArgumentException
 
-- **TC40: Place draft army when none remain** ( :x: )
+- **TC40: Place draft army when none remain** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - ALASKA owned by current player RED
@@ -288,11 +288,11 @@ Places 1 draft army on a territory owned by the current player during the `ATTAC
 
 Returns `true` when the current player has placed all their draft armies (`draftArmiesRemaining == 0`).
 
-- **TC41: Draft not yet complete** ( :x: )
+- **TC41: Draft not yet complete** ( :white_check_mark: )
     - **State of the system**: draftArmiesRemaining > 0
     - **Expected output**: false
 
-- **TC42: Draft complete** ( :x: )
+- **TC42: Draft complete** ( :white_check_mark: )
     - **State of the system**: draftArmiesRemaining = 0
     - **Expected output**: true
 

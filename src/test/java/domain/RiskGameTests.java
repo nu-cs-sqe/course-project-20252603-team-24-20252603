@@ -522,4 +522,19 @@ public class RiskGameTests {
         game.draftArmy(TerritoryName.ALASKA);
         assertThrows(IllegalArgumentException.class, () -> game.draftArmy(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void EndAttack_DuringAttackPhase_TransitionsToFortify() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        game.endAttack();
+        assertEquals(GamePhase.FORTIFY, game.getPhase());
+    }
+
+    @Test
+    public void EndAttack_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        assertThrows(IllegalStateException.class, () -> game.endAttack());
+    }
 }
