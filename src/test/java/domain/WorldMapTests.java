@@ -442,4 +442,120 @@ public class WorldMapTests {
         assertEquals(42, result.size());
         assertTrue(result.containsAll(Set.of(TerritoryName.values())));
     }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithOneArmy_RemoveArmiesCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.removeArmies(TerritoryName.ALASKA, 1);
+
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithMoreThanOneArmy_RemoveArmiesCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.removeArmies(TerritoryName.ALASKA, 1);
+
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_MoreThanOneFromTerritoryWithMoreArmies_RemoveArmiesCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(3);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.removeArmies(TerritoryName.ALASKA, 3);
+
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_ExactAmountTerritoryHas_RemoveArmiesCalledOnTerritory() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(3);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        map.removeArmies(TerritoryName.ALASKA, 3);
+
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_MoreThanTerritoryHas_ThrowsIllegalArgumentException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(3);
+        EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 3));
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_CountOfZero_ThrowsIllegalArgumentException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(0);
+        EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 0));
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_NegativeCount_ThrowsIllegalArgumentException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(-1);
+        EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, -1));
+        EasyMock.verify(mockAlaska);
+    }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithZeroArmies_ThrowsIllegalArgumentException() {
+        Map<TerritoryName, Territory> territories = createTerritories();
+        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        Territory mockAlaska = EasyMock.createMock(Territory.class);
+        mockAlaska.removeArmies(1);
+        EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
+        EasyMock.replay(mockAlaska);
+        territories.put(TerritoryName.ALASKA, mockAlaska);
+        WorldMap map = new WorldMap(territories, neighbors);
+        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 1));
+        EasyMock.verify(mockAlaska);
+    }
 }
