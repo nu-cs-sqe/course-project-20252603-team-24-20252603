@@ -56,6 +56,10 @@ class WorldMap {
         territories.get(territory).addArmies(count);
     }
 
+    void removeArmies(TerritoryName territory, int count) {
+        territories.get(territory).removeArmies(count);
+    }
+
     int countTerritoriesOwnedBy(PlayerColor color) {
         int count = 0;
         for (Territory territory : territories.values()) {
