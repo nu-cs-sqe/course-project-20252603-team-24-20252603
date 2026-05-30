@@ -537,11 +537,11 @@ Ends the current player's turn. Advances to the next player and returns to `ATTA
 
 Returns the `PlayerColor` of the player who owns all 42 territories, or `null` if no winner yet.
 
-- **TC69: No winner — territories distributed among multiple players** ( :x: )
+- **TC69: No winner — territories distributed among multiple players** ( :white_check_mark: )
     - **State of the system**: territories distributed among at least 2 players
     - **Expected output**: null
 
-- **TC70: One player owns all 42 territories** ( :x: )
+- **TC70: One player owns all 42 territories** ( :white_check_mark: )
     - **State of the system**:
         - RED owns all 42 territories
     - **Expected output**: RED
