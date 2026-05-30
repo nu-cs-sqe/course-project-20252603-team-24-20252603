@@ -422,13 +422,13 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
 
 Transitions the game from `ATTACK` phase to `FORTIFY` phase. Must be called even if the player did not attack.
 
-- **TC56: End attack during ATTACK phase** ( :x: )
+- **TC56: End attack during ATTACK phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - isDraftComplete: true
     - **Expected output**: phase == FORTIFY
 
-- **TC57: End attack in wrong phase** ( :x: )
+- **TC57: End attack in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
     - **Expected output**: throw IllegalStateException
