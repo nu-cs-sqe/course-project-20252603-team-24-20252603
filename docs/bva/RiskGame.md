@@ -437,7 +437,7 @@ Transitions the game from `ATTACK` phase to `FORTIFY` phase. Must be called even
 
 Current player moves armies from one owned territory to an adjacent owned territory. Exactly one fortify move is allowed per turn.
 
-- **TC58: Fortify with 1 army (minimum valid)** ( :x: )
+- **TC58: Fortify with 1 army (minimum valid)** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -448,7 +448,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - ALASKA armies decrease by 1
         - ALBERTA armies increase by 1
 
-- **TC59: Fortify with from.armies - 1 (maximum valid — leaves 1 army behind)** ( :x: )
+- **TC59: Fortify with from.armies - 1 (maximum valid — leaves 1 army behind)** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 5
@@ -459,12 +459,12 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - ALASKA armies = 1
         - ALBERTA armies increase by 4
 
-- **TC60: Fortify in wrong phase** ( :x: )
+- **TC60: Fortify in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
     - **Expected output**: throw IllegalStateException
 
-- **TC61: Fortify from territory not owned by current player** ( :x: )
+- **TC61: Fortify from territory not owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by BLUE
@@ -472,7 +472,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - armies: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC62: Fortify to territory not owned by current player** ( :x: )
+- **TC62: Fortify to territory not owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -481,7 +481,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - armies: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC63: Fortify between non-adjacent territories** ( :x: )
+- **TC63: Fortify between non-adjacent territories** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -490,7 +490,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - armies: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC64: Fortify with 0 armies** ( :x: )
+- **TC64: Fortify with 0 armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -499,7 +499,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
         - armies: 0
     - **Expected output**: throw IllegalArgumentException
 
-- **TC65: Fortify with all armies (none left behind)** ( :x: )
+- **TC65: Fortify with all armies (none left behind)** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
