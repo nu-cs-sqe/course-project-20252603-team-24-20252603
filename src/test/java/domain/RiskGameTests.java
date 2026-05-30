@@ -921,4 +921,30 @@ public class RiskGameTests {
         assertEquals(4, game.getDraftArmies());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetWinner_TerritoriesDistributedAmongMultiplePlayers_ReturnsNull() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(14);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(14);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(14);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        assertNull(game.getWinner());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetWinner_OnePlayerOwnsAllFortyTwoTerritories_ReturnsThatPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(42);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(0);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        assertEquals(PlayerColor.RED, game.getWinner());
+        EasyMock.verify(mockMap);
+    }
 }

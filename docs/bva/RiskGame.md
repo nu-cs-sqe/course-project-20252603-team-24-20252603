@@ -512,7 +512,7 @@ Current player moves armies from one owned territory to an adjacent owned territ
 
 Ends the current player's turn. Advances to the next player and returns to `ATTACK` phase with the new player's draft armies calculated.
 
-- **TC66: End turn during FORTIFY phase** ( :x: )
+- **TC66: End turn during FORTIFY phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED (in a 3-player game with RED, BLUE, GREEN)
@@ -520,12 +520,12 @@ Ends the current player's turn. Advances to the next player and returns to `ATTA
         - phase == ATTACK
         - current player is different from RED
 
-- **TC67: End turn in wrong phase** ( :x: )
+- **TC67: End turn in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
     - **Expected output**: throw IllegalStateException
 
-- **TC68: Draft armies reset for new player after endTurn** ( :x: )
+- **TC68: Draft armies reset for new player after endTurn** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - RED calls endTurn()
