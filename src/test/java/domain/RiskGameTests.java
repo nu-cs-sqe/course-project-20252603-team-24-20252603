@@ -792,7 +792,8 @@ public class RiskGameTests {
     @Test
     public void Attack_OneAttackerExecutes_DiceRolledAndArmiesAdjusted() {
         // TC43: defender wins all (attacker rolls 1, defender rolls 6 -> defender beats attacker)
-        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5));
+        // First scripted value (0) is consumed by RiskGame constructor for starting player.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
@@ -814,7 +815,8 @@ public class RiskGameTests {
         // TC44: attacker rolls (6,5,4), defender rolls (6,1)
         // Pair 1: 6 vs 6 -> tie, defender wins -> attacker -1
         // Pair 2: 5 vs 1 -> attacker wins -> defender -1
-        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(5, 4, 3, 5, 0));
+        // First scripted value (0) is consumed by RiskGame constructor for starting player.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 5, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);

@@ -1,6 +1,8 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -16,6 +18,8 @@ public final class RiskGame {
     private static final int MIN_DRAFT_ARMIES = 3;
     private static final int MIN_ATTACK_DICE = 1;
     private static final int MAX_ATTACK_DICE = 3;
+    private static final int MAX_DEFEND_DICE = 2;
+    private static final int DIE_SIDES = 6;
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -24,6 +28,7 @@ public final class RiskGame {
     private int territoriesClaimed;
     private int draftArmiesRemaining;
     private boolean isDraftInitialized;
+    private Random random;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
         this(playerInfo, new Random());
@@ -33,6 +38,7 @@ public final class RiskGame {
         validatePlayerCount(playerInfo);
         this.worldMap = new WorldMap();
         this.players = new ArrayList<>();
+        this.random = random;
         initializePlayers(playerInfo);
         this.currentPlayerIndex = random.nextInt(players.size());
         this.phase = GamePhase.SCRAMBLE;
@@ -170,6 +176,39 @@ public final class RiskGame {
         if (numAttackers >= worldMap.getArmies(from)) {
             throw new IllegalArgumentException("must leave at least 1 army behind");
         }
+        int defenderArmies = worldMap.getArmies(to);
+        int numDefenders = Math.min(MAX_DEFEND_DICE, defenderArmies);
+        int[] attackerRolls = rollDiceDescending(numAttackers);
+        int[] defenderRolls = rollDiceDescending(numDefenders);
+        int comparisons = Math.min(numAttackers, numDefenders);
+        int attackerLosses = 0;
+        int defenderLosses = 0;
+        for (int i = 0; i < comparisons; i++) {
+            if (attackerRolls[i] > defenderRolls[i]) {
+                defenderLosses++;
+            } else {
+                attackerLosses++;
+            }
+        }
+        if (attackerLosses > 0) {
+            worldMap.removeArmies(from, attackerLosses);
+        }
+        if (defenderLosses > 0) {
+            worldMap.removeArmies(to, defenderLosses);
+        }
+    }
+
+    private int[] rollDiceDescending(int count) {
+        Integer[] rolls = new Integer[count];
+        for (int i = 0; i < count; i++) {
+            rolls[i] = random.nextInt(DIE_SIDES) + 1;
+        }
+        Arrays.sort(rolls, Collections.reverseOrder());
+        int[] result = new int[count];
+        for (int i = 0; i < count; i++) {
+            result[i] = rolls[i];
+        }
+        return result;
     }
 
     public void endAttack() {
