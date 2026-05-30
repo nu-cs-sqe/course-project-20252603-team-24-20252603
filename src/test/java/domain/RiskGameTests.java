@@ -435,4 +435,17 @@ public class RiskGameTests {
         assertEquals(4, game.getDraftArmies());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetDraftArmies_PlayerOwnsAllFortyTwoTerritories_ReturnsFourteen() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(42);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(14, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
 }
