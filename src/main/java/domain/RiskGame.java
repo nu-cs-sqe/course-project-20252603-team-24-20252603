@@ -113,7 +113,8 @@ public final class RiskGame {
     }
 
     public int getDraftArmies() {
-        return MIN_DRAFT_ARMIES;
+        int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
+        return Math.max(MIN_DRAFT_ARMIES, owned / 3);
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
