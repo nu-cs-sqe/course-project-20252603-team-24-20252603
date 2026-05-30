@@ -21,6 +21,7 @@ public final class RiskGame {
     private int currentPlayerIndex;
     private int territoriesClaimed;
     private int draftArmiesRemaining;
+    private boolean isDraftInitialized;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
         this(playerInfo, new Random());
@@ -122,12 +123,26 @@ public final class RiskGame {
     }
 
     public void draftArmy(TerritoryName territory) {
-        if (draftArmiesRemaining == 0) {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only draft armies during ATTACK phase");
+        }
+        if (draftArmiesRemaining == 0 && !isDraftInitialized) {
             int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
             draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3);
+            isDraftInitialized = true;
+        }
+        if (!worldMap.isOwnedBy(territory, getCurrentPlayerColor())) {
+            throw new IllegalArgumentException("territory not owned by current player");
+        }
+        if (draftArmiesRemaining == 0) {
+            throw new IllegalArgumentException("no draft armies remaining");
         }
         worldMap.addArmies(territory, 1);
         draftArmiesRemaining--;
+    }
+
+    public boolean isDraftComplete() {
+        return isDraftInitialized && draftArmiesRemaining == 0;
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
