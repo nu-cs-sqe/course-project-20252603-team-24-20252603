@@ -20,6 +20,7 @@ public final class RiskGame {
     private List<Player> players;
     private int currentPlayerIndex;
     private int territoriesClaimed;
+    private int draftArmiesRemaining;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
         this(playerInfo, new Random());
@@ -113,8 +114,20 @@ public final class RiskGame {
     }
 
     public int getDraftArmies() {
+        if (draftArmiesRemaining > 0) {
+            return draftArmiesRemaining;
+        }
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
         return Math.max(MIN_DRAFT_ARMIES, owned / 3);
+    }
+
+    public void draftArmy(TerritoryName territory) {
+        if (draftArmiesRemaining == 0) {
+            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
+            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3);
+        }
+        worldMap.addArmies(territory, 1);
+        draftArmiesRemaining--;
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
