@@ -14,6 +14,8 @@ public final class RiskGame {
     private static final int ARMIES_SIX_PLAYERS = 20;
     private static final int TOTAL_TERRITORIES = 42;
     private static final int MIN_DRAFT_ARMIES = 3;
+    private static final int MIN_ATTACK_DICE = 1;
+    private static final int MAX_ATTACK_DICE = 3;
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -143,6 +145,31 @@ public final class RiskGame {
 
     public boolean isDraftComplete() {
         return isDraftInitialized && draftArmiesRemaining == 0;
+    }
+
+    public void attack(TerritoryName from, TerritoryName to, int numAttackers) {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only attack during ATTACK phase");
+        }
+        if (isDraftInitialized && draftArmiesRemaining > 0) {
+            throw new IllegalStateException("must complete draft before attacking");
+        }
+        PlayerColor current = getCurrentPlayerColor();
+        if (!worldMap.isOwnedBy(from, current)) {
+            throw new IllegalArgumentException("from territory not owned by current player");
+        }
+        if (worldMap.isOwnedBy(to, current)) {
+            throw new IllegalArgumentException("cannot attack own territory");
+        }
+        if (!worldMap.areNeighbors(from, to)) {
+            throw new IllegalArgumentException("territories are not neighbors");
+        }
+        if (numAttackers < MIN_ATTACK_DICE || numAttackers > MAX_ATTACK_DICE) {
+            throw new IllegalArgumentException("numAttackers must be between 1 and 3");
+        }
+        if (numAttackers >= worldMap.getArmies(from)) {
+            throw new IllegalArgumentException("must leave at least 1 army behind");
+        }
     }
 
     public void endAttack() {
