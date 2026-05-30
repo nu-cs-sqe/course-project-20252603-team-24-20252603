@@ -218,25 +218,25 @@ The following methods cover one complete turn: the current player drafts reinfor
 
 Returns the number of reinforcement armies the current player has remaining to place this turn. At the start of each `ATTACK` turn, this equals `max(3, floor(ownedTerritories / 3))` and decrements as `draftArmy()` is called.
 
-- **TC32: Draft armies for player owning 1 territory** ( :x: )
+- **TC32: Draft armies for player owning 1 territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns 1 territory
     - **Expected output**: 3 (minimum — floor(1/3) = 0, clamped to 3)
 
-- **TC33: Draft armies for player owning 11 territories** ( :x: )
+- **TC33: Draft armies for player owning 11 territories** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns 11 territories
     - **Expected output**: 3 (floor(11/3) = 3, equal to minimum — last count that stays at 3)
 
-- **TC34: Draft armies for player owning 12 territories** ( :x: )
+- **TC34: Draft armies for player owning 12 territories** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns 12 territories
     - **Expected output**: 4 (floor(12/3) = 4 — first territory count that exceeds the minimum of 3)
 
-- **TC35: Draft armies for player owning 42 territories** ( :x: )
+- **TC35: Draft armies for player owning 42 territories** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns all 42 territories
