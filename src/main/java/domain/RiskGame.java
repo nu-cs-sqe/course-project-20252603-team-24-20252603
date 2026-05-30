@@ -145,6 +145,13 @@ public final class RiskGame {
         return isDraftInitialized && draftArmiesRemaining == 0;
     }
 
+    public void endAttack() {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only end attack during ATTACK phase");
+        }
+        phase = GamePhase.FORTIFY;
+    }
+
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
         return worldMap.isOwnedBy(territory, color);
     }
