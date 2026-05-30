@@ -834,4 +834,58 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3);
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void Attack_AttackerWinsAllDice_CapturesTerritory() {
+        // TC54: 2 attackers vs 1 defender, attacker wins all dice.
+        // First scripted value (0) consumed by constructor.
+        // Attacker rolls 2 dice (values 6, 5), defender rolls 1 die (value 1).
+        // Pair 1: 6 vs 1 -> defender loses (-1). Defender at 0 -> captured.
+        // Captured: ownership transferred, attacker moves armies = numAttackers (2) into ALBERTA.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        mockMap.claim(TerritoryName.ALBERTA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        mockMap.removeArmies(TerritoryName.ALASKA, 2);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 2);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Attack_DefenderWinsAllDice_AttackerLosesArmies() {
+        // TC55: 2 attackers vs defender with 2 armies, defender wins all.
+        // First scripted value (0) consumed by constructor.
+        // Attacker rolls 2 dice (values 1, 1), defender rolls 2 dice (values 6, 6).
+        // Pair 1: 1 vs 6 -> attacker -1. Pair 2: 1 vs 6 -> attacker -1. Total attacker -2.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 0, 5, 5));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(2);
+        mockMap.removeArmies(TerritoryName.ALASKA, 2);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        EasyMock.verify(mockMap);
+    }
 }
