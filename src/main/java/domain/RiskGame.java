@@ -227,6 +227,16 @@ public final class RiskGame {
         phase = GamePhase.FORTIFY;
     }
 
+    public void endTurn() {
+        if (phase != GamePhase.FORTIFY) {
+            throw new IllegalStateException("can only end turn during FORTIFY phase");
+        }
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        phase = GamePhase.ATTACK;
+        draftArmiesRemaining = 0;
+        isDraftInitialized = false;
+    }
+
     public void fortify(TerritoryName from, TerritoryName to, int armies) {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only fortify during FORTIFY phase");
