@@ -300,7 +300,7 @@ Returns `true` when the current player has placed all their draft armies (`draft
 
 Current player attacks an adjacent enemy territory. Dice are rolled internally. Armies are removed from both sides based on dice outcome. If all defending armies are eliminated, the attacker captures the territory.
 
-- **TC43: Attack with 1 attacker (minimum valid)** ( :x: )
+- **TC43: Attack with 1 attacker (minimum valid)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 2
@@ -309,7 +309,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: attack executes — dice rolled, armies adjusted on both sides
 
-- **TC44: Attack with 3 attackers (maximum valid)** ( :x: )
+- **TC44: Attack with 3 attackers (maximum valid)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 4
@@ -318,12 +318,12 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 3
     - **Expected output**: attack executes — dice rolled, armies adjusted on both sides
 
-- **TC45: Attack in wrong phase** ( :x: )
+- **TC45: Attack in wrong phase** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
     - **Expected output**: throw IllegalStateException
 
-- **TC46: Attack before completing draft** ( :x: )
+- **TC46: Attack before completing draft** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: false (draftArmiesRemaining > 0)
         - ALASKA owned by RED, armies = 3
@@ -331,7 +331,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: throw IllegalStateException
 
-- **TC47: Attack from territory not owned by current player** ( :x: )
+- **TC47: Attack from territory not owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by BLUE
@@ -339,7 +339,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC48: Attack territory owned by current player** ( :x: )
+- **TC48: Attack territory owned by current player** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -348,7 +348,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC49: Attack non-adjacent territory** ( :x: )
+- **TC49: Attack non-adjacent territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -357,7 +357,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC50: Attack with 0 attackers** ( :x: )
+- **TC50: Attack with 0 attackers** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 2
@@ -366,7 +366,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 0
     - **Expected output**: throw IllegalArgumentException
 
-- **TC51: Attack with 4 attackers (exceeds maximum of 3)** ( :x: )
+- **TC51: Attack with 4 attackers (exceeds maximum of 3)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 5
@@ -375,7 +375,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 4
     - **Expected output**: throw IllegalArgumentException
 
-- **TC52: Attack from territory with only 1 army (cannot attack)** ( :x: )
+- **TC52: Attack from territory with only 1 army (cannot attack)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 1
@@ -384,7 +384,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 1
     - **Expected output**: throw IllegalArgumentException (numAttackers must be strictly less than from.armies)
 
-- **TC53: Attack where numAttackers equals from.armies** ( :x: )
+- **TC53: Attack where numAttackers equals from.armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 2
@@ -393,7 +393,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - numAttackers: 2
     - **Expected output**: throw IllegalArgumentException (must leave at least 1 army behind)
 
-- **TC54: Attacker wins and captures territory** ( :x: )
+- **TC54: Attacker wins and captures territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -405,7 +405,7 @@ Current player attacks an adjacent enemy territory. Dice are rolled internally. 
         - ALBERTA owned by RED
         - ALASKA armies reduced by attacker losses (>= 1 army remains on ALASKA)
 
-- **TC55: Defender wins and repels attack** ( :x: )
+- **TC55: Defender wins and repels attack** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3

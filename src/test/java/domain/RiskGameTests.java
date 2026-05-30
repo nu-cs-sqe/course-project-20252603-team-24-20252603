@@ -888,4 +888,37 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void EndTurn_DuringFortifyPhase_TransitionsToAttackAndAdvancesPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        PlayerColor before = game.getCurrentPlayerColor();
+        game.endTurn();
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertNotEquals(before, game.getCurrentPlayerColor());
+    }
+
+    @Test
+    public void EndTurn_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        assertThrows(IllegalStateException.class, () -> game.endTurn());
+    }
+
+    @Test
+    public void EndTurn_NextPlayerOwnsTwelveTerritories_GetDraftArmiesReturnsFour() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(12);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(PlayerColor.BLUE, game.getCurrentPlayerColor());
+        assertEquals(4, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
 }
