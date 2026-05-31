@@ -111,6 +111,16 @@ public final class GameSetupController {
         }
 
         validatedPlayerInfo = Collections.unmodifiableMap(map);
+
+        final RiskGame game;
+        try {
+            game = new RiskGame(validatedPlayerInfo);
+        } catch (IllegalArgumentException e) {
+            showError(e.getMessage());
+            return;
+        }
+
+        switchToGameBoard(game);
     }
 
     @FXML
