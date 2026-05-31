@@ -12,6 +12,9 @@ import java.util.Set;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
@@ -25,9 +28,11 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 
 import domain.GameConstants;
 import domain.PlayerColor;
+import domain.RiskGame;
 
 /**
  * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
@@ -111,6 +116,26 @@ public final class GameSetupController {
     @FXML
     private void handleQuit() {
         Platform.exit();
+    }
+
+    private void switchToGameBoard(RiskGame game) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/game-board-view.fxml"));
+            Parent root = loader.load();
+
+            GameBoardController controller = loader.getController();
+            controller.initGame(game);
+
+            Stage stage = (Stage) headingLabel.getScene().getWindow();
+            Scene scene = new Scene(root, 1100, 750);
+            stage.setScene(scene);
+            stage.setTitle("Risk");
+            stage.setMinWidth(900);
+            stage.setMinHeight(600);
+        } catch (Exception e) {
+            showError("Failed to load game board: " + e.getMessage());
+        }
     }
 
     private void rebuildNameFields(int count) {
