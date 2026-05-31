@@ -180,3 +180,53 @@
         - color: RED
         - RED owns all 42 territories
     - **Expected output**: set containing all 42 territories
+
+## Method: `void removeArmies(TerritoryName territory, int count)`
+
+- **TC30: Remove 1 army from territory with 1 army** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 1
+        - count: 1
+    - **Expected output**: ALASKA armies = 0
+
+- **TC31: Remove 1 army from territory with more than 1 army** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 3
+        - count: 1
+    - **Expected output**: ALASKA armies = 2
+
+- **TC32: Remove more than 1 army from territory with more than 1 army** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 5
+        - count: 3
+    - **Expected output**: ALASKA armies = 2
+
+- **TC33: Remove exact amount territory has** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 3
+        - count: 3
+    - **Expected output**: ALASKA armies = 0
+
+- **TC34: Remove more than territory has** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 2
+        - count: 3
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC35: Remove 0 armies** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 3
+        - count: 0
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC36: Remove negative armies** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 3
+        - count: -1
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC37: Remove 1 army from territory with 0 armies** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA with armies = 0
+        - count: 1
+    - **Expected output**: throw IllegalArgumentException

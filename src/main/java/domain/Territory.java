@@ -30,6 +30,16 @@ class Territory {
         this.armies += count;
     }
 
+    void removeArmies(int count) {
+        if (count < 1) {
+            throw new IllegalArgumentException("count must be at least 1");
+        }
+        if (count > armies) {
+            throw new IllegalArgumentException("count cannot exceed current armies");
+        }
+        this.armies -= count;
+    }
+
     void claim(PlayerColor color) {
         if (owner != null) {
             throw new IllegalStateException("Territory is already claimed");

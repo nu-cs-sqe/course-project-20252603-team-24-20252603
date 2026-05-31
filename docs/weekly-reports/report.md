@@ -39,3 +39,14 @@
 4. [not started] David: Implement BVA and TDD for one turn of Risk
 5. [in progress] Jonathan: Set up Checkstyle and SpotBugs
 6. [in progress] Jonathan: Set up Jacoco for code coverage and Pitest for mutation testing
+
+# Week 8 (05/18/2026-05/24/2026)
+**Planning and Progress Tracking**:
+1. [done] David: Implement BVA for one turn of Risk
+2. [done] Jonathan: Set up Checkstyle and SpotBugs
+3. [done] Jonathan: Set up Jacoco for code coverage and Pitest for mutation testing
+4. [done] Justin: Update design document for one phase of Risk
+5. [not started] David: TDD for one turn phase
+6. [not started] Justin: TDD for one turn phase
+7. [in progress] Prashant: GUI for setup + one turn
+8. [in progress] Jonathan: GUI for setup + one turn
