@@ -1,7 +1,11 @@
 package domain;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class PlayerTests {
 
@@ -81,7 +85,7 @@ public class PlayerTests {
     }
 
     @Test
-    public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_DecreaseByThirtyFive_ReturnsZero() {
+    public void DecreaseArmiesToPlace_PlayerWithThirtyFiveArmies_ByThirtyFive_ReturnsZero() {
         Player player = new Player(PlayerColor.RED, "Justin", 35);
         player.decreaseArmiesToPlace(35);
         assertEquals(0, player.getArmiesToPlace());
