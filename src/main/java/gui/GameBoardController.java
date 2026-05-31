@@ -4,11 +4,13 @@ import domain.GamePhase;
 import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
+import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import netscape.javascript.JSObject;
 
 import java.util.Map;
 
@@ -47,7 +49,10 @@ public final class GameBoardController {
     private void loadMap() {
         engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) engine.executeScript("window");
+                window.setMember("javaBridge", new JavaBridge());
                 applyMapStyling();
+                updateMapColors();
                 updateStatusBar();
             }
         });
@@ -59,13 +64,81 @@ public final class GameBoardController {
                 + "paths.forEach(function(p) {"
                 + "  var id = p.id;"
                 + "  if (!id || id === 'false' || id === 'schere') return;"
-                + "  p.style.cursor = 'default';"
+                + "  p.style.cursor = 'pointer';"
                 + "  p.style.fill = '#c8d8a8';"
                 + "  p.style.fillOpacity = '1';"
                 + "  p.style.stroke = '#555';"
                 + "  p.style.strokeWidth = '1.5';"
+                + "  p.style.transition = 'fill 0.15s ease';"
+                + "  p.addEventListener('mouseenter', function() {"
+                + "    if (!this.dataset.owner) { this.style.fill = '#e8f4c8'; }"
+                + "    else { this.style.opacity = '0.8'; }"
+                + "  });"
+                + "  p.addEventListener('mouseleave', function() {"
+                + "    this.style.opacity = '1';"
+                + "    if (!this.dataset.owner) { this.style.fill = '#c8d8a8'; }"
+                + "  });"
+                + "  p.addEventListener('click', function() {"
+                + "    window.javaBridge.onTerritoryClicked(this.id);"
+                + "  });"
                 + "});";
         engine.executeScript(js);
+    }
+
+    public final class JavaBridge {
+        public void onTerritoryClicked(String svgId) {
+            Platform.runLater(() -> handleTerritoryClick(svgId));
+        }
+    }
+
+    private void handleTerritoryClick(String svgId) {
+        TerritoryName territory = SVG_ID_TO_TERRITORY.get(svgId);
+        if (territory == null) {
+            return;
+        }
+
+        GamePhase phase = game.getPhase();
+        try {
+            if (phase == GamePhase.SCRAMBLE) {
+                game.claimTerritory(territory);
+            } else if (phase == GamePhase.SETUP) {
+                game.placeArmy(territory);
+            }
+            updateMapColors();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    private void updateMapColors() {
+        for (Map.Entry<String, TerritoryName> entry : SVG_ID_TO_TERRITORY.entrySet()) {
+            String svgId = entry.getKey();
+            TerritoryName territory = entry.getValue();
+
+            String fillColor = "#c8d8a8";
+            String ownerData = "";
+
+            for (PlayerColor color : PlayerColor.values()) {
+                if (game.isOwnedBy(territory, color)) {
+                    fillColor = PLAYER_COLORS.get(color);
+                    ownerData = color.name();
+                    break;
+                }
+            }
+
+            int armies = game.getArmies(territory);
+            String script = "(function() {"
+                    + "  var el = document.getElementById('" + svgId + "');"
+                    + "  if (el) {"
+                    + "    el.style.fill = '" + fillColor + "';"
+                    + "    el.dataset.owner = '" + ownerData + "';"
+                    + "    el.dataset.armies = '" + armies + "';"
+                    + "    el.title = '" + territory.name() + " (" + armies + ")';"
+                    + "  }"
+                    + "})();";
+            engine.executeScript(script);
+        }
     }
 
     private void updateStatusBar() {
