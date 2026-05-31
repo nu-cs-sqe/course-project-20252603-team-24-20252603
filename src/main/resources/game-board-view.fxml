@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.web.WebView?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx/17"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="nu.csse.sqe.gui.GameBoardController"
+        style="-fx-background-color: #1a2633;">
+
+    <center>
+        <WebView fx:id="mapView" />
+    </center>
+
+    <bottom>
+        <HBox
+                spacing="24.0"
+                alignment="CENTER_LEFT"
+                style="-fx-background-color: #0f1923; -fx-border-color: #2a3f55; -fx-border-width: 1 0 0 0;">
+            <padding>
+                <Insets top="10" bottom="10" left="16" right="16" />
+            </padding>
+
+            <VBox spacing="2.0">
+                <Label text="PHASE" style="-fx-text-fill: #4a6a8a; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                <Label fx:id="phaseLabel" text="SCRAMBLE"
+                       style="-fx-text-fill: #c8d8e8; -fx-font-size: 13px; -fx-font-weight: bold;" />
+            </VBox>
+
+            <Region prefWidth="1.0" style="-fx-background-color: #2a3f55;" prefHeight="36.0" />
+
+            <VBox spacing="2.0">
+                <Label text="CURRENT PLAYER" style="-fx-text-fill: #4a6a8a; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                <Label fx:id="playerLabel" text="—"
+                       style="-fx-text-fill: #ffffff; -fx-font-size: 13px; -fx-font-weight: bold;" />
+            </VBox>
+
+            <Region prefWidth="1.0" style="-fx-background-color: #2a3f55;" prefHeight="36.0" />
+
+            <VBox spacing="2.0">
+                <Label text="ARMIES TO PLACE" style="-fx-text-fill: #4a6a8a; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                <Label fx:id="armiesLabel" text="—"
+                       style="-fx-text-fill: #c8d8e8; -fx-font-size: 13px; -fx-font-weight: bold;" />
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS" />
+
+            <Label fx:id="statusLabel" text="Click a territory to begin."
+                   style="-fx-text-fill: #7a9ab8; -fx-font-size: 12px; -fx-font-style: italic;" />
+        </HBox>
+    </bottom>
+
+</BorderPane>
