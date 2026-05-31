@@ -396,4 +396,555 @@ public class RiskGameTests {
         assertEquals(PlayerColor.GREEN, game.getCurrentPlayerColor());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetDraftArmies_PlayerOwnsOneTerritory_ReturnsThree() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(3, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetDraftArmies_PlayerOwnsElevenTerritories_ReturnsThree() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(11);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(3, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetDraftArmies_PlayerOwnsTwelveTerritories_ReturnsFour() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(12);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(4, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetDraftArmies_PlayerOwnsAllFortyTwoTerritories_ReturnsFourteen() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(42);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(14, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void DraftArmy_OwnedTerritoryDuringAttack_PlacesArmyAndDecrementsDraft() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        assertEquals(2, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void DraftArmy_LastDraftArmy_IsDraftCompleteReturnsTrue() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall().times(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        assertTrue(game.isDraftComplete());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void DraftArmy_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        assertThrows(IllegalStateException.class, () -> game.draftArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void DraftArmy_TerritoryNotOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class, () -> game.draftArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void DraftArmy_NoArmiesRemain_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall().times(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        assertThrows(IllegalArgumentException.class, () -> game.draftArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void EndAttack_DuringAttackPhase_TransitionsToFortify() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        game.endAttack();
+        assertEquals(GamePhase.FORTIFY, game.getPhase());
+    }
+
+    @Test
+    public void EndAttack_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        assertThrows(IllegalStateException.class, () -> game.endAttack());
+    }
+
+    @Test
+    public void Fortify_OneArmyBetweenAdjacentOwnedTerritories_MovesArmy() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Fortify_MaxArmiesLeavesOneBehind_MovesAllButOne() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(5);
+        mockMap.removeArmies(TerritoryName.ALASKA, 4);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 4);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 4);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Fortify_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        assertThrows(IllegalStateException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Fortify_FromTerritoryNotOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Fortify_ToTerritoryNotOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Fortify_NonAdjacentTerritories_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.BRAZIL, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.BRAZIL)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.BRAZIL, 1));
+    }
+
+    @Test
+    public void Fortify_ZeroArmies_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 0));
+    }
+
+    @Test
+    public void Fortify_AllArmiesNoneLeftBehind_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3));
+    }
+
+    private RiskGame attackReadyGame(WorldMap mockMap) {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        return game;
+    }
+
+    @Test
+    public void Attack_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        assertThrows(IllegalStateException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Attack_BeforeDraftComplete_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        assertFalse(game.isDraftComplete());
+        assertThrows(IllegalStateException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Attack_FromTerritoryNotOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Attack_TerritoryOwnedByCurrentPlayer_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Attack_NonAdjacentTerritory_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.BRAZIL, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.BRAZIL)).andStubReturn(false);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.BRAZIL, 1));
+    }
+
+    @Test
+    public void Attack_ZeroAttackers_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(2);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 0));
+    }
+
+    @Test
+    public void Attack_FourAttackersExceedsMax_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(5);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 4));
+    }
+
+    @Test
+    public void Attack_FromTerritoryWithOnlyOneArmy_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(1);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void Attack_NumAttackersEqualsFromArmies_ThrowsIllegalArgumentException() {
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(2);
+        EasyMock.replay(mockMap);
+        RiskGame game = attackReadyGame(mockMap);
+        assertThrows(IllegalArgumentException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2));
+    }
+
+    /** Builds a Random mock that returns the given sequence from nextInt(). */
+    private Random scriptedDice(int... rolls) {
+        Random rand = EasyMock.createMock(Random.class);
+        for (int roll : rolls) {
+            EasyMock.expect(rand.nextInt(EasyMock.anyInt())).andReturn(roll);
+        }
+        EasyMock.replay(rand);
+        return rand;
+    }
+
+    @Test
+    public void Attack_OneAttackerExecutes_DiceRolledAndArmiesAdjusted() {
+        // TC43: defender wins all (attacker rolls 1, defender rolls 6 -> defender beats attacker)
+        // First scripted value (0) is consumed by RiskGame constructor for starting player.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(2);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Attack_ThreeAttackersExecutes_DiceRolledAndBothSidesLoseArmies() {
+        // TC44: attacker rolls (6,5,4), defender rolls (6,1)
+        // Pair 1: 6 vs 6 -> tie, defender wins -> attacker -1
+        // Pair 2: 5 vs 1 -> attacker wins -> defender -1
+        // First scripted value (0) is consumed by RiskGame constructor for starting player.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 5, 0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(4);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(2);
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Attack_AttackerWinsAllDice_CapturesTerritory() {
+        // TC54: 2 attackers vs 1 defender, attacker wins all dice.
+        // First scripted value (0) consumed by constructor.
+        // Attacker rolls 2 dice (values 6, 5), defender rolls 1 die (value 1).
+        // Pair 1: 6 vs 1 -> defender loses (-1). Defender at 0 -> captured.
+        // Captured: ownership transferred, attacker moves armies = numAttackers (2) into ALBERTA.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        mockMap.claim(TerritoryName.ALBERTA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        mockMap.removeArmies(TerritoryName.ALASKA, 2);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 2);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void Attack_DefenderWinsAllDice_AttackerLosesArmies() {
+        // TC55: 2 attackers vs defender with 2 armies, defender wins all.
+        // First scripted value (0) consumed by constructor.
+        // Attacker rolls 2 dice (values 1, 1), defender rolls 2 dice (values 6, 6).
+        // Pair 1: 1 vs 6 -> attacker -1. Pair 2: 1 vs 6 -> attacker -1. Total attacker -2.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 0, 5, 5));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(2);
+        mockMap.removeArmies(TerritoryName.ALASKA, 2);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void EndTurn_DuringFortifyPhase_TransitionsToAttackAndAdvancesPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        PlayerColor before = game.getCurrentPlayerColor();
+        game.endTurn();
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertNotEquals(before, game.getCurrentPlayerColor());
+    }
+
+    @Test
+    public void EndTurn_WrongPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        assertThrows(IllegalStateException.class, () -> game.endTurn());
+    }
+
+    @Test
+    public void EndTurn_NextPlayerOwnsTwelveTerritories_GetDraftArmiesReturnsFour() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(12);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(PlayerColor.BLUE, game.getCurrentPlayerColor());
+        assertEquals(4, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetWinner_TerritoriesDistributedAmongMultiplePlayers_ReturnsNull() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(14);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(14);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(14);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        assertNull(game.getWinner());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void GetWinner_OnePlayerOwnsAllFortyTwoTerritories_ReturnsThatPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(42);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(0);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        assertEquals(PlayerColor.RED, game.getWinner());
+        EasyMock.verify(mockMap);
+    }
 }
