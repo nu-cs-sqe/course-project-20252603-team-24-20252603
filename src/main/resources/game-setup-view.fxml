@@ -39,6 +39,9 @@
                 </VBox>
             </ScrollPane>
 
+            <Label fx:id="errorLabel" text="" visible="false"
+                   style="-fx-text-fill: #cc3333; -fx-font-size: 11px;" />
+
             <Region prefHeight="4.0" />
         </VBox>
     </center>
