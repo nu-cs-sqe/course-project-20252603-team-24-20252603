@@ -1,0 +1,172 @@
+package gui;
+
+import domain.GamePhase;
+import domain.PlayerColor;
+import domain.RiskGame;
+import domain.TerritoryName;
+import javafx.concurrent.Worker;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
+import java.util.Map;
+
+/**
+ * FXML controller for the interactive Risk board (scramble and setup phases).
+ */
+public final class GameBoardController {
+
+    private static final Map<String, TerritoryName> SVG_ID_TO_TERRITORY = buildIdMap();
+    private static final Map<PlayerColor, String> PLAYER_COLORS = buildColorMap();
+
+    @FXML
+    private WebView mapView;
+
+    @FXML
+    private Label phaseLabel;
+
+    @FXML
+    private Label playerLabel;
+
+    @FXML
+    private Label armiesLabel;
+
+    @FXML
+    private Label statusLabel;
+
+    private RiskGame game;
+    private WebEngine engine;
+
+    void initGame(RiskGame game) {
+        this.game = game;
+        this.engine = mapView.getEngine();
+        loadMap();
+    }
+
+    private void loadMap() {
+        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                applyMapStyling();
+                updateStatusBar();
+            }
+        });
+        engine.loadContent(buildMapHtml());
+    }
+
+    private void applyMapStyling() {
+        String js = "var paths = document.querySelectorAll('path[id]');"
+                + "paths.forEach(function(p) {"
+                + "  var id = p.id;"
+                + "  if (!id || id === 'false' || id === 'schere') return;"
+                + "  p.style.cursor = 'default';"
+                + "  p.style.fill = '#c8d8a8';"
+                + "  p.style.fillOpacity = '1';"
+                + "  p.style.stroke = '#555';"
+                + "  p.style.strokeWidth = '1.5';"
+                + "});";
+        engine.executeScript(js);
+    }
+
+    private void updateStatusBar() {
+        GamePhase phase = game.getPhase();
+        phaseLabel.setText(phase.name());
+        playerLabel.setText(game.getCurrentPlayerName()
+                + " (" + game.getCurrentPlayerColor().name() + ")");
+
+        if (phase == GamePhase.SCRAMBLE) {
+            armiesLabel.setText("Armies: " + game.getArmiesToPlace());
+            statusLabel.setText("Click an unclaimed territory to claim it.");
+        } else if (phase == GamePhase.SETUP) {
+            armiesLabel.setText("Armies: " + game.getArmiesToPlace());
+            statusLabel.setText("Click one of your territories to place an army.");
+        } else if (phase == GamePhase.ATTACK) {
+            armiesLabel.setText("");
+            statusLabel.setText("Attack phase — coming soon.");
+        } else if (phase == GamePhase.GAME_OVER) {
+            statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
+        }
+
+        String playerColor = PLAYER_COLORS.get(game.getCurrentPlayerColor());
+        playerLabel.setStyle("-fx-text-fill: " + playerColor + "; -fx-font-weight: bold;");
+    }
+
+    private String buildMapHtml() {
+        try {
+            java.net.URL svgUrl = getClass().getResource("/Risk_board.svg");
+            if (svgUrl == null) {
+                return "<html><body>Error: Risk_board.svg not found in resources.</body></html>";
+            }
+            java.nio.file.Path svgPath = java.nio.file.Paths.get(svgUrl.toURI());
+            String svgContent = java.nio.file.Files.readString(svgPath);
+            svgContent = svgContent.replaceFirst("<\\?xml[^?]*\\?>", "");
+            return "<!DOCTYPE html><html><head><style>"
+                    + "* { margin: 0; padding: 0; box-sizing: border-box; }"
+                    + "html, body { width: 100%; height: 100%; background: #1a2633; overflow: hidden; }"
+                    + "svg { width: 100%; height: 100%; display: block; }"
+                    + "</style></head><body>"
+                    + svgContent
+                    + "</body></html>";
+        } catch (Exception e) {
+            return "<html><body>Error loading map: " + e.getMessage() + "</body></html>";
+        }
+    }
+
+    private static Map<String, TerritoryName> buildIdMap() {
+        Map<String, TerritoryName> map = new java.util.HashMap<>();
+        map.put("alaska", TerritoryName.ALASKA);
+        map.put("northwest_territory", TerritoryName.NORTHWEST_TERRITORY);
+        map.put("greenland", TerritoryName.GREENLAND);
+        map.put("alberta", TerritoryName.ALBERTA);
+        map.put("ontario", TerritoryName.ONTARIO);
+        map.put("quebec", TerritoryName.QUEBEC);
+        map.put("western_united_states", TerritoryName.WESTERN_UNITED_STATES);
+        map.put("eastern_united_states", TerritoryName.EASTERN_UNITED_STATES);
+        map.put("central_america", TerritoryName.CENTRAL_AMERICA);
+        map.put("venezuela", TerritoryName.VENEZUELA);
+        map.put("peru", TerritoryName.PERU);
+        map.put("brazil", TerritoryName.BRAZIL);
+        map.put("argentina", TerritoryName.ARGENTINA);
+        map.put("iceland", TerritoryName.ICELAND);
+        map.put("great_britain", TerritoryName.GREAT_BRITAIN);
+        map.put("western_europe", TerritoryName.WESTERN_EUROPE);
+        map.put("northern_europe", TerritoryName.NORTHERN_EUROPE);
+        map.put("southern_europe", TerritoryName.SOUTHERN_EUROPE);
+        map.put("scandinavia", TerritoryName.SCANDINAVIA);
+        map.put("ukraine", TerritoryName.UKRAINE);
+        map.put("north_africa", TerritoryName.NORTH_AFRICA);
+        map.put("egypt", TerritoryName.EGYPT);
+        map.put("east_africa", TerritoryName.EAST_AFRICA);
+        map.put("congo", TerritoryName.CONGO);
+        map.put("south_africa", TerritoryName.SOUTH_AFRICA);
+        map.put("madagascar", TerritoryName.MADAGASCAR);
+        map.put("middle_east", TerritoryName.MIDDLE_EAST);
+        map.put("afghanistan", TerritoryName.AFGHANISTAN);
+        map.put("ural", TerritoryName.URAL);
+        map.put("siberia", TerritoryName.SIBERIA);
+        map.put("yakursk", TerritoryName.YAKUTSK);
+        map.put("kamchatka", TerritoryName.KAMCHATKA);
+        map.put("irkutsk", TerritoryName.IRKUTSK);
+        map.put("mongolia", TerritoryName.MONGOLIA);
+        map.put("japan", TerritoryName.JAPAN);
+        map.put("china", TerritoryName.CHINA);
+        map.put("india", TerritoryName.INDIA);
+        map.put("siam", TerritoryName.SIAM);
+        map.put("eastern_australia", TerritoryName.EASTERN_AUSTRALIA);
+        map.put("western_australia", TerritoryName.WESTERN_AUSTRALIA);
+        map.put("new_guinea", TerritoryName.NEW_GUINEA);
+        map.put("indonesia", TerritoryName.INDONESIA);
+        return java.util.Collections.unmodifiableMap(map);
+    }
+
+    private static Map<PlayerColor, String> buildColorMap() {
+        Map<PlayerColor, String> map = new java.util.EnumMap<>(PlayerColor.class);
+        map.put(PlayerColor.RED, "#e05555");
+        map.put(PlayerColor.BLUE, "#5588dd");
+        map.put(PlayerColor.GREEN, "#44aa66");
+        map.put(PlayerColor.ORANGE, "#ee8833");
+        map.put(PlayerColor.PINK, "#dd66aa");
+        map.put(PlayerColor.CYAN, "#44bbcc");
+        return java.util.Collections.unmodifiableMap(map);
+    }
+}
