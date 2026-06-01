@@ -545,3 +545,34 @@ Returns the `PlayerColor` of the player who owns all 42 territories, or `null` i
     - **State of the system**:
         - RED owns all 42 territories
     - **Expected output**: RED
+
+---
+
+# Multiple Turns
+
+The following test cases cover behaviors that emerge only across more than one complete turn:
+turn-order wrap-around, fresh draft state at the start of each new turn, the `GAME_OVER`
+transition triggered when the final territory is captured, and the enforcement that no
+further game actions are permitted once `GAME_OVER` is set.
+
+## Method: `void endTurn()` — additional case
+
+- **TC71: Turn order wraps from last player back to first player** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - 3-player game: RED, BLUE, GREEN (in that order)
+        - current player: GREEN (last in rotation)
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
+
+## Method: `boolean isDraftComplete()` — additional case
+
+- **TC72: Draft not complete at start of a brand-new turn** ( :x: )
+    - **State of the system**:
+        - GREEN just called `endTurn()`, RED is now the current player
+        - RED has not yet called `draftArmy()` (draft not initialized for this turn)
+    - **Expected output**: false
+    - **Note**: This is distinct from TC41. TC41 tests `draftArmiesRemaining > 0`;
+      this tests the case where the draft has not been initialized at all for the new turn
+      (`isDraftInitialized == false`, `draftArmiesRemaining == 0`).
