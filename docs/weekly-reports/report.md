@@ -28,14 +28,14 @@
 4. [done] Jonathan Complete BVA for all four classes in design document
 5. [done] Jonathan Follow TDD for testing implementation based on BVA and design document
 6. [not started] Justin: Update design document for one phase of Risk
-7. [not started] Prashant: Implement BVA and TDD for one turn of Risk
+7. [in progress] Prashant: Implement BVA and TDD for one turn of Risk
 8. [not started] David: Implement BVA and TDD for one turn of Risk
 
 # Week 7 (05/11/2026-05/17/2026)
 **Planning and Progress Tracking**:
 1. [in progress] Prashant: Open draft PR, document BVA, and begin TDD for GUI
 2. [not started] Justin: Update design document for one phase of Risk
-3. [not started] Prashant: Implement BVA and TDD for one turn of Risk
+3. [in progress] Prashant: Implement BVA and TDD for one turn of Risk
 4. [not started] David: Implement BVA and TDD for one turn of Risk
 5. [in progress] Jonathan: Set up Checkstyle and SpotBugs
 6. [in progress] Jonathan: Set up Jacoco for code coverage and Pitest for mutation testing
