@@ -591,3 +591,30 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA owned by RED
         - phase == GAME_OVER
         - getWinner() == RED
+
+## Actions blocked in GAME_OVER phase
+
+- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC76: `endAttack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC77: `fortify()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
