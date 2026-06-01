@@ -1,4 +1,4 @@
-package nu.csse.sqe.gui;
+package gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,9 +19,10 @@ public final class RiskApplication extends Application {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle("Risk — Game setup");
-        stage.setWidth(1100);
-        stage.setHeight(750);
-        stage.setMaximized(false);
+        stage.setWidth(520);
+        stage.setHeight(420);
+        stage.setMinWidth(480);
+        stage.setMinHeight(360);
         stage.setScene(scene);
         stage.show();
     }

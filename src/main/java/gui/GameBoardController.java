@@ -1,4 +1,4 @@
-package nu.csse.sqe.gui;
+package gui;
 
 import domain.GamePhase;
 import domain.PlayerColor;
@@ -14,19 +14,32 @@ import netscape.javascript.JSObject;
 
 import java.util.Map;
 
+/**
+ * FXML controller for the interactive Risk board (scramble and setup phases).
+ */
 public final class GameBoardController {
 
     private static final Map<String, TerritoryName> SVG_ID_TO_TERRITORY = buildIdMap();
     private static final Map<PlayerColor, String> PLAYER_COLORS = buildColorMap();
 
-    @FXML private WebView mapView;
-    @FXML private Label phaseLabel;
-    @FXML private Label playerLabel;
-    @FXML private Label armiesLabel;
-    @FXML private Label statusLabel;
+    @FXML
+    private WebView mapView;
+
+    @FXML
+    private Label phaseLabel;
+
+    @FXML
+    private Label playerLabel;
+
+    @FXML
+    private Label armiesLabel;
+
+    @FXML
+    private Label statusLabel;
 
     private RiskGame game;
     private WebEngine engine;
+    private JavaBridge javaBridge;
 
     void initGame(RiskGame game) {
         this.game = game;
@@ -38,8 +51,10 @@ public final class GameBoardController {
         engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) engine.executeScript("window");
-                window.setMember("javaBridge", new JavaBridge());
+                javaBridge = new JavaBridge();
+                window.setMember("javaBridge", javaBridge);
                 applyMapStyling();
+                updateMapColors();
                 updateStatusBar();
             }
         });
@@ -47,10 +62,11 @@ public final class GameBoardController {
     }
 
     private void applyMapStyling() {
-        String js = "var paths = document.querySelectorAll('path[id]');"
+        String js = "var countryLayer = document.getElementById('layer4');"
+                + "if (countryLayer) { countryLayer.style.opacity = '1'; }"
+                + "var paths = document.querySelectorAll('#layer4 path[id]');"
                 + "paths.forEach(function(p) {"
                 + "  var id = p.id;"
-                + "  if (!id || id === 'false' || id === 'schere') return;"
                 + "  p.style.cursor = 'pointer';"
                 + "  p.style.fill = '#c8d8a8';"
                 + "  p.style.fillOpacity = '1';"
@@ -72,7 +88,7 @@ public final class GameBoardController {
         engine.executeScript(js);
     }
 
-    public class JavaBridge {
+    public final class JavaBridge {
         public void onTerritoryClicked(String svgId) {
             Platform.runLater(() -> handleTerritoryClick(svgId));
         }
@@ -80,7 +96,9 @@ public final class GameBoardController {
 
     private void handleTerritoryClick(String svgId) {
         TerritoryName territory = SVG_ID_TO_TERRITORY.get(svgId);
-        if (territory == null) return;
+        if (territory == null) {
+            return;
+        }
 
         GamePhase phase = game.getPhase();
         try {
@@ -219,12 +237,12 @@ public final class GameBoardController {
 
     private static Map<PlayerColor, String> buildColorMap() {
         Map<PlayerColor, String> map = new java.util.EnumMap<>(PlayerColor.class);
-        map.put(PlayerColor.RED,    "#e05555");
-        map.put(PlayerColor.BLUE,   "#5588dd");
-        map.put(PlayerColor.GREEN,  "#44aa66");
+        map.put(PlayerColor.RED, "#e05555");
+        map.put(PlayerColor.BLUE, "#5588dd");
+        map.put(PlayerColor.GREEN, "#44aa66");
         map.put(PlayerColor.ORANGE, "#ee8833");
-        map.put(PlayerColor.PINK,   "#dd66aa");
-        map.put(PlayerColor.CYAN,   "#44bbcc");
+        map.put(PlayerColor.PINK, "#dd66aa");
+        map.put(PlayerColor.CYAN, "#44bbcc");
         return java.util.Collections.unmodifiableMap(map);
     }
 }

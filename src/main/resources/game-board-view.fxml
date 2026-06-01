@@ -11,7 +11,7 @@
 <BorderPane
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="nu.csse.sqe.gui.GameBoardController"
+        fx:controller="gui.GameBoardController"
         style="-fx-background-color: #1a2633;">
 
     <center>
