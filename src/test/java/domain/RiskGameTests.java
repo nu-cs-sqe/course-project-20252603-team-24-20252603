@@ -947,4 +947,14 @@ public class RiskGameTests {
         assertEquals(PlayerColor.RED, game.getWinner());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void EndTurn_LastPlayerInRotation_WrapsBackToFirstPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.GREEN);
+        game.endTurn();
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
+    }
 }
