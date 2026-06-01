@@ -205,10 +205,6 @@ public final class RiskGame {
         worldMap.claim(to, getCurrentPlayerColor());
         worldMap.removeArmies(from, armiesToMove);
         worldMap.addArmies(to, armiesToMove);
-
-        if (getWinner() != null) {
-            phase = GamePhase.GAME_OVER;
-        }
     }
 
     private int[] rollDiceDescending(int count) {
