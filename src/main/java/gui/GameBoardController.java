@@ -39,6 +39,7 @@ public final class GameBoardController {
 
     private RiskGame game;
     private WebEngine engine;
+    private JavaBridge javaBridge;
 
     void initGame(RiskGame game) {
         this.game = game;
@@ -50,7 +51,8 @@ public final class GameBoardController {
         engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) engine.executeScript("window");
-                window.setMember("javaBridge", new JavaBridge());
+                javaBridge = new JavaBridge();
+                window.setMember("javaBridge", javaBridge);
                 applyMapStyling();
                 updateMapColors();
                 updateStatusBar();
@@ -60,10 +62,11 @@ public final class GameBoardController {
     }
 
     private void applyMapStyling() {
-        String js = "var paths = document.querySelectorAll('path[id]');"
+        String js = "var countryLayer = document.getElementById('layer4');"
+                + "if (countryLayer) { countryLayer.style.opacity = '1'; }"
+                + "var paths = document.querySelectorAll('#layer4 path[id]');"
                 + "paths.forEach(function(p) {"
                 + "  var id = p.id;"
-                + "  if (!id || id === 'false' || id === 'schere') return;"
                 + "  p.style.cursor = 'pointer';"
                 + "  p.style.fill = '#c8d8a8';"
                 + "  p.style.fillOpacity = '1';"
