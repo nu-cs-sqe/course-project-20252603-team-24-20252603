@@ -576,3 +576,18 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Note**: This is distinct from TC41. TC41 tests `draftArmiesRemaining > 0`;
       this tests the case where the draft has not been initialized at all for the new turn
       (`isDraftInitialized == false`, `draftArmiesRemaining == 0`).
+
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` — additional case
+
+- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - RED owns 41 territories; BLUE owns only ALBERTA (armies = 1)
+        - ALASKA owned by RED (current player), armies = 2
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - ALBERTA owned by RED
+        - phase == GAME_OVER
+        - getWinner() == RED
