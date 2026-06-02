@@ -599,7 +599,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException

@@ -1001,4 +1001,12 @@ public class RiskGameTests {
         game.setPhase(GamePhase.GAME_OVER);
         assertThrows(IllegalStateException.class, () -> game.draftArmy(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void Attack_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        assertThrows(IllegalStateException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
 }
