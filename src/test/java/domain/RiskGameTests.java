@@ -1133,4 +1133,38 @@ public class RiskGameTests {
                 () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void Attack_AfterDraftComplete_Succeeds() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(20);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(20);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall().times(3);
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        mockMap.assignTerritory(TerritoryName.ALBERTA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        EasyMock.verify(mockMap);
+    }
 }
