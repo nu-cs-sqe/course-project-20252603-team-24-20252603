@@ -558,4 +558,10 @@ public class WorldMapTests {
         assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 1));
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void AreNeighbors_DefaultMap_AlaskaAndAlbertaAreNeighbors() {
+        WorldMap map = new WorldMap();
+        assertTrue(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA));
+    }
 }
