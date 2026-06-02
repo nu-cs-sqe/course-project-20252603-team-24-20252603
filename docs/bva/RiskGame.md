@@ -618,3 +618,83 @@ further game actions are permitted once `GAME_OVER` is set.
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
+
+- **TC79: Attacker captures already-owned defender territory with real map** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - real WorldMap used (not mocked)
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors (real adjacency)
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - no exception thrown
+        - ALBERTA owned by RED
+        - ALBERTA armies = 1
+        - ALASKA armies >= 1
+
+- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by RED (current player)
+        - ALASKA and ALBERTA are neighbors
+        - armies: 1
+        - hasFortifiedThisTurn: false
+    - **Expected output**:
+        - ALASKA armies decrease by 1
+        - ALBERTA armies increase by 1
+        - hasFortifiedThisTurn set to true
+
+- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by RED (current player)
+        - ALASKA and ALBERTA are neighbors
+        - first fortify() already succeeded this turn
+        - hasFortifiedThisTurn: true
+    - **Expected output**: throw IllegalStateException
+
+- **TC82: hasFortifiedThisTurn resets after endTurn** ( :x: )
+    - **State of the system**:
+        - RED successfully called fortify() this turn
+        - RED calls endTurn()
+        - BLUE is now current player
+        - BLUE calls fortify() on valid adjacent owned territories
+    - **Expected output**: fortify succeeds — no exception thrown
+
+- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - isDraftInitialized == false
+        - draftArmiesRemaining == 0
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA owned by BLUE
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+    - **Expected output**: throw IllegalStateException
+
+- **TC84: Attack after draft fully complete succeeds** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - isDraftInitialized == true
+        - draftArmiesRemaining == 0
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**: attack executes — no exception thrown
+
+- **TC85: After endTurn new player cannot attack without drafting** ( :x: )
+    - **State of the system**:
+        - RED ends turn, BLUE is new current player
+        - BLUE has not called draftArmy()
+        - isDraftInitialized == false for BLUE
+        - valid owned source, enemy target, adjacent territories
+        - numAttackers: 1
+    - **Expected output**: throw IllegalStateException
