@@ -594,7 +594,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Actions blocked in GAME_OVER phase
 
-- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
