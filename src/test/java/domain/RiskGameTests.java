@@ -850,6 +850,8 @@ public class RiskGameTests {
         EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
         EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
         EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(20);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(20);
         mockMap.removeArmies(TerritoryName.ALBERTA, 1);
         EasyMock.expectLastCall();
         mockMap.claim(TerritoryName.ALBERTA, PlayerColor.RED);
