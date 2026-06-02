@@ -318,4 +318,8 @@ public final class RiskGame {
             }
         }
     }
+    void setDraftComplete() {
+        this.isDraftInitialized = true;
+        this.draftArmiesRemaining = 0;
+    }
 }
