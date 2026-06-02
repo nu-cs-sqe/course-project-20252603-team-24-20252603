@@ -1167,4 +1167,23 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void Attack_AfterEndTurn_NewPlayerDraftNotInitialized_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.BLUE)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.BLUE)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(PlayerColor.BLUE, game.getCurrentPlayerColor());
+        assertThrows(IllegalStateException.class,
+                () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+        EasyMock.verify(mockMap);
+    }
 }
