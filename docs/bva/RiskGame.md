@@ -614,7 +614,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
