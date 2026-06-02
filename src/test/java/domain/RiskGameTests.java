@@ -1066,4 +1066,26 @@ public class RiskGameTests {
         game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void Fortify_CalledTwiceInSameTurn_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertThrows(IllegalStateException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+        EasyMock.verify(mockMap);
+    }
 }

@@ -28,6 +28,7 @@ public final class RiskGame {
     private int territoriesClaimed;
     private int draftArmiesRemaining;
     private boolean isDraftInitialized;
+    private boolean hasFortifiedThisTurn;
     private Random random;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
@@ -247,12 +248,18 @@ public final class RiskGame {
         phase = GamePhase.ATTACK;
         draftArmiesRemaining = 0;
         isDraftInitialized = false;
+        hasFortifiedThisTurn = false;
     }
 
     public void fortify(TerritoryName from, TerritoryName to, int armies) {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only fortify during FORTIFY phase");
         }
+
+        if (hasFortifiedThisTurn) {
+            throw new IllegalStateException("can only fortify once per turn");
+        }
+
         PlayerColor current = getCurrentPlayerColor();
         if (!worldMap.isOwnedBy(from, current)) {
             throw new IllegalArgumentException("from territory not owned by current player");
@@ -271,6 +278,7 @@ public final class RiskGame {
         }
         worldMap.removeArmies(from, armies);
         worldMap.addArmies(to, armies);
+        hasFortifiedThisTurn = true;
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
