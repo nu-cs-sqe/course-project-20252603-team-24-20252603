@@ -557,7 +557,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endTurn()` — additional case
 
-- **TC71: Turn order wraps from last player back to first player** ( :x: )
+- **TC71: Turn order wraps from last player back to first player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - 3-player game: RED, BLUE, GREEN (in that order)
