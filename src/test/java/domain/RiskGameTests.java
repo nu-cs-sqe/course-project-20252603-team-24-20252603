@@ -957,4 +957,13 @@ public class RiskGameTests {
         assertEquals(GamePhase.ATTACK, game.getPhase());
         assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
     }
+
+    @Test
+    public void IsDraftComplete_NewTurnDraftNotInitialized_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.GREEN);
+        game.endTurn();
+        assertFalse(game.isDraftComplete());
+    }
 }

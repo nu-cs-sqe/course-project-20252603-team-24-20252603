@@ -568,7 +568,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `boolean isDraftComplete()` — additional case
 
-- **TC72: Draft not complete at start of a brand-new turn** ( :x: )
+- **TC72: Draft not complete at start of a brand-new turn** ( :white_check_mark: )
     - **State of the system**:
         - GREEN just called `endTurn()`, RED is now the current player
         - RED has not yet called `draftArmy()` (draft not initialized for this turn)
