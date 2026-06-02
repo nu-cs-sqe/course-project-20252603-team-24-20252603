@@ -158,7 +158,7 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
-        if (isDraftInitialized && draftArmiesRemaining > 0) {
+        if (!isDraftInitialized || draftArmiesRemaining > 0) {
             throw new IllegalStateException("must complete draft before attacking");
         }
         PlayerColor current = getCurrentPlayerColor();
