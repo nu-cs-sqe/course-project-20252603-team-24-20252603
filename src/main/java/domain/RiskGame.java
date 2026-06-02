@@ -202,10 +202,9 @@ public final class RiskGame {
     }
 
     private void captureTerritory(TerritoryName from, TerritoryName to, int armiesToMove) {
-        worldMap.claim(to, getCurrentPlayerColor());
+        worldMap.assignTerritory(to, getCurrentPlayerColor());
         worldMap.removeArmies(from, armiesToMove);
         worldMap.addArmies(to, armiesToMove);
-
         if (getWinner() != null) {
             phase = GamePhase.GAME_OVER;
         }
@@ -292,6 +291,11 @@ public final class RiskGame {
         do {
             currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         } while (!players.get(currentPlayerIndex).hasArmiesToPlace());
+    }
+
+    void setupTerritory(TerritoryName territory, PlayerColor owner, int armies) {
+        worldMap.claim(territory, owner);
+        worldMap.addArmies(territory, armies);
     }
 
     // helpers

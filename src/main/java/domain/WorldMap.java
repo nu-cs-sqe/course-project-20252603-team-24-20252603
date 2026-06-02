@@ -178,4 +178,8 @@ class WorldMap {
         }
         return owned;
     }
+
+    void assignTerritory(TerritoryName territory, PlayerColor color) {
+        territories.get(territory).assignTerritory(color);
+    }
 }

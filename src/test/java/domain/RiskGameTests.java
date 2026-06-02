@@ -1033,4 +1033,17 @@ public class RiskGameTests {
         game.setPhase(GamePhase.GAME_OVER);
         assertThrows(IllegalStateException.class, () -> game.endTurn());
     }
+
+    @Test
+    public void Attack_RealMap_CapturesAlberta_AlbertaOwnedByRed() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 3);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertTrue(game.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED));
+        assertEquals(1, game.getArmies(TerritoryName.ALBERTA));
+        assertTrue(game.getArmies(TerritoryName.ALASKA) >= 1);
+    }
 }
