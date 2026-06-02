@@ -564,4 +564,10 @@ public class WorldMapTests {
         WorldMap map = new WorldMap();
         assertTrue(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA));
     }
+
+    @Test
+    public void AreNeighbors_DefaultMap_AlbertaAndAlaskaAreNeighbors() {
+        WorldMap map = new WorldMap();
+        assertTrue(map.areNeighbors(TerritoryName.ALBERTA, TerritoryName.ALASKA));
+    }
 }
