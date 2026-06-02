@@ -1016,4 +1016,12 @@ public class RiskGameTests {
         game.setPhase(GamePhase.GAME_OVER);
         assertThrows(IllegalStateException.class, () -> game.endAttack());
     }
+
+    @Test
+    public void Fortify_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        assertThrows(IllegalStateException.class,
+                () -> game.fortify(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
 }
