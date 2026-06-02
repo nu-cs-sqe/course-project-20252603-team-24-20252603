@@ -579,7 +579,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` — additional case
 
-- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :x: )
+- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - RED owns 41 territories; BLUE owns only ALBERTA (armies = 1)
