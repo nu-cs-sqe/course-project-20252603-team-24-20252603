@@ -545,3 +545,76 @@ Returns the `PlayerColor` of the player who owns all 42 territories, or `null` i
     - **State of the system**:
         - RED owns all 42 territories
     - **Expected output**: RED
+
+---
+
+# Multiple Turns
+
+The following test cases cover behaviors that emerge only across more than one complete turn:
+turn-order wrap-around, fresh draft state at the start of each new turn, the `GAME_OVER`
+transition triggered when the final territory is captured, and the enforcement that no
+further game actions are permitted once `GAME_OVER` is set.
+
+## Method: `void endTurn()` — additional case
+
+- **TC71: Turn order wraps from last player back to first player** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - 3-player game: RED, BLUE, GREEN (in that order)
+        - current player: GREEN (last in rotation)
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
+
+## Method: `boolean isDraftComplete()` — additional case
+
+- **TC72: Draft not complete at start of a brand-new turn** ( :x: )
+    - **State of the system**:
+        - GREEN just called `endTurn()`, RED is now the current player
+        - RED has not yet called `draftArmy()` (draft not initialized for this turn)
+    - **Expected output**: false
+    - **Note**: This is distinct from TC41. TC41 tests `draftArmiesRemaining > 0`;
+      this tests the case where the draft has not been initialized at all for the new turn
+      (`isDraftInitialized == false`, `draftArmiesRemaining == 0`).
+
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` — additional case
+
+- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - RED owns 41 territories; BLUE owns only ALBERTA (armies = 1)
+        - ALASKA owned by RED (current player), armies = 2
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - ALBERTA owned by RED
+        - phase == GAME_OVER
+        - getWinner() == RED
+
+## Actions blocked in GAME_OVER phase
+
+- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC76: `endAttack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC77: `fortify()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
