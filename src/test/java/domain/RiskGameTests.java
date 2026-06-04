@@ -527,6 +527,7 @@ public class RiskGameTests {
     public void EndAttack_DuringAttackPhase_TransitionsToFortify() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.ATTACK);
+        game.setDraftComplete();
         game.endAttack();
         assertEquals(GamePhase.FORTIFY, game.getPhase());
     }
@@ -1212,5 +1213,12 @@ public class RiskGameTests {
         assertTrue(game.isDraftComplete());
         assertEquals(0, game.getDraftArmies());
         EasyMock.verify(mockMap);
+    }
+
+    @Test
+    public void EndAttack_BeforeDraftComplete_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        assertThrows(IllegalStateException.class, () -> game.endAttack());
     }
 }

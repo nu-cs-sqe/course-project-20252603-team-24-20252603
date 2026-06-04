@@ -231,6 +231,9 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only end attack during ATTACK phase");
         }
+        if (!isDraftComplete()) {
+            throw new IllegalStateException("must complete draft before ending attack");
+        }
         phase = GamePhase.FORTIFY;
     }
 
