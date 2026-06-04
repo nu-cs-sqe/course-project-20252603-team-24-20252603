@@ -4,15 +4,17 @@ import domain.GamePhase;
 import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
+import java.util.Map;
 import javafx.application.Platform;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-
-import java.util.Map;
 
 /**
  * FXML controller for the interactive Risk board (scramble and setup phases).
@@ -37,9 +39,33 @@ public final class GameBoardController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Spinner<Integer> attackDiceSpinner;
+
+    @FXML
+    private Spinner<Integer> fortifyArmiesSpinner;
+
+    @FXML
+    private Button endAttackButton;
+
+    @FXML
+    private Button fortifyButton;
+
+    @FXML
+    private Button endTurnButton;
+
     private RiskGame game;
     private WebEngine engine;
     private JavaBridge javaBridge;
+
+    @FXML
+    private void initialize() {
+        attackDiceSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3, 1));
+        fortifyArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
+        updateActionControls(GamePhase.SCRAMBLE);
+    }
 
     void initGame(RiskGame game) {
         this.game = game;
@@ -114,6 +140,33 @@ public final class GameBoardController {
         }
     }
 
+    @FXML
+    private void handleEndAttack() {
+        try {
+            game.endAttack();
+            updateMapColors();
+            updateStatusBar();
+        } catch (IllegalStateException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleFortify() {
+        statusLabel.setText("Select two owned neighboring territories before fortifying.");
+    }
+
+    @FXML
+    private void handleEndTurn() {
+        try {
+            game.endTurn();
+            updateMapColors();
+            updateStatusBar();
+        } catch (IllegalStateException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
     private void updateMapColors() {
         for (Map.Entry<String, TerritoryName> entry : SVG_ID_TO_TERRITORY.entrySet()) {
             String svgId = entry.getKey();
@@ -163,8 +216,19 @@ public final class GameBoardController {
             statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
         }
 
+        updateActionControls(phase);
         String playerColor = PLAYER_COLORS.get(game.getCurrentPlayerColor());
         playerLabel.setStyle("-fx-text-fill: " + playerColor + "; -fx-font-weight: bold;");
+    }
+
+    private void updateActionControls(GamePhase phase) {
+        boolean attackPhase = phase == GamePhase.ATTACK;
+        boolean fortifyPhase = phase == GamePhase.FORTIFY;
+        attackDiceSpinner.setDisable(!attackPhase);
+        endAttackButton.setDisable(!attackPhase);
+        fortifyArmiesSpinner.setDisable(!fortifyPhase);
+        fortifyButton.setDisable(!fortifyPhase);
+        endTurnButton.setDisable(!fortifyPhase);
     }
 
     private String buildMapHtml() {
