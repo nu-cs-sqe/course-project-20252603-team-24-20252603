@@ -132,6 +132,8 @@ public final class GameBoardController {
                 game.claimTerritory(territory);
             } else if (phase == GamePhase.SETUP) {
                 game.placeArmy(territory);
+            } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
+                game.draftArmy(territory);
             }
             updateMapColors();
             updateStatusBar();
@@ -210,9 +212,17 @@ public final class GameBoardController {
             armiesLabel.setText("Armies: " + game.getArmiesToPlace());
             statusLabel.setText("Click one of your territories to place an army.");
         } else if (phase == GamePhase.ATTACK) {
+            armiesLabel.setText("Draft: " + game.getDraftArmies());
+            if (game.isDraftComplete()) {
+                statusLabel.setText("Draft complete. Select attacks or end attack.");
+            } else {
+                statusLabel.setText("Click your territories to place draft armies.");
+            }
+        } else if (phase == GamePhase.FORTIFY) {
             armiesLabel.setText("");
-            statusLabel.setText("Attack phase — coming soon.");
+            statusLabel.setText("Fortify or end your turn.");
         } else if (phase == GamePhase.GAME_OVER) {
+            armiesLabel.setText("");
             statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
         }
 
