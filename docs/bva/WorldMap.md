@@ -230,3 +230,19 @@
         - ALASKA with armies = 0
         - count: 1
     - **Expected output**: throw IllegalArgumentException
+
+## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)` — additional cases
+
+- **TC38: Default map has adjacent territories** ( :x: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - first: ALASKA
+        - second: ALBERTA
+    - **Expected output**: true
+
+- **TC39: Default map adjacency is bidirectional** ( :x: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - first: ALBERTA
+        - second: ALASKA
+    - **Expected output**: true
