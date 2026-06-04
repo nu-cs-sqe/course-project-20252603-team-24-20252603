@@ -58,6 +58,8 @@ public final class GameBoardController {
     private WebEngine engine;
     private JavaBridge javaBridge;
     private TerritoryName selectedAttackFrom;
+    private TerritoryName selectedFortifyFrom;
+    private TerritoryName selectedFortifyTo;
 
     @FXML
     private void initialize() {
@@ -137,6 +139,8 @@ public final class GameBoardController {
                 game.draftArmy(territory);
             } else if (phase == GamePhase.ATTACK) {
                 handleAttackClick(territory);
+            } else if (phase == GamePhase.FORTIFY) {
+                handleFortifyClick(territory);
             }
             updateMapColors();
             updateStatusBar();
@@ -160,6 +164,22 @@ public final class GameBoardController {
         game.attack(selectedAttackFrom, territory, dice);
     }
 
+    private void handleFortifyClick(TerritoryName territory) {
+        PlayerColor current = game.getCurrentPlayerColor();
+        if (!game.isOwnedBy(territory, current)) {
+            statusLabel.setText("Select territories owned by the current player.");
+            return;
+        }
+        if (selectedFortifyFrom == null || selectedFortifyTo != null) {
+            selectedFortifyFrom = territory;
+            selectedFortifyTo = null;
+            statusLabel.setText("Selected " + territory.name() + " as fortify source.");
+            return;
+        }
+        selectedFortifyTo = territory;
+        statusLabel.setText("Selected " + territory.name() + " as fortify destination.");
+    }
+
     @FXML
     private void handleEndAttack() {
         try {
@@ -174,12 +194,28 @@ public final class GameBoardController {
 
     @FXML
     private void handleFortify() {
-        statusLabel.setText("Select two owned neighboring territories before fortifying.");
+        if (selectedFortifyFrom == null || selectedFortifyTo == null) {
+            statusLabel.setText("Select a source and destination before fortifying.");
+            return;
+        }
+        try {
+            int armies = fortifyArmiesSpinner.getValue();
+            game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
+            selectedFortifyFrom = null;
+            selectedFortifyTo = null;
+            updateMapColors();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
     }
 
     @FXML
     private void handleEndTurn() {
         try {
+            selectedAttackFrom = null;
+            selectedFortifyFrom = null;
+            selectedFortifyTo = null;
             game.endTurn();
             updateMapColors();
             updateStatusBar();
@@ -205,7 +241,9 @@ public final class GameBoardController {
             }
 
             int armies = game.getArmies(territory);
-            boolean selected = territory == selectedAttackFrom;
+            boolean selected = territory == selectedAttackFrom
+                    || territory == selectedFortifyFrom
+                    || territory == selectedFortifyTo;
             String strokeColor = selected ? "#f8e16c" : "#555";
             String strokeWidth = selected ? "3" : "1.5";
             String script = "(function() {"
@@ -248,7 +286,13 @@ public final class GameBoardController {
             }
         } else if (phase == GamePhase.FORTIFY) {
             armiesLabel.setText("");
-            statusLabel.setText("Fortify or end your turn.");
+            if (selectedFortifyFrom == null) {
+                statusLabel.setText("Select one of your territories to fortify from.");
+            } else if (selectedFortifyTo == null) {
+                statusLabel.setText("Select one of your territories to fortify to.");
+            } else {
+                statusLabel.setText("Choose army count, then fortify or end turn.");
+            }
         } else if (phase == GamePhase.GAME_OVER) {
             armiesLabel.setText("");
             statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
