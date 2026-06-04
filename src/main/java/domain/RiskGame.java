@@ -25,6 +25,7 @@ public final class RiskGame {
     private WorldMap worldMap;
     private List<Player> players;
     private int currentPlayerIndex;
+    private int firstSetupPlayerIndex;
     private int territoriesClaimed;
     private int draftArmiesRemaining;
     private boolean isDraftInitialized;
@@ -42,6 +43,7 @@ public final class RiskGame {
         this.random = random;
         initializePlayers(playerInfo);
         this.currentPlayerIndex = random.nextInt(players.size());
+        this.firstSetupPlayerIndex = currentPlayerIndex;
         this.phase = GamePhase.SCRAMBLE;
         this.territoriesClaimed = 0;
     }
@@ -83,10 +85,15 @@ public final class RiskGame {
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
+        boolean setupStarted = false;
         if (territoriesClaimed == TOTAL_TERRITORIES) {
             phase = GamePhase.SETUP;
+            setupStarted = true;
         }
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        if (setupStarted) {
+            firstSetupPlayerIndex = currentPlayerIndex;
+        }
     }
 
     public PlayerColor getCurrentPlayerColor() {
@@ -299,6 +306,7 @@ public final class RiskGame {
 
     private void advanceToNextPlayer() {
         if (isSetupComplete()) {
+            currentPlayerIndex = firstSetupPlayerIndex;
             phase = GamePhase.ATTACK;
             return;
         }

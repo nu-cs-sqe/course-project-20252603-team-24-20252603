@@ -1221,4 +1221,27 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         assertThrows(IllegalStateException.class, () -> game.endAttack());
     }
+
+    @Test
+    public void PlaceArmy_LastSetupArmy_ReturnsFirstSetupPlayerToAttack() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.anyObject())).andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall().times(3);
+        EasyMock.replay(mockMap);
+        Player redPlayer = new Player(PlayerColor.RED, "Jonathan", 1);
+        Player bluePlayer = new Player(PlayerColor.BLUE, "Justin", 1);
+        Player greenPlayer = new Player(PlayerColor.GREEN, "Prashant", 1);
+        game.provideWorldMap(mockMap);
+        game.providePlayers(List.of(redPlayer, bluePlayer, greenPlayer));
+        game.setPhase(GamePhase.SETUP);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.placeArmy(TerritoryName.ALASKA);
+        game.placeArmy(TerritoryName.ALASKA);
+        game.placeArmy(TerritoryName.ALASKA);
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
+        EasyMock.verify(mockMap);
+    }
 }
