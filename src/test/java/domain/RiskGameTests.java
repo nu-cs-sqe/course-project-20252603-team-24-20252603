@@ -1193,4 +1193,24 @@ public class RiskGameTests {
                 () -> game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetDraftArmies_AfterAllDraftArmiesPlaced_ReturnsZero() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall().times(3);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        game.draftArmy(TerritoryName.ALASKA);
+        assertTrue(game.isDraftComplete());
+        assertEquals(0, game.getDraftArmies());
+        EasyMock.verify(mockMap);
+    }
 }

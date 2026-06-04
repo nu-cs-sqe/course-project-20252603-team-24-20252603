@@ -124,6 +124,9 @@ public final class RiskGame {
     }
 
     public int getDraftArmies() {
+        if (isDraftInitialized) {
+            return draftArmiesRemaining;
+        }
         if (draftArmiesRemaining > 0) {
             return draftArmiesRemaining;
         }
