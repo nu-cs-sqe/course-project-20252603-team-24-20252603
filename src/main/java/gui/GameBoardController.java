@@ -246,6 +246,7 @@ public final class GameBoardController {
                     || territory == selectedFortifyTo;
             String strokeColor = selected ? "#f8e16c" : "#555";
             String strokeWidth = selected ? "3" : "1.5";
+            String armyDisplay = armies > 0 ? "block" : "none";
             String script = "(function() {"
                     + "  var el = document.getElementById('" + svgId + "');"
                     + "  if (el) {"
@@ -255,6 +256,27 @@ public final class GameBoardController {
                     + "    el.dataset.owner = '" + ownerData + "';"
                     + "    el.dataset.armies = '" + armies + "';"
                     + "    el.title = '" + territory.name() + " (" + armies + ")';"
+                    + "    var labelId = 'army-label-" + svgId + "';"
+                    + "    var label = document.getElementById(labelId);"
+                    + "    if (!label) {"
+                    + "      label = document.createElementNS('http://www.w3.org/2000/svg', 'text');"
+                    + "      label.id = labelId;"
+                    + "      label.style.pointerEvents = 'none';"
+                    + "      label.style.fontSize = '12px';"
+                    + "      label.style.fontWeight = '700';"
+                    + "      label.style.fill = '#111827';"
+                    + "      label.style.stroke = '#f8fafc';"
+                    + "      label.style.strokeWidth = '0.8px';"
+                    + "      label.style.paintOrder = 'stroke';"
+                    + "      label.setAttribute('text-anchor', 'middle');"
+                    + "      label.setAttribute('dominant-baseline', 'central');"
+                    + "      el.parentNode.appendChild(label);"
+                    + "    }"
+                    + "    var box = el.getBBox();"
+                    + "    label.setAttribute('x', box.x + box.width / 2);"
+                    + "    label.setAttribute('y', box.y + box.height / 2);"
+                    + "    label.textContent = '" + armies + "';"
+                    + "    label.style.display = '" + armyDisplay + "';"
                     + "  }"
                     + "})();";
             engine.executeScript(script);
