@@ -346,7 +346,8 @@ public final class GameBoardController {
             svgContent = svgContent.replaceFirst("<\\?xml[^?]*\\?>", "");
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
-                    + "html, body { width: 100%; height: 100%; background: #1a2633; overflow: hidden; }"
+                    + "html, body { width: 100%; height: 100%;"
+                    + " background: #1a2633; overflow: hidden; }"
                     + "svg { width: 100%; height: 100%; display: block; }"
                     + "</style></head><body>"
                     + svgContent
