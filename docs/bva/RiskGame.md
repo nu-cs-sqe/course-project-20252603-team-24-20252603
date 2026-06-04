@@ -207,22 +207,28 @@
 The following methods cover one complete turn: the current player drafts reinforcement armies, optionally attacks, optionally fortifies, then ends their turn. These methods are all active during the `ATTACK` or `FORTIFY` phase.
 
 **Turn flow:**
-1. On entering `ATTACK` phase (after setup or after `endTurn()`), `draftArmiesRemaining` is set to `max(3, floor(ownedTerritories / 3))`.
+1. On entering `ATTACK` phase (after setup or after `endTurn()`), `getDraftArmies()` reports
+   `max(3, floor(ownedTerritories / 3))` for the current player.
 2. Player places all draft armies via `draftArmy()`.
-3. Player may call `attack()` zero or more times.
+3. Player may call `attack()` zero or more times only after all draft armies are placed.
 4. Player calls `endAttack()` to transition to `FORTIFY`.
 5. Player optionally calls `fortify()` once.
 6. Player calls `endTurn()` to advance to the next player.
 
 ## Method: `int getDraftArmies()`
 
-Returns the number of reinforcement armies the current player has remaining to place this turn. At the start of each `ATTACK` turn, this equals `max(3, floor(ownedTerritories / 3))` and decrements as `draftArmy()` is called.
+Returns the number of reinforcement armies the current player has remaining to place this turn.
+At the start of each `ATTACK` turn, this equals `max(3, floor(ownedTerritories / 3))`.
+Calling `getDraftArmies()` is informational only; it does not place armies and does not make
+the draft complete. The returned value decrements as `draftArmy()` is called.
 
 - **TC32: Draft armies for player owning 1 territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns 1 territory
-    - **Expected output**: 3 (minimum — floor(1/3) = 0, clamped to 3)
+    - **Expected output**:
+        - returns 3 (minimum — floor(1/3) = 0, clamped to 3)
+        - draft is not complete until all draft armies are placed with `draftArmy()`
 
 - **TC33: Draft armies for player owning 11 territories** ( :white_check_mark: )
     - **State of the system**:
@@ -668,8 +674,7 @@ further game actions are permitted once `GAME_OVER` is set.
 - **TC83: Attack before draft ever initialized throws IllegalStateException** ( :x: )
     - **State of the system**:
         - phase: ATTACK
-        - isDraftInitialized == false
-        - draftArmiesRemaining == 0
+        - current player has not called `draftArmy()` this turn
         - current player: RED
         - ALASKA owned by RED, armies = 3
         - ALBERTA owned by BLUE
@@ -694,7 +699,6 @@ further game actions are permitted once `GAME_OVER` is set.
     - **State of the system**:
         - RED ends turn, BLUE is new current player
         - BLUE has not called draftArmy()
-        - isDraftInitialized == false for BLUE
         - valid owned source, enemy target, adjacent territories
         - numAttackers: 1
     - **Expected output**: throw IllegalStateException
