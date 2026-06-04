@@ -50,3 +50,23 @@
 6. [not started] Justin: TDD for one turn phase
 7. [in progress] Prashant: GUI for setup + one turn
 8. [in progress] Jonathan: GUI for setup + one turn
+
+# Week 9 (05/25/2026-05/31/2026)
+**Planning and Progress Tracking**:
+1. [done] Justin: TDD for one turn phase
+2. [done] Prashant: GUI for setup
+3. [done] Jonathan: GUI for setup
+5. [in progress] David: BVA for multiple turns phase
+6. [in progress] Justin: Design doc for multiple turn phase
+7. [not started] Jonathan: TDD for multiple turns phase
+8. [not started] Prashant: GUI for one turn + multiple turns phase
+
+# Week 10 (06/01/2026-06/07/2026)
+**Planning and Progress Tracking**:
+1. [done] David: BVA for multiple turns phase
+2. [in progress] Jonathan: TDD for multple turns phase
+3. [in progress] Prashant: GUI for one turn + multiple turns phase
+4. [in progress] Justin: Design doc for multiple turn phase + win condition
+6. [not started] Jonathan: BVA for win condition
+7. [not started] David: TDD for win condition
+8. [not started] Prashant: GUI for win condition

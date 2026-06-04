@@ -207,22 +207,28 @@
 The following methods cover one complete turn: the current player drafts reinforcement armies, optionally attacks, optionally fortifies, then ends their turn. These methods are all active during the `ATTACK` or `FORTIFY` phase.
 
 **Turn flow:**
-1. On entering `ATTACK` phase (after setup or after `endTurn()`), `draftArmiesRemaining` is set to `max(3, floor(ownedTerritories / 3))`.
+1. On entering `ATTACK` phase (after setup or after `endTurn()`), `getDraftArmies()` reports
+   `max(3, floor(ownedTerritories / 3))` for the current player.
 2. Player places all draft armies via `draftArmy()`.
-3. Player may call `attack()` zero or more times.
+3. Player may call `attack()` zero or more times only after all draft armies are placed.
 4. Player calls `endAttack()` to transition to `FORTIFY`.
 5. Player optionally calls `fortify()` once.
 6. Player calls `endTurn()` to advance to the next player.
 
 ## Method: `int getDraftArmies()`
 
-Returns the number of reinforcement armies the current player has remaining to place this turn. At the start of each `ATTACK` turn, this equals `max(3, floor(ownedTerritories / 3))` and decrements as `draftArmy()` is called.
+Returns the number of reinforcement armies the current player has remaining to place this turn.
+At the start of each `ATTACK` turn, this equals `max(3, floor(ownedTerritories / 3))`.
+Calling `getDraftArmies()` is informational only; it does not place armies and does not make
+the draft complete. The returned value decrements as `draftArmy()` is called.
 
 - **TC32: Draft armies for player owning 1 territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns 1 territory
-    - **Expected output**: 3 (minimum — floor(1/3) = 0, clamped to 3)
+    - **Expected output**:
+        - returns 3 (minimum — floor(1/3) = 0, clamped to 3)
+        - draft is not complete until all draft armies are placed with `draftArmy()`
 
 - **TC33: Draft armies for player owning 11 territories** ( :white_check_mark: )
     - **State of the system**:
@@ -618,3 +624,114 @@ further game actions are permitted once `GAME_OVER` is set.
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
+
+- **TC79: Attacker captures already-owned defender territory with real map** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - real WorldMap used (not mocked)
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors (real adjacency)
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - no exception thrown
+        - ALBERTA owned by RED
+        - ALBERTA armies = 1
+        - ALASKA armies >= 1
+
+- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by RED (current player)
+        - ALASKA and ALBERTA are neighbors
+        - armies: 1
+        - hasFortifiedThisTurn: false
+    - **Expected output**:
+        - ALASKA armies decrease by 1
+        - ALBERTA armies increase by 1
+        - hasFortifiedThisTurn set to true
+
+- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - ALASKA owned by RED (current player), armies = 3
+        - ALBERTA owned by RED (current player)
+        - ALASKA and ALBERTA are neighbors
+        - first fortify() already succeeded this turn
+        - hasFortifiedThisTurn: true
+    - **Expected output**: throw IllegalStateException
+
+- **TC82: hasFortifiedThisTurn resets after endTurn** ( :x: )
+    - **State of the system**:
+        - RED successfully called fortify() this turn
+        - RED calls endTurn()
+        - BLUE is now current player
+        - BLUE calls fortify() on valid adjacent owned territories
+    - **Expected output**: fortify succeeds — no exception thrown
+
+- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player has not called `draftArmy()` this turn
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA owned by BLUE
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+    - **Expected output**: throw IllegalStateException
+
+- **TC84: Attack after draft fully complete succeeds** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - isDraftInitialized == true
+        - draftArmiesRemaining == 0
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors
+        - numAttackers: 1
+        - Random mocked so attacker wins all dice
+    - **Expected output**: attack executes — no exception thrown
+
+- **TC85: After endTurn new player cannot attack without drafting** ( :x: )
+    - **State of the system**:
+        - RED ends turn, BLUE is new current player
+        - BLUE has not called draftArmy()
+        - valid owned source, enemy target, adjacent territories
+        - numAttackers: 1
+    - **Expected output**: throw IllegalStateException
+
+## Method: `int getDraftArmies()` — additional case
+
+- **TC86: Draft armies after all draft armies are placed returns zero** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns 1 territory
+        - RED has placed all 3 draft armies with `draftArmy()`
+        - isDraftComplete() returns true
+    - **Expected output**: getDraftArmies() == 0
+
+## Method: `void endAttack()` — additional case
+
+- **TC87: End attack before draft is complete throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has not placed all draft armies
+    - **Expected output**: throw IllegalStateException
+
+## Method: `void placeArmy(TerritoryName territory)` — additional case
+
+- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :x: )
+    - **State of the system**:
+        - phase: SETUP
+        - 3-player game: RED, BLUE, GREEN (in that order)
+        - first setup player: RED
+        - RED, BLUE, and GREEN each have 1 setup army left
+        - each player places their final setup army in turn
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
