@@ -57,6 +57,7 @@ public final class GameBoardController {
     private RiskGame game;
     private WebEngine engine;
     private JavaBridge javaBridge;
+    private TerritoryName selectedAttackFrom;
 
     @FXML
     private void initialize() {
@@ -134,6 +135,8 @@ public final class GameBoardController {
                 game.placeArmy(territory);
             } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
                 game.draftArmy(territory);
+            } else if (phase == GamePhase.ATTACK) {
+                handleAttackClick(territory);
             }
             updateMapColors();
             updateStatusBar();
@@ -142,9 +145,25 @@ public final class GameBoardController {
         }
     }
 
+    private void handleAttackClick(TerritoryName territory) {
+        PlayerColor current = game.getCurrentPlayerColor();
+        if (game.isOwnedBy(territory, current)) {
+            selectedAttackFrom = territory;
+            statusLabel.setText("Selected " + territory.name() + " to attack from.");
+            return;
+        }
+        if (selectedAttackFrom == null) {
+            statusLabel.setText("Select one of your territories before choosing a target.");
+            return;
+        }
+        int dice = attackDiceSpinner.getValue();
+        game.attack(selectedAttackFrom, territory, dice);
+    }
+
     @FXML
     private void handleEndAttack() {
         try {
+            selectedAttackFrom = null;
             game.endAttack();
             updateMapColors();
             updateStatusBar();
@@ -186,10 +205,15 @@ public final class GameBoardController {
             }
 
             int armies = game.getArmies(territory);
+            boolean selected = territory == selectedAttackFrom;
+            String strokeColor = selected ? "#f8e16c" : "#555";
+            String strokeWidth = selected ? "3" : "1.5";
             String script = "(function() {"
                     + "  var el = document.getElementById('" + svgId + "');"
                     + "  if (el) {"
                     + "    el.style.fill = '" + fillColor + "';"
+                    + "    el.style.stroke = '" + strokeColor + "';"
+                    + "    el.style.strokeWidth = '" + strokeWidth + "';"
                     + "    el.dataset.owner = '" + ownerData + "';"
                     + "    el.dataset.armies = '" + armies + "';"
                     + "    el.title = '" + territory.name() + " (" + armies + ")';"
@@ -214,7 +238,11 @@ public final class GameBoardController {
         } else if (phase == GamePhase.ATTACK) {
             armiesLabel.setText("Draft: " + game.getDraftArmies());
             if (game.isDraftComplete()) {
-                statusLabel.setText("Draft complete. Select attacks or end attack.");
+                if (selectedAttackFrom == null) {
+                    statusLabel.setText("Select one of your territories to attack from.");
+                } else {
+                    statusLabel.setText("Select an enemy target or choose a different source.");
+                }
             } else {
                 statusLabel.setText("Click your territories to place draft armies.");
             }
