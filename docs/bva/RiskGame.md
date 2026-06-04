@@ -702,3 +702,36 @@ further game actions are permitted once `GAME_OVER` is set.
         - valid owned source, enemy target, adjacent territories
         - numAttackers: 1
     - **Expected output**: throw IllegalStateException
+
+## Method: `int getDraftArmies()` — additional case
+
+- **TC86: Draft armies after all draft armies are placed returns zero** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns 1 territory
+        - RED has placed all 3 draft armies with `draftArmy()`
+        - isDraftComplete() returns true
+    - **Expected output**: getDraftArmies() == 0
+
+## Method: `void endAttack()` — additional case
+
+- **TC87: End attack before draft is complete throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has not placed all draft armies
+    - **Expected output**: throw IllegalStateException
+
+## Method: `void placeArmy(TerritoryName territory)` — additional case
+
+- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :x: )
+    - **State of the system**:
+        - phase: SETUP
+        - 3-player game: RED, BLUE, GREEN (in that order)
+        - first setup player: RED
+        - RED, BLUE, and GREEN each have 1 setup army left
+        - each player places their final setup army in turn
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
