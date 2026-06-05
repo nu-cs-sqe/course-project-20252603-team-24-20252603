@@ -1,10 +1,14 @@
 package domain;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 class Player {
     private final PlayerColor color;
     private final String name;
     private int armiesToPlace;
-    private final java.util.List<Card> cards = new java.util.ArrayList<>();
+    private final List<Card> cards = new ArrayList<>();
 
     Player(PlayerColor color, String name, int armiesToPlace) {
         this.color = color;
@@ -30,6 +34,10 @@ class Player {
 
     int getCardCount() {
         return cards.size();
+    }
+
+    List<Card> getCards() {
+        return Collections.unmodifiableList(cards);
     }
 
     void addCard(Card card) {

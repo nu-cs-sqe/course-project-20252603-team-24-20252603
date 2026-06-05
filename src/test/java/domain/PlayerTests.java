@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class PlayerTests {
@@ -129,5 +131,11 @@ public class PlayerTests {
         player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
         player.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
         assertEquals(3, player.getCardCount());
+    }
+
+    @Test
+    public void GetCards_PlayerHasNoCards_ReturnsEmptyList() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertEquals(List.of(), player.getCards());
     }
 }
