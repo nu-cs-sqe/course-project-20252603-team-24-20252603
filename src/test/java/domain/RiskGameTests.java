@@ -1459,6 +1459,16 @@ public class RiskGameTests {
     }
 
     @Test
+    public void EndTurn_AfterMoreThanOneCapture_AwardsOneCard() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setCapturedThisTurn(true);
+        game.endTurn();
+        assertEquals(1, game.getCards(PlayerColor.RED).size());
+    }
+
+    @Test
     public void EndTurn_AfterOneCapture_AwardsOneCard() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);
