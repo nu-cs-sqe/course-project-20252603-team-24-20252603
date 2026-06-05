@@ -74,6 +74,7 @@ public final class GameBoardController {
     private TerritoryName selectedFortifyFrom;
     private TerritoryName selectedFortifyTo;
     private final List<Card> visibleCards = new ArrayList<>();
+    private String actionStatusMessage;
 
     @FXML
     private void initialize() {
@@ -152,6 +153,7 @@ public final class GameBoardController {
 
         GamePhase phase = game.getPhase();
         try {
+            actionStatusMessage = null;
             if (phase == GamePhase.SCRAMBLE) {
                 game.claimTerritory(territory);
             } else if (phase == GamePhase.SETUP) {
@@ -183,7 +185,22 @@ public final class GameBoardController {
             return;
         }
         int dice = attackDiceSpinner.getValue();
-        game.attack(selectedAttackFrom, territory, dice);
+        TerritoryName from = selectedAttackFrom;
+        int fromBefore = game.getArmies(from);
+        int toBefore = game.getArmies(territory);
+        game.attack(from, territory, dice);
+        int fromAfter = game.getArmies(from);
+        int toAfter = game.getArmies(territory);
+        boolean captured = game.isOwnedBy(territory, current);
+        selectedAttackFrom = null;
+        if (captured) {
+            actionStatusMessage = "Captured " + territory.name()
+                    + " from " + from.name() + ".";
+        } else {
+            actionStatusMessage = "Attack resolved: " + from.name()
+                    + " " + fromBefore + "->" + fromAfter
+                    + ", " + territory.name() + " " + toBefore + "->" + toAfter + ".";
+        }
     }
 
     private void handleFortifyClick(TerritoryName territory) {
@@ -359,6 +376,9 @@ public final class GameBoardController {
             statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
         }
 
+        if (actionStatusMessage != null) {
+            statusLabel.setText(actionStatusMessage);
+        }
         updateActionControls(phase);
         String playerColor = PLAYER_COLORS.get(game.getCurrentPlayerColor());
         playerLabel.setStyle("-fx-text-fill: " + playerColor + "; -fx-font-weight: bold;");
