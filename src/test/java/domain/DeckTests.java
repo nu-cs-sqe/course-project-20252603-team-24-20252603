@@ -135,4 +135,11 @@ public class DeckTests {
         }
         assertThrows(IllegalStateException.class, deck::draw);
     }
+
+    @Test
+    public void DiscardOneCardIntoEmptyDiscardPile_ReturnsOneDiscardedCard() {
+        Deck deck = new Deck();
+        deck.discard(List.of(new Card(CardType.INFANTRY, TerritoryName.ALASKA)));
+        assertEquals(1, deck.getDiscardPileSize());
+    }
 }
