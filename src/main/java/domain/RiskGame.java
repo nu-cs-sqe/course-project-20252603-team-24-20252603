@@ -90,6 +90,7 @@ public final class RiskGame {
     private int territoriesClaimed;
     private int draftArmiesRemaining;
     private boolean isDraftInitialized;
+    private int tradeSetCount;
     private boolean hasFortifiedThisTurn;
     private boolean capturedThisTurn;
     private final Deck deck = new Deck();
@@ -207,6 +208,9 @@ public final class RiskGame {
     public void draftArmy(TerritoryName territory) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only draft armies during ATTACK phase");
+        }
+        if (players.get(currentPlayerIndex).getCardCount() >= 5) {
+            throw new IllegalStateException("must trade cards before drafting");
         }
         if (draftArmiesRemaining == 0 && !isDraftInitialized) {
             int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
@@ -456,6 +460,40 @@ public final class RiskGame {
             return true;
         }
         return infantry == 1 && cavalry == 1 && artillery == 1;
+    }
+
+    public void tradeCards(List<Card> cards) {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only trade cards during ATTACK phase");
+        }
+        if (cards == null) {
+            throw new IllegalArgumentException("cards cannot be null");
+        }
+        for (Card card : cards) {
+            if (card == null) {
+                throw new IllegalArgumentException("cards cannot contain null");
+            }
+        }
+        if (!canTradeCards(cards)) {
+            throw new IllegalArgumentException("invalid card set");
+        }
+        Player current = players.get(currentPlayerIndex);
+        if (!current.hasCards(cards)) {
+            throw new IllegalArgumentException("player does not own all specified cards");
+        }
+        current.removeCards(cards);
+        tradeSetCount++;
+        int[] bonusTable = {4, 6, 8, 10, 12, 15};
+        int bonus = tradeSetCount <= 6
+                ? bonusTable[tradeSetCount - 1]
+                : 15 + 5 * (tradeSetCount - 6);
+        draftArmiesRemaining += bonus;
+        isDraftInitialized = true;
+        for (Card card : cards) {
+            if (!card.isWild() && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
+                worldMap.addArmies(card.getTerritory(), 2);
+            }
+        }
     }
 
     public List<Card> getCards(PlayerColor color) {
