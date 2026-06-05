@@ -204,4 +204,16 @@ public class PlayerTests {
         player.addCard(alaska);
         assertTrue(player.hasCards(List.of(alaska)));
     }
+
+    @Test
+    public void HasCards_PlayerHasAllRequestedCards_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        assertTrue(player.hasCards(List.of(alaska, alberta, brazil)));
+    }
 }
