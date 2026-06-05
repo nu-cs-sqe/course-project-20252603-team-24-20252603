@@ -138,4 +138,12 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 35);
         assertEquals(List.of(), player.getCards());
     }
+
+    @Test
+    public void GetCards_PlayerHasOneCard_ReturnsListWithThatCard() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        assertEquals(List.of(alaska), player.getCards());
+    }
 }
