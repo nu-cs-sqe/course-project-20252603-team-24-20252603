@@ -198,9 +198,6 @@ public final class RiskGame {
         if (isDraftInitialized) {
             return draftArmiesRemaining;
         }
-        if (draftArmiesRemaining > 0) {
-            return draftArmiesRemaining;
-        }
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
         return Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
     }
