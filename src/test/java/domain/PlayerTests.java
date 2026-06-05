@@ -165,4 +165,12 @@ public class PlayerTests {
         player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
         assertEquals(1, player.getCardCount());
     }
+
+    @Test
+    public void AddCard_PlayerHasOneCard_PlayerHasTwoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        assertEquals(2, player.getCardCount());
+    }
 }
