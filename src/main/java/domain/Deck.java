@@ -23,6 +23,15 @@ class Deck {
         return discardPile.size();
     }
 
+    boolean containsTerritoryCard(TerritoryName territory) {
+        for (Card card : drawPile) {
+            if (card.matchesTerritory(territory)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void initializeDrawPile() {
         for (TerritoryName territory : TerritoryName.values()) {
             drawPile.add(new Card(CardType.INFANTRY, territory));
