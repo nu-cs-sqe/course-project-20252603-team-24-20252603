@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,5 +33,10 @@ public class CardTests {
         Card card = new Card(CardType.WILD, null);
         assertEquals(CardType.WILD, card.getType());
         assertEquals(null, card.getTerritory());
+    }
+
+    @Test
+    public void ConstructCardWithNullType_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Card(null, TerritoryName.ALASKA));
     }
 }
