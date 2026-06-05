@@ -215,6 +215,10 @@ public final class GameBoardController {
             statusLabel.setText("Selected " + territory.name() + " as fortify source.");
             return;
         }
+        if (territory == selectedFortifyFrom) {
+            actionStatusMessage = "Select a different territory to fortify to.";
+            return;
+        }
         selectedFortifyTo = territory;
         statusLabel.setText("Selected " + territory.name() + " as fortify destination.");
     }
@@ -240,8 +244,12 @@ public final class GameBoardController {
         }
         try {
             int armies = fortifyArmiesSpinner.getValue();
+            TerritoryName from = selectedFortifyFrom;
+            TerritoryName to = selectedFortifyTo;
             game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
             clearFortifySelection();
+            actionStatusMessage = "Fortified " + armies + " from "
+                    + from.name() + " to " + to.name() + ".";
             updateMapColors();
             updateCardHand();
             updateStatusBar();
