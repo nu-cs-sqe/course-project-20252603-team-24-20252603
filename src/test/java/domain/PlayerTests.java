@@ -285,4 +285,13 @@ public class PlayerTests {
         player.removeCards(List.of());
         assertEquals(1, player.getCardCount());
     }
+
+    @Test
+    public void RemoveCards_CardPlayerDoesNotOwn_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        assertThrows(IllegalArgumentException.class, () -> player.removeCards(List.of(brazil)));
+    }
 }
