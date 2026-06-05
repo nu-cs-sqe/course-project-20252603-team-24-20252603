@@ -1405,4 +1405,17 @@ public class RiskGameTests {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertEquals(List.of(), game.getCards(PlayerColor.RED));
     }
+
+    @Test
+    public void GetCards_PlayerHasOneCard_ReturnsListWithThatCard() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(alaska);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(List.of(alaska), game.getCards(PlayerColor.RED));
+    }
 }
