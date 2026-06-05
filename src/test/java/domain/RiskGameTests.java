@@ -1420,6 +1420,28 @@ public class RiskGameTests {
     }
 
     @Test
+    public void Attack_WithoutCapture_DoesNotMarkCardAward() {
+        // scriptedDice: 0=constructor, 0=attacker roll (1), 5=defender roll (6) → defender wins
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(2);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertEquals(0, game.getCards(PlayerColor.RED).size());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void GetCards_ColorNotInGame_ThrowsIllegalArgumentException() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertThrows(IllegalArgumentException.class, () -> game.getCards(PlayerColor.CYAN));
