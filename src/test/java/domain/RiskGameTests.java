@@ -1795,6 +1795,22 @@ public class RiskGameTests {
     }
 
     @Test
+    public void TradeCards_ListContainingNull_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.providePlayers(List.of(
+                new Player(PlayerColor.RED, "Jonathan", 35),
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        List<Card> cards = new java.util.ArrayList<>();
+        cards.add(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        cards.add(null);
+        cards.add(new Card(CardType.INFANTRY, TerritoryName.BRAZIL));
+        assertThrows(IllegalArgumentException.class, () -> game.tradeCards(cards));
+    }
+
+    @Test
     public void CanTradeCards_ListContainingNull_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = new java.util.ArrayList<>();
