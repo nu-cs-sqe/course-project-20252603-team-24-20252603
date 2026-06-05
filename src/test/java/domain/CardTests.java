@@ -93,4 +93,10 @@ public class CardTests {
         Card card = new Card(CardType.WILD, null);
         assertTrue(card.isWild());
     }
+
+    @Test
+    public void MatchesTerritory_SameTerritory_ReturnsTrue() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertTrue(card.matchesTerritory(TerritoryName.ALASKA));
+    }
 }

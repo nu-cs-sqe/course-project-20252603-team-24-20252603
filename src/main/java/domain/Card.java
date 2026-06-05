@@ -29,4 +29,8 @@ class Card {
     boolean isWild() {
         return type == CardType.WILD;
     }
+
+    boolean matchesTerritory(TerritoryName territory) {
+        return this.territory == territory;
+    }
 }
