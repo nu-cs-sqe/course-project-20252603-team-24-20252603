@@ -276,4 +276,13 @@ public class PlayerTests {
         player.removeCards(List.of(alaska, alberta, brazil));
         assertEquals(0, player.getCardCount());
     }
+
+    @Test
+    public void RemoveCards_EmptyList_PlayerCardCountUnchanged() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        player.removeCards(List.of());
+        assertEquals(1, player.getCardCount());
+    }
 }
