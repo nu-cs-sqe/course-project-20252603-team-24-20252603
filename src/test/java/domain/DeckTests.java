@@ -152,4 +152,14 @@ public class DeckTests {
         deck.discard(List.of(first, second, third));
         assertEquals(3, deck.getDiscardPileSize());
     }
+
+    @Test
+    public void DiscardOneCardIntoNonEmptyDiscardPile_ReturnsTwoDiscardedCards() {
+        Deck deck = new Deck();
+        Card first = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card second = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        deck.discard(List.of(first));
+        deck.discard(List.of(second));
+        assertEquals(2, deck.getDiscardPileSize());
+    }
 }
