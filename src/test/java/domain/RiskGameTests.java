@@ -1085,6 +1085,22 @@ public class RiskGameTests {
     }
 
     @Test
+    public void EndTurn_NextPlayerHasNoTerritories_SkipsToActivePlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(1);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertEquals(PlayerColor.GREEN, game.getCurrentPlayerColor());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void GetWinner_TerritoriesDistributedAmongMultiplePlayers_ReturnsNull() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
@@ -1265,6 +1281,7 @@ public class RiskGameTests {
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.BLUE)).andStubReturn(true);
         EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
         EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(1);
         mockMap.removeArmies(TerritoryName.ALASKA, 1);
         EasyMock.expectLastCall().times(2);
         mockMap.addArmies(TerritoryName.ALBERTA, 1);
@@ -1342,6 +1359,7 @@ public class RiskGameTests {
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.BLUE)).andStubReturn(false);
         EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
         EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(3);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(1);
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
         game.setPhase(GamePhase.FORTIFY);

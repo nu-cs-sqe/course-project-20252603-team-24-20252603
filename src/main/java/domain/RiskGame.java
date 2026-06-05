@@ -349,6 +349,19 @@ public final class RiskGame {
         return owned.containsAll(territories);
     }
 
+    private void advanceToNextActivePlayer() {
+        int fallbackIndex = (currentPlayerIndex + 1) % players.size();
+        for (int i = 1; i <= players.size(); i++) {
+            int candidateIndex = (currentPlayerIndex + i) % players.size();
+            PlayerColor candidate = players.get(candidateIndex).getColor();
+            if (worldMap.countTerritoriesOwnedBy(candidate) > 0) {
+                currentPlayerIndex = candidateIndex;
+                return;
+            }
+        }
+        currentPlayerIndex = fallbackIndex;
+    }
+
     private int[] rollDiceDescending(int count) {
         Integer[] rolls = new Integer[count];
         for (int i = 0; i < count; i++) {
@@ -389,7 +402,7 @@ public final class RiskGame {
             players.get(currentPlayerIndex).addCard(deck.draw());
         }
         capturedThisTurn = false;
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+        advanceToNextActivePlayer();
         phase = GamePhase.ATTACK;
         draftArmiesRemaining = 0;
         isDraftInitialized = false;
