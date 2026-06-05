@@ -47,6 +47,19 @@ public class DeckTests {
     }
 
     @Test
+    public void ConstructDeckWithFourteenCavalryTerritoryCards_ReturnsFourteenCavalryCards() {
+        Deck deck = new Deck();
+        int cavalryCards = 0;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (!card.isWild() && card.getType() == CardType.CAVALRY) {
+                cavalryCards++;
+            }
+        }
+        assertEquals(14, cavalryCards);
+    }
+
+    @Test
     public void GetDrawPileSize_FullDeck_ReturnsFortyFour() {
         Deck deck = new Deck();
         assertEquals(44, deck.getDrawPileSize());
