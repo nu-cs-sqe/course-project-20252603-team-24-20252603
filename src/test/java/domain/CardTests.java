@@ -3,6 +3,7 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -85,5 +86,11 @@ public class CardTests {
     public void IsWild_NonWildCard_ReturnsFalse() {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertFalse(card.isWild());
+    }
+
+    @Test
+    public void IsWild_WildCard_ReturnsTrue() {
+        Card card = new Card(CardType.WILD, null);
+        assertTrue(card.isWild());
     }
 }
