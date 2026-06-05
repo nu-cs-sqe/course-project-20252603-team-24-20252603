@@ -1826,6 +1826,23 @@ public class RiskGameTests {
     }
 
     @Test
+    public void TradeCards_MoreThanThreeCards_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Card c1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card c2 = new Card(CardType.INFANTRY, TerritoryName.ALBERTA);
+        Card c3 = new Card(CardType.INFANTRY, TerritoryName.BRAZIL);
+        Card c4 = new Card(CardType.INFANTRY, TerritoryName.CHINA);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(c1); red.addCard(c2); red.addCard(c3); red.addCard(c4);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalArgumentException.class, () -> game.tradeCards(List.of(c1, c2, c3, c4)));
+    }
+
+    @Test
     public void CanTradeCards_ListContainingNull_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = new java.util.ArrayList<>();
