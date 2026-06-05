@@ -60,6 +60,19 @@ public class DeckTests {
     }
 
     @Test
+    public void ConstructDeckWithFourteenArtilleryTerritoryCards_ReturnsFourteenArtilleryCards() {
+        Deck deck = new Deck();
+        int artilleryCards = 0;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (!card.isWild() && card.getType() == CardType.ARTILLERY) {
+                artilleryCards++;
+            }
+        }
+        assertEquals(14, artilleryCards);
+    }
+
+    @Test
     public void GetDrawPileSize_FullDeck_ReturnsFortyFour() {
         Deck deck = new Deck();
         assertEquals(44, deck.getDrawPileSize());
