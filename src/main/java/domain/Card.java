@@ -11,6 +11,9 @@ class Card {
         if (type != CardType.WILD && territory == null) {
             throw new IllegalArgumentException("non-wild cards must have a territory");
         }
+        if (type == CardType.WILD && territory != null) {
+            throw new IllegalArgumentException("wild cards cannot have a territory");
+        }
         this.type = type;
         this.territory = territory;
     }
