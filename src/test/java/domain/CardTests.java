@@ -39,4 +39,9 @@ public class CardTests {
     public void ConstructCardWithNullType_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Card(null, TerritoryName.ALASKA));
     }
+
+    @Test
+    public void ConstructNonWildCardWithNoTerritory_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Card(CardType.INFANTRY, null));
+    }
 }

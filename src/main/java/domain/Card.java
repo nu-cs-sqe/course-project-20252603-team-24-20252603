@@ -8,6 +8,9 @@ class Card {
         if (type == null) {
             throw new IllegalArgumentException("type cannot be null");
         }
+        if (type != CardType.WILD && territory == null) {
+            throw new IllegalArgumentException("non-wild cards must have a territory");
+        }
         this.type = type;
         this.territory = territory;
     }
