@@ -95,4 +95,18 @@ public class DeckTests {
         assertNotNull(card);
         assertEquals(0, deck.getDrawPileSize());
     }
+
+    @Test
+    public void DrawFromEmptyDrawPileWithOneDiscardedCard_ReturnsCardAndClearsDiscardPile() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        deck.discard(List.of(card));
+        Card drawn = deck.draw();
+        assertNotNull(drawn);
+        assertEquals(0, deck.getDrawPileSize());
+        assertEquals(0, deck.getDiscardPileSize());
+    }
 }

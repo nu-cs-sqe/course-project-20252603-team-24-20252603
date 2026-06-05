@@ -24,6 +24,10 @@ class Deck {
     }
 
     Card draw() {
+        if (drawPile.isEmpty()) {
+            drawPile.addAll(discardPile);
+            discardPile.clear();
+        }
         return drawPile.remove(0);
     }
 
