@@ -1479,6 +1479,16 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_ListContainingNull_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        List<Card> cards = new java.util.ArrayList<>();
+        cards.add(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        cards.add(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        cards.add(null);
+        assertFalse(game.canTradeCards(cards));
+    }
+
+    @Test
     public void CanTradeCards_NullList_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         assertFalse(game.canTradeCards(null));
