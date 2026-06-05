@@ -517,6 +517,23 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetDraftArmies_WithNorthAmericaBonus_ReturnsEight() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.GREENLAND, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ONTARIO, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.QUEBEC, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.WESTERN_UNITED_STATES, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.EASTERN_UNITED_STATES, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.CENTRAL_AMERICA, PlayerColor.RED, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(8, game.getDraftArmies());
+    }
+
+    @Test
     public void DraftArmy_OwnedTerritoryDuringAttack_PlacesArmyAndDecrementsDraft() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
