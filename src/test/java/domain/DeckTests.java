@@ -33,4 +33,11 @@ public class DeckTests {
         Deck deck = new Deck();
         assertEquals(44, deck.getDrawPileSize());
     }
+
+    @Test
+    public void GetDrawPileSize_AfterDrawingOneCard_ReturnsFortyThree() {
+        Deck deck = new Deck();
+        deck.draw();
+        assertEquals(43, deck.getDrawPileSize());
+    }
 }
