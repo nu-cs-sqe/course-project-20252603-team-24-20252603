@@ -183,7 +183,7 @@ public final class GameBoardController {
     @FXML
     private void handleEndAttack() {
         try {
-            selectedAttackFrom = null;
+            clearAttackSelection();
             game.endAttack();
             updateMapColors();
             updateStatusBar();
@@ -201,8 +201,7 @@ public final class GameBoardController {
         try {
             int armies = fortifyArmiesSpinner.getValue();
             game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
-            selectedFortifyFrom = null;
-            selectedFortifyTo = null;
+            clearFortifySelection();
             updateMapColors();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
@@ -213,9 +212,8 @@ public final class GameBoardController {
     @FXML
     private void handleEndTurn() {
         try {
-            selectedAttackFrom = null;
-            selectedFortifyFrom = null;
-            selectedFortifyTo = null;
+            clearAttackSelection();
+            clearFortifySelection();
             game.endTurn();
             updateMapColors();
             updateStatusBar();
@@ -285,6 +283,7 @@ public final class GameBoardController {
 
     private void updateStatusBar() {
         GamePhase phase = game.getPhase();
+        syncSelectionsWithPhase(phase);
         phaseLabel.setText(phase.name());
         playerLabel.setText(game.getCurrentPlayerName()
                 + " (" + game.getCurrentPlayerColor().name() + ")");
@@ -326,13 +325,33 @@ public final class GameBoardController {
     }
 
     private void updateActionControls(GamePhase phase) {
-        boolean attackPhase = phase == GamePhase.ATTACK;
+        boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
         attackDiceSpinner.setDisable(!attackPhase);
         endAttackButton.setDisable(!attackPhase);
         fortifyArmiesSpinner.setDisable(!fortifyPhase);
-        fortifyButton.setDisable(!fortifyPhase);
+        fortifyButton.setDisable(!fortifyPhase
+                || selectedFortifyFrom == null
+                || selectedFortifyTo == null);
         endTurnButton.setDisable(!fortifyPhase);
+    }
+
+    private void syncSelectionsWithPhase(GamePhase phase) {
+        if (phase != GamePhase.ATTACK || !game.isDraftComplete()) {
+            clearAttackSelection();
+        }
+        if (phase != GamePhase.FORTIFY) {
+            clearFortifySelection();
+        }
+    }
+
+    private void clearAttackSelection() {
+        selectedAttackFrom = null;
+    }
+
+    private void clearFortifySelection() {
+        selectedFortifyFrom = null;
+        selectedFortifyTo = null;
     }
 
     private String buildMapHtml() {
