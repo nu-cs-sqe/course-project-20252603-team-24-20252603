@@ -227,4 +227,12 @@ public class PlayerTests {
         player.addCard(alberta);
         assertFalse(player.hasCards(List.of(alaska, alberta, brazil)));
     }
+
+    @Test
+    public void HasCards_PlayerHasCardOnceButRequestedTwice_ReturnsFalse() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        assertFalse(player.hasCards(List.of(alaska, alaska)));
+    }
 }
