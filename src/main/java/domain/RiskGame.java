@@ -482,6 +482,7 @@ public final class RiskGame {
             throw new IllegalArgumentException("player does not own all specified cards");
         }
         current.removeCards(cards);
+        deck.discard(cards);
         tradeSetCount++;
         int[] bonusTable = {4, 6, 8, 10, 12, 15};
         int bonus = tradeSetCount <= 6
@@ -531,8 +532,8 @@ public final class RiskGame {
         worldMap.addArmies(territory, armies);
     }
 
-    // helpers
     void setCapturedThisTurn(boolean value) { this.capturedThisTurn = value; }
+    int getDeckDiscardPileSize() { return deck.getDiscardPileSize(); }
     void setTradeSetCount(int count) { this.tradeSetCount = count; }
     void provideWorldMap(WorldMap map) { this.worldMap = map; }
     void providePlayers(List<Player> players) { this.players = players; }
