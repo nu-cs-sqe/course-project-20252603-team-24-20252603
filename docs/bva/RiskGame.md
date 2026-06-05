@@ -735,3 +735,92 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - phase == ATTACK
         - current player == RED
+
+---
+
+# Continent Bonuses
+
+## Method: `int getDraftArmies()` — continent bonus cases
+
+- **TC89: Draft armies with no complete continent uses only territory count** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns 11 territories
+        - RED owns no complete continent
+    - **Expected output**: getDraftArmies() == 3
+      (minimum 3 territory armies + 0 continent bonus)
+
+- **TC90: Draft armies include South America continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns VENEZUELA, PERU, BRAZIL, and ARGENTINA
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 5
+      (minimum 3 territory armies + 2 South America bonus)
+
+- **TC91: Draft armies include Australia continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns EASTERN_AUSTRALIA, WESTERN_AUSTRALIA, NEW_GUINEA, and INDONESIA
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 5
+      (minimum 3 territory armies + 2 Australia bonus)
+
+- **TC92: Draft armies include Africa continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns NORTH_AFRICA, EGYPT, EAST_AFRICA, CONGO, SOUTH_AFRICA, and MADAGASCAR
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 6
+      (minimum 3 territory armies + 3 Africa bonus)
+
+- **TC93: Draft armies include North America continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns all 9 North America territories
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 8
+      (minimum 3 territory armies + 5 North America bonus)
+
+- **TC94: Draft armies include Europe continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns all 7 Europe territories
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 8
+      (minimum 3 territory armies + 5 Europe bonus)
+
+- **TC95: Draft armies include Asia continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns all 12 Asia territories
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 11
+      (4 territory armies + 7 Asia bonus)
+
+- **TC96: Draft armies stack multiple continent bonuses** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns all South America territories
+        - RED owns all Australia territories
+        - RED owns no other territories
+    - **Expected output**: getDraftArmies() == 7
+      (minimum 3 territory armies + 2 South America bonus + 2 Australia bonus)
+
+- **TC97: Draft armies do not include partial continent bonus** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK, start of turn
+        - current player: RED
+        - RED owns VENEZUELA, PERU, and BRAZIL
+        - ARGENTINA is owned by BLUE
+        - RED owns no complete continent
+    - **Expected output**: getDraftArmies() == 3
+      (minimum 3 territory armies + 0 continent bonus)
