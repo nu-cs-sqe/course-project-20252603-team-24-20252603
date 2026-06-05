@@ -162,4 +162,11 @@ public class DeckTests {
         deck.discard(List.of(second));
         assertEquals(2, deck.getDiscardPileSize());
     }
+
+    @Test
+    public void DiscardZeroCards_ThrowsIllegalArgumentException() {
+        Deck deck = new Deck();
+        deck.discard(List.of(new Card(CardType.INFANTRY, TerritoryName.ALASKA)));
+        assertThrows(IllegalArgumentException.class, () -> deck.discard(List.of()));
+    }
 }
