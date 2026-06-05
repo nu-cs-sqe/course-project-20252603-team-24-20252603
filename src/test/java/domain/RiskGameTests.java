@@ -503,6 +503,20 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetDraftArmies_WithAfricaBonus_ReturnsSix() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.NORTH_AFRICA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.EGYPT, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.EAST_AFRICA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.CONGO, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.SOUTH_AFRICA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.MADAGASCAR, PlayerColor.RED, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(6, game.getDraftArmies());
+    }
+
+    @Test
     public void DraftArmy_OwnedTerritoryDuringAttack_PlacesArmyAndDecrementsDraft() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
