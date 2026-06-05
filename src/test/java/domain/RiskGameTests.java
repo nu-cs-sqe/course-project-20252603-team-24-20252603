@@ -450,6 +450,25 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetDraftArmies_NoCompleteContinent_UsesOnlyTerritoryCount() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ONTARIO, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.QUEBEC, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.VENEZUELA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.PERU, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.BRAZIL, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ICELAND, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.GREAT_BRITAIN, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.NORTH_AFRICA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.EGYPT, PlayerColor.RED, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(3, game.getDraftArmies());
+    }
+
+    @Test
     public void DraftArmy_OwnedTerritoryDuringAttack_PlacesArmyAndDecrementsDraft() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
