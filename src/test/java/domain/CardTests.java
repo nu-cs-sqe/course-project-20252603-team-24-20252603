@@ -73,4 +73,10 @@ public class CardTests {
         Card card = new Card(CardType.ARTILLERY, TerritoryName.INDONESIA);
         assertEquals(TerritoryName.INDONESIA, card.getTerritory());
     }
+
+    @Test
+    public void GetTerritory_WildCard_ReturnsNull() {
+        Card card = new Card(CardType.WILD, null);
+        assertEquals(null, card.getTerritory());
+    }
 }
