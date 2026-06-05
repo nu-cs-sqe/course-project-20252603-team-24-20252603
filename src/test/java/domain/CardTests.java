@@ -111,4 +111,10 @@ public class CardTests {
         Card card = new Card(CardType.WILD, null);
         assertFalse(card.matchesTerritory(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void MatchesTerritory_NullTerritory_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.matchesTerritory(null));
+    }
 }
