@@ -91,6 +91,8 @@ public final class RiskGame {
     private int draftArmiesRemaining;
     private boolean isDraftInitialized;
     private boolean hasFortifiedThisTurn;
+    private boolean capturedThisTurn;
+    private final Deck deck = new Deck();
     private Random random;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
@@ -274,12 +276,45 @@ public final class RiskGame {
     }
 
     private void captureTerritory(TerritoryName from, TerritoryName to, int armiesToMove) {
+        PlayerColor defenderColor = getOwnerOf(to);
         worldMap.assignTerritory(to, getCurrentPlayerColor());
         worldMap.removeArmies(from, armiesToMove);
         worldMap.addArmies(to, armiesToMove);
+        capturedThisTurn = true;
+        if (defenderColor != null && worldMap.countTerritoriesOwnedBy(defenderColor) == 0) {
+            transferCards(defenderColor, getCurrentPlayerColor());
+        }
         if (getWinner() != null) {
             phase = GamePhase.GAME_OVER;
         }
+    }
+
+    private PlayerColor getOwnerOf(TerritoryName territory) {
+        for (Player p : players) {
+            if (worldMap.isOwnedBy(territory, p.getColor())) {
+                return p.getColor();
+            }
+        }
+        return null;
+    }
+
+    private void transferCards(PlayerColor from, PlayerColor to) {
+        Player fromPlayer = getPlayer(from);
+        Player toPlayer = getPlayer(to);
+        List<Card> cards = new ArrayList<>(fromPlayer.getCards());
+        fromPlayer.removeCards(cards);
+        for (Card card : cards) {
+            toPlayer.addCard(card);
+        }
+    }
+
+    private Player getPlayer(PlayerColor color) {
+        for (Player p : players) {
+            if (p.getColor() == color) {
+                return p;
+            }
+        }
+        throw new IllegalArgumentException("player color not in game");
     }
 
     private int getContinentBonus() {
@@ -346,6 +381,10 @@ public final class RiskGame {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only end turn during FORTIFY phase");
         }
+        if (capturedThisTurn) {
+            players.get(currentPlayerIndex).addCard(deck.draw());
+        }
+        capturedThisTurn = false;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         phase = GamePhase.ATTACK;
         draftArmiesRemaining = 0;
