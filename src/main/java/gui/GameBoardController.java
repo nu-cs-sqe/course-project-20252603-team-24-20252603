@@ -1,15 +1,22 @@
 package gui;
 
+import domain.Card;
+import domain.CardType;
 import domain.GamePhase;
 import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.web.WebEngine;
@@ -54,12 +61,19 @@ public final class GameBoardController {
     @FXML
     private Button endTurnButton;
 
+    @FXML
+    private ListView<String> cardListView;
+
+    @FXML
+    private Button tradeCardsButton;
+
     private RiskGame game;
     private WebEngine engine;
     private JavaBridge javaBridge;
     private TerritoryName selectedAttackFrom;
     private TerritoryName selectedFortifyFrom;
     private TerritoryName selectedFortifyTo;
+    private final List<Card> visibleCards = new ArrayList<>();
 
     @FXML
     private void initialize() {
@@ -67,6 +81,13 @@ public final class GameBoardController {
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3, 1));
         fortifyArmiesSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
+        cardListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        cardListView.getSelectionModel().getSelectedIndices().addListener(
+                (ListChangeListener<Integer>) change -> {
+                    if (game != null) {
+                        updateActionControls(game.getPhase());
+                    }
+                });
         updateActionControls(GamePhase.SCRAMBLE);
     }
 
@@ -143,6 +164,7 @@ public final class GameBoardController {
                 handleFortifyClick(territory);
             }
             updateMapColors();
+            updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
@@ -186,6 +208,7 @@ public final class GameBoardController {
             clearAttackSelection();
             game.endAttack();
             updateMapColors();
+            updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
@@ -203,6 +226,21 @@ public final class GameBoardController {
             game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
             clearFortifySelection();
             updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleTradeCards() {
+        List<Card> selectedCards = getSelectedCards();
+        try {
+            game.tradeCards(selectedCards);
+            cardListView.getSelectionModel().clearSelection();
+            updateMapColors();
+            updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
@@ -216,6 +254,7 @@ public final class GameBoardController {
             clearFortifySelection();
             game.endTurn();
             updateMapColors();
+            updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
@@ -284,6 +323,7 @@ public final class GameBoardController {
     private void updateStatusBar() {
         GamePhase phase = game.getPhase();
         syncSelectionsWithPhase(phase);
+        updateCardHand();
         phaseLabel.setText(phase.name());
         playerLabel.setText(game.getCurrentPlayerName()
                 + " (" + game.getCurrentPlayerColor().name() + ")");
@@ -327,6 +367,9 @@ public final class GameBoardController {
     private void updateActionControls(GamePhase phase) {
         boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
+        boolean tradeReady = game != null
+                && phase == GamePhase.ATTACK
+                && game.canTradeCards(getSelectedCards());
         attackDiceSpinner.setDisable(!attackPhase);
         endAttackButton.setDisable(!attackPhase);
         fortifyArmiesSpinner.setDisable(!fortifyPhase);
@@ -334,6 +377,36 @@ public final class GameBoardController {
                 || selectedFortifyFrom == null
                 || selectedFortifyTo == null);
         endTurnButton.setDisable(!fortifyPhase);
+        tradeCardsButton.setDisable(!tradeReady);
+    }
+
+    private void updateCardHand() {
+        visibleCards.clear();
+        cardListView.getItems().clear();
+        if (game == null) {
+            return;
+        }
+        visibleCards.addAll(game.getCards(game.getCurrentPlayerColor()));
+        for (Card card : visibleCards) {
+            cardListView.getItems().add(formatCard(card));
+        }
+    }
+
+    private List<Card> getSelectedCards() {
+        List<Card> selectedCards = new ArrayList<>();
+        for (Integer index : cardListView.getSelectionModel().getSelectedIndices()) {
+            if (index >= 0 && index < visibleCards.size()) {
+                selectedCards.add(visibleCards.get(index));
+            }
+        }
+        return selectedCards;
+    }
+
+    private String formatCard(Card card) {
+        if (card.getType() == CardType.WILD) {
+            return "Wild";
+        }
+        return card.getType().name() + " - " + card.getTerritory().name();
     }
 
     private void syncSelectionsWithPhase(GamePhase phase) {
