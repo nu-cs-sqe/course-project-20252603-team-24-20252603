@@ -263,4 +263,17 @@ public class PlayerTests {
         player.removeCards(List.of(alaska));
         assertEquals(List.of(alberta, brazil), player.getCards());
     }
+
+    @Test
+    public void RemoveCards_PlayerHasThreeCards_RemoveAll_PlayerHasNoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        player.removeCards(List.of(alaska, alberta, brazil));
+        assertEquals(0, player.getCardCount());
+    }
 }
