@@ -49,4 +49,10 @@ public class DeckTests {
         }
         assertEquals(0, deck.getDrawPileSize());
     }
+
+    @Test
+    public void GetDiscardPileSize_EmptyDiscardPile_ReturnsZero() {
+        Deck deck = new Deck();
+        assertEquals(0, deck.getDiscardPileSize());
+    }
 }
