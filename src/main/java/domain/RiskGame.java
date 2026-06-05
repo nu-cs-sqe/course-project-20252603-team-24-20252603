@@ -149,13 +149,9 @@ public final class RiskGame {
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
-        boolean setupStarted = false;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         if (territoriesClaimed == TOTAL_TERRITORIES) {
             phase = GamePhase.SETUP;
-            setupStarted = true;
-        }
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        if (setupStarted) {
             firstSetupPlayerIndex = currentPlayerIndex;
         }
     }
