@@ -1,10 +1,10 @@
 package domain;
 
-class Card {
+public class Card {
     private final CardType type;
     private final TerritoryName territory;
 
-    Card(CardType type, TerritoryName territory) {
+    public Card(CardType type, TerritoryName territory) {
         if (type == null) {
             throw new IllegalArgumentException("type cannot be null");
         }

@@ -1,6 +1,6 @@
 package domain;
 
-enum CardType {
+public enum CardType {
     INFANTRY,
     CAVALRY,
     ARTILLERY,
