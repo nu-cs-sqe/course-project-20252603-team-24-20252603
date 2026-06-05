@@ -381,10 +381,12 @@ public final class GameBoardController {
             }
         } else if (phase == GamePhase.GAME_OVER) {
             armiesLabel.setText("");
-            statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
+            PlayerColor winner = game.getWinner();
+            String winnerText = winner == null ? "Winner pending" : winner.name() + " wins";
+            statusLabel.setText("Game over! " + winnerText + ".");
         }
 
-        if (actionStatusMessage != null) {
+        if (actionStatusMessage != null && phase != GamePhase.GAME_OVER) {
             statusLabel.setText(actionStatusMessage);
         }
         updateActionControls(phase);
@@ -395,6 +397,7 @@ public final class GameBoardController {
     private void updateActionControls(GamePhase phase) {
         boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
+        boolean gameOver = phase == GamePhase.GAME_OVER;
         boolean tradeReady = game != null
                 && phase == GamePhase.ATTACK
                 && game.canTradeCards(getSelectedCards());
@@ -406,6 +409,7 @@ public final class GameBoardController {
                 || selectedFortifyTo == null);
         endTurnButton.setDisable(!fortifyPhase);
         tradeCardsButton.setDisable(!tradeReady);
+        cardListView.setDisable(gameOver);
     }
 
     private void updateCardHand() {
