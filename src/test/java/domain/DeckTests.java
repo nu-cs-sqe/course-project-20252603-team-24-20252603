@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -74,5 +75,13 @@ public class DeckTests {
         Card third = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
         deck.discard(List.of(first, second, third));
         assertEquals(3, deck.getDiscardPileSize());
+    }
+
+    @Test
+    public void DrawOneCardFromFullDeck_ReturnsCardAndLeavesFortyThreeCards() {
+        Deck deck = new Deck();
+        Card card = deck.draw();
+        assertNotNull(card);
+        assertEquals(43, deck.getDrawPileSize());
     }
 }
