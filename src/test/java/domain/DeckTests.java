@@ -169,4 +169,10 @@ public class DeckTests {
         deck.discard(List.of(new Card(CardType.INFANTRY, TerritoryName.ALASKA)));
         assertThrows(IllegalArgumentException.class, () -> deck.discard(List.of()));
     }
+
+    @Test
+    public void DiscardNullCardsList_ThrowsIllegalArgumentException() {
+        Deck deck = new Deck();
+        assertThrows(IllegalArgumentException.class, () -> deck.discard(null));
+    }
 }

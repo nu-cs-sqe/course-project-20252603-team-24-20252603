@@ -35,6 +35,9 @@ class Deck {
     }
 
     void discard(List<Card> cards) {
+        if (cards == null) {
+            throw new IllegalArgumentException("cards cannot be null");
+        }
         if (cards.isEmpty()) {
             throw new IllegalArgumentException("cards cannot be empty");
         }
