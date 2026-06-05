@@ -53,6 +53,18 @@ class Player {
         return true;
     }
 
+    void removeCards(List<Card> toRemove) {
+        if (toRemove == null) {
+            throw new IllegalArgumentException("cards cannot be null");
+        }
+        if (!hasCards(toRemove)) {
+            throw new IllegalArgumentException("player does not own all specified cards");
+        }
+        for (Card card : toRemove) {
+            cards.remove(card);
+        }
+    }
+
     void addCard(Card card) {
         if (card == null) {
             throw new IllegalArgumentException("card cannot be null");
