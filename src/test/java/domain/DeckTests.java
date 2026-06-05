@@ -27,4 +27,10 @@ public class DeckTests {
         Deck deck = new Deck();
         assertEquals(2, deck.countWildCards());
     }
+
+    @Test
+    public void GetDrawPileSize_FullDeck_ReturnsFortyFour() {
+        Deck deck = new Deck();
+        assertEquals(44, deck.getDrawPileSize());
+    }
 }
