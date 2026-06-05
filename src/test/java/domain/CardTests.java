@@ -99,4 +99,10 @@ public class CardTests {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertTrue(card.matchesTerritory(TerritoryName.ALASKA));
     }
+
+    @Test
+    public void MatchesTerritory_DifferentTerritory_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.matchesTerritory(TerritoryName.ALBERTA));
+    }
 }
