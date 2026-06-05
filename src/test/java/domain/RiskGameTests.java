@@ -549,6 +549,26 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetDraftArmies_WithAsiaBonus_ReturnsEleven() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.MIDDLE_EAST, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.AFGHANISTAN, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.URAL, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.SIBERIA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.YAKUTSK, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.KAMCHATKA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.IRKUTSK, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.MONGOLIA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.JAPAN, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.CHINA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.INDIA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.SIAM, PlayerColor.RED, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(11, game.getDraftArmies());
+    }
+
+    @Test
     public void DraftArmy_OwnedTerritoryDuringAttack_PlacesArmyAndDecrementsDraft() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
