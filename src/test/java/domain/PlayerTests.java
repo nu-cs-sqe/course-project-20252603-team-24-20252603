@@ -173,4 +173,14 @@ public class PlayerTests {
         player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
         assertEquals(2, player.getCardCount());
     }
+
+    @Test
+    public void AddCard_PlayerHasThreeCards_PlayerHasFourCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        player.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.CHINA));
+        assertEquals(4, player.getCardCount());
+    }
 }
