@@ -21,4 +21,10 @@ public class DeckTests {
             assertTrue(deck.containsTerritoryCard(territory));
         }
     }
+
+    @Test
+    public void ConstructDeckWithTwoWildCards_ReturnsTwoWildCards() {
+        Deck deck = new Deck();
+        assertEquals(2, deck.countWildCards());
+    }
 }

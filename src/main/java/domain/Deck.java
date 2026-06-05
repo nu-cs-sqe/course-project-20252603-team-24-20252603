@@ -32,6 +32,16 @@ class Deck {
         return false;
     }
 
+    int countWildCards() {
+        int count = 0;
+        for (Card card : drawPile) {
+            if (card.isWild()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     private void initializeDrawPile() {
         for (TerritoryName territory : TerritoryName.values()) {
             drawPile.add(new Card(CardType.INFANTRY, territory));
