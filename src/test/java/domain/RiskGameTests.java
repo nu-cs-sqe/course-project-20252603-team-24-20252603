@@ -1399,4 +1399,10 @@ public class RiskGameTests {
         assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
         EasyMock.verify(mockMap);
     }
+
+    @Test
+    public void GetCards_PlayerHasNoCards_ReturnsEmptyList() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertEquals(List.of(), game.getCards(PlayerColor.RED));
+    }
 }
