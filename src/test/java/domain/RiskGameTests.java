@@ -1479,6 +1479,12 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_NullList_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertFalse(game.canTradeCards(null));
+    }
+
+    @Test
     public void CanTradeCards_MoreThanThreeCards_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = List.of(
