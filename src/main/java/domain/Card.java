@@ -18,7 +18,7 @@ public class Card {
         this.territory = territory;
     }
 
-    CardType getType() {
+    public CardType getType() {
         return type;
     }
 

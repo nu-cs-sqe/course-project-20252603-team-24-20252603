@@ -1,5 +1,6 @@
 package domainapi;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import domain.Card;
@@ -14,5 +15,11 @@ public class CardPublicApiTests {
     public void ConstructCardFromOutsideDomainPackage_ReturnsCard() {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertNotNull(card);
+    }
+
+    @Test
+    public void GetCardTypeFromOutsideDomainPackage_ReturnsInfantry() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(CardType.INFANTRY, card.getType());
     }
 }
