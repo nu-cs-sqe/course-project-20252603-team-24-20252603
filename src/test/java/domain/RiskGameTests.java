@@ -1843,6 +1843,31 @@ public class RiskGameTests {
     }
 
     @Test
+    public void DraftArmy_PlayerHasFourCards_DraftSucceeds() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(3);
+        EasyMock.expect(mockMap.getTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(territories());
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        mockMap.addArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall().once();
+        EasyMock.replay(mockMap);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        red.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        red.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        red.addCard(new Card(CardType.INFANTRY, TerritoryName.CHINA));
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.draftArmy(TerritoryName.ALASKA);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void CanTradeCards_ListContainingNull_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = new java.util.ArrayList<>();
