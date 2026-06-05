@@ -825,7 +825,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 3
       (minimum 3 territory armies + 0 continent bonus)
 
-## Method: `List<RiskCard> getCards(PlayerColor color)`
+## Method: `List<Card> getCards(PlayerColor color)`
 
 - **TC98: Get cards for player with no cards** ( :x: )
     - **State of the system**:
@@ -936,7 +936,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - next player is not eligible for a card award
 
-## Method: `boolean canTradeCards(List<RiskCard> cards)`
+## Method: `boolean canTradeCards(List<Card> cards)`
 
 - **TC110: Trade three cards of same type is valid** ( :x: )
     - **State of the system**: cards contains 3 infantry cards
@@ -978,7 +978,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **State of the system**: cards contains null
     - **Expected output**: false
 
-## Method: `void tradeCards(List<RiskCard> cards)`
+## Method: `void tradeCards(List<Card> cards)`
 
 - **TC120: Trade first valid set adds 4 draft armies** ( :x: )
     - **State of the system**:

@@ -1,5 +1,5 @@
-# BVA Analysis for RiskDeck
-## Method: `RiskDeck()`
+# BVA Analysis for Deck
+## Method: `Deck()`
 
 - **TC1: Construct deck with all Risk cards** ( :x: )
     - **State of the system**: new deck constructed
@@ -43,18 +43,18 @@
     - **State of the system**: deck has 3 cards in discard pile
     - **Expected output**: 3
 
-## Method: `RiskCard draw()`
+## Method: `Card draw()`
 
 - **TC10: Draw one card from full deck** ( :x: )
     - **State of the system**: deck has 44 cards in draw pile
     - **Expected output**:
-        - returns one RiskCard
+        - returns one Card
         - getDrawPileSize() == 43
 
 - **TC11: Draw last card from draw pile** ( :x: )
     - **State of the system**: deck has exactly 1 card in draw pile
     - **Expected output**:
-        - returns one RiskCard
+        - returns one Card
         - getDrawPileSize() == 0
 
 - **TC12: Draw from empty draw pile with one discarded card** ( :x: )
@@ -63,7 +63,7 @@
         - discard pile has 1 card
     - **Expected output**:
         - discarded card moves back to draw pile
-        - returns one RiskCard
+        - returns one Card
         - getDrawPileSize() == 0
         - getDiscardPileSize() == 0
 
@@ -73,7 +73,7 @@
         - discard pile has 3 cards
     - **Expected output**:
         - discarded cards move back to draw pile
-        - returns one RiskCard
+        - returns one Card
         - getDrawPileSize() == 2
         - getDiscardPileSize() == 0
 
@@ -83,7 +83,7 @@
         - discard pile has 0 cards
     - **Expected output**: throw IllegalStateException
 
-## Method: `void discard(List<RiskCard> cards)`
+## Method: `void discard(List<Card> cards)`
 
 - **TC15: Discard one card into empty discard pile** ( :x: )
     - **State of the system**:

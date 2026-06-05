@@ -101,7 +101,7 @@
     - **State of the system**: player has 3 cards
     - **Expected output**: 3
 
-## Method: `List<RiskCard> getCards()`
+## Method: `List<Card> getCards()`
 
 - **TC20: Get cards when player has no cards** ( :x: )
     - **State of the system**: player has 0 cards
@@ -115,7 +115,7 @@
     - **State of the system**: player has ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: list containing ALASKA, ALBERTA, and BRAZIL cards
 
-## Method: `void addCard(RiskCard card)`
+## Method: `void addCard(Card card)`
 
 - **TC23: Add 1 card when player has no cards** ( :x: )
     - **State of the system**:
@@ -141,7 +141,7 @@
         - card: null
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `boolean hasCards(List<RiskCard> cards)`
+## Method: `boolean hasCards(List<Card> cards)`
 
 - **TC27: Check player has empty card list** ( :x: )
     - **State of the system**:
@@ -179,7 +179,7 @@
         - cards is null
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `void removeCards(List<RiskCard> cards)`
+## Method: `void removeCards(List<Card> cards)`
 
 - **TC33: Remove 1 card when player has 1 card** ( :x: )
     - **State of the system**:

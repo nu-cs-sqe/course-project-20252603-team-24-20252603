@@ -1,5 +1,5 @@
-# BVA Analysis for RiskCard
-## Method: `RiskCard(CardType type, TerritoryName territory)`
+# BVA Analysis for Card
+## Method: `Card(CardType type, TerritoryName territory)`
 
 - **TC1: Construct infantry card with first territory** ( :x: )
     - **State of the system**:
