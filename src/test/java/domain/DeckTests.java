@@ -109,4 +109,20 @@ public class DeckTests {
         assertEquals(0, deck.getDrawPileSize());
         assertEquals(0, deck.getDiscardPileSize());
     }
+
+    @Test
+    public void DrawFromEmptyDrawPileWithMoreThanOneDiscardedCard_ReturnsCardAndLeavesTwoCards() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        Card first = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card second = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card third = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        deck.discard(List.of(first, second, third));
+        Card drawn = deck.draw();
+        assertNotNull(drawn);
+        assertEquals(2, deck.getDrawPileSize());
+        assertEquals(0, deck.getDiscardPileSize());
+    }
 }
