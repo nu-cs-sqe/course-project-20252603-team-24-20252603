@@ -1418,4 +1418,21 @@ public class RiskGameTests {
         game.setCurrentPlayer(PlayerColor.RED);
         assertEquals(List.of(alaska), game.getCards(PlayerColor.RED));
     }
+
+    @Test
+    public void GetCards_PlayerHasThreeCards_ReturnsListWithAllThreeCards() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(alaska);
+        red.addCard(alberta);
+        red.addCard(brazil);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertEquals(List.of(alaska, alberta, brazil), game.getCards(PlayerColor.RED));
+    }
 }
