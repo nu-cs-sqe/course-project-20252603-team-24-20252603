@@ -177,7 +177,8 @@ public final class GameBoardController {
         PlayerColor current = game.getCurrentPlayerColor();
         if (game.isOwnedBy(territory, current)) {
             selectedAttackFrom = territory;
-            statusLabel.setText("Selected " + territory.name() + " to attack from.");
+            statusLabel.setText("Selected " + formatName(territory.name())
+                    + " to attack from.");
             return;
         }
         if (selectedAttackFrom == null) {
@@ -194,12 +195,13 @@ public final class GameBoardController {
         boolean captured = game.isOwnedBy(territory, current);
         selectedAttackFrom = null;
         if (captured) {
-            actionStatusMessage = "Captured " + territory.name()
-                    + " from " + from.name() + ".";
+            actionStatusMessage = "Captured " + formatName(territory.name())
+                    + " from " + formatName(from.name()) + ".";
         } else {
-            actionStatusMessage = "Attack resolved: " + from.name()
+            actionStatusMessage = "Attack resolved: " + formatName(from.name())
                     + " " + fromBefore + "->" + fromAfter
-                    + ", " + territory.name() + " " + toBefore + "->" + toAfter + ".";
+                    + ", " + formatName(territory.name()) + " "
+                    + toBefore + "->" + toAfter + ".";
         }
     }
 
@@ -212,7 +214,8 @@ public final class GameBoardController {
         if (selectedFortifyFrom == null || selectedFortifyTo != null) {
             selectedFortifyFrom = territory;
             selectedFortifyTo = null;
-            statusLabel.setText("Selected " + territory.name() + " as fortify source.");
+            statusLabel.setText("Selected " + formatName(territory.name())
+                    + " as fortify source.");
             return;
         }
         if (territory == selectedFortifyFrom) {
@@ -220,7 +223,8 @@ public final class GameBoardController {
             return;
         }
         selectedFortifyTo = territory;
-        statusLabel.setText("Selected " + territory.name() + " as fortify destination.");
+        statusLabel.setText("Selected " + formatName(territory.name())
+                + " as fortify destination.");
     }
 
     @FXML
@@ -249,7 +253,7 @@ public final class GameBoardController {
             game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
             clearFortifySelection();
             actionStatusMessage = "Fortified " + armies + " from "
-                    + from.name() + " to " + to.name() + ".";
+                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
             updateMapColors();
             updateCardHand();
             updateStatusBar();
@@ -317,7 +321,7 @@ public final class GameBoardController {
                     + "    el.style.strokeWidth = '" + strokeWidth + "';"
                     + "    el.dataset.owner = '" + ownerData + "';"
                     + "    el.dataset.armies = '" + armies + "';"
-                    + "    el.title = '" + territory.name() + " (" + armies + ")';"
+                    + "    el.title = '" + formatName(territory.name()) + " (" + armies + ")';"
                     + "    var labelId = 'army-label-" + svgId + "';"
                     + "    var label = document.getElementById(labelId);"
                     + "    if (!label) {"
@@ -438,7 +442,20 @@ public final class GameBoardController {
         if (card.getType() == CardType.WILD) {
             return "Wild";
         }
-        return card.getType().name() + " - " + card.getTerritory().name();
+        return formatName(card.getType().name())
+                + " - " + formatName(card.getTerritory().name());
+    }
+
+    private String formatName(String name) {
+        StringBuilder formatted = new StringBuilder();
+        for (String part : name.split("_")) {
+            if (formatted.length() > 0) {
+                formatted.append(" ");
+            }
+            formatted.append(part.charAt(0));
+            formatted.append(part.substring(1).toLowerCase());
+        }
+        return formatted.toString();
     }
 
     private void syncSelectionsWithPhase(GamePhase phase) {

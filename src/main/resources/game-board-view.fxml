@@ -32,8 +32,11 @@
 
             <Label text="CARDS"
                    style="-fx-text-fill: #4a6a8a; -fx-font-size: 10px; -fx-font-weight: bold;" />
-            <ListView fx:id="cardListView" VBox.vgrow="ALWAYS" />
-            <Button fx:id="tradeCardsButton" text="Trade Cards" onAction="#handleTradeCards" />
+            <ListView fx:id="cardListView" VBox.vgrow="ALWAYS"
+                      style="-fx-background-color: #0f1923; -fx-control-inner-background: #0f1923; -fx-text-fill: #dce8f3;" />
+            <Button fx:id="tradeCardsButton" text="Trade Cards" onAction="#handleTradeCards"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #d6a84f; -fx-text-fill: #17202a; -fx-font-weight: bold;" />
         </VBox>
     </right>
 
