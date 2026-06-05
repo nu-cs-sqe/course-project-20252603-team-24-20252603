@@ -1459,6 +1459,15 @@ public class RiskGameTests {
     }
 
     @Test
+    public void EndTurn_AfterNoCaptures_AwardsNoCard() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(0, game.getCards(PlayerColor.BLUE).size());
+    }
+
+    @Test
     public void Attack_CapturesFinalTerritory_TransfersDefeatedPlayerCards() {
         // BLUE has exactly 1 territory (ALBERTA) and 2 cards; RED captures it
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
