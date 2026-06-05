@@ -32,6 +32,13 @@ class Player {
         return cards.size();
     }
 
+    void addCard(Card card) {
+        if (card == null) {
+            throw new IllegalArgumentException("card cannot be null");
+        }
+        cards.add(card);
+    }
+
     void decreaseArmiesToPlace(int count) {
         if (count < 1 || count > armiesToPlace) {
             throw new IllegalArgumentException(

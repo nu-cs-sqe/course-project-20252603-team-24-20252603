@@ -114,4 +114,11 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 35);
         assertEquals(0, player.getCardCount());
     }
+
+    @Test
+    public void GetCardCount_PlayerHasOneCard_ReturnsOne() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertEquals(1, player.getCardCount());
+    }
 }
