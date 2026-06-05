@@ -294,4 +294,10 @@ public class PlayerTests {
         player.addCard(alaska);
         assertThrows(IllegalArgumentException.class, () -> player.removeCards(List.of(brazil)));
     }
+
+    @Test
+    public void RemoveCards_NullCardList_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.removeCards(null));
+    }
 }
