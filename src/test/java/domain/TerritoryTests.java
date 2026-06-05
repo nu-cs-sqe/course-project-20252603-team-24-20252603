@@ -145,4 +145,63 @@ public class TerritoryTests {
         Territory territory = new Territory(TerritoryName.ALASKA);
         assertThrows(IllegalArgumentException.class, () -> territory.addArmies(-1));
     }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithOneArmy_ReturnsZero() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(1);
+        territory.removeArmies(1);
+        assertEquals(0, territory.getArmies());
+    }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithMoreThanOneArmy_DecrementsByOne() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(3);
+        territory.removeArmies(1);
+        assertEquals(2, territory.getArmies());
+    }
+
+    @Test
+    public void RemoveArmies_MoreThanOneFromTerritoryWithMoreArmies_DecrementsCorrectly() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(5);
+        territory.removeArmies(3);
+        assertEquals(2, territory.getArmies());
+    }
+
+    @Test
+    public void RemoveArmies_ExactAmountTerritoryHas_ReturnsZero() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(3);
+        territory.removeArmies(3);
+        assertEquals(0, territory.getArmies());
+    }
+
+    @Test
+    public void RemoveArmies_MoreThanTerritoryHas_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(2);
+        assertThrows(IllegalArgumentException.class, () -> territory.removeArmies(3));
+    }
+
+    @Test
+    public void RemoveArmies_CountOfZero_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(3);
+        assertThrows(IllegalArgumentException.class, () -> territory.removeArmies(0));
+    }
+
+    @Test
+    public void RemoveArmies_NegativeCount_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        territory.addArmies(3);
+        assertThrows(IllegalArgumentException.class, () -> territory.removeArmies(-1));
+    }
+
+    @Test
+    public void RemoveArmies_OneFromTerritoryWithZeroArmies_ThrowsIllegalArgumentException() {
+        Territory territory = new Territory(TerritoryName.ALASKA);
+        assertThrows(IllegalArgumentException.class, () -> territory.removeArmies(1));
+    }
 }

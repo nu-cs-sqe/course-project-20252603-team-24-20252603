@@ -127,3 +127,6 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+#temp file
+/temp

@@ -36,7 +36,7 @@ tasks.compileJava {
 }
 
 application {
-    mainClass.set("nu.csse.sqe.gui.RiskApplication")
+    mainClass.set("gui.RiskApplication")
 }
 
 javafx {
@@ -45,6 +45,7 @@ javafx {
         "javafx.controls",
         "javafx.fxml",
         "javafx.graphics",
+        "javafx.web",
     )
 }
 

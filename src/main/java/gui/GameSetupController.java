@@ -1,0 +1,238 @@
+package gui;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import javafx.application.Platform;
+import javafx.geometry.Pos;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
+
+import domain.GameConstants;
+import domain.PlayerColor;
+import domain.RiskGame;
+
+/**
+ * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
+ * payload expected by {@code RiskGame} when the user starts a game.
+ */
+public final class GameSetupController {
+
+    private static final int DEFAULT_PLAYERS = 3;
+
+    /** Last successfully validated start payload; {@code null} until a valid start. */
+    private Map<PlayerColor, String> validatedPlayerInfo;
+
+    @FXML
+    private Label headingLabel;
+
+    @FXML
+    private Spinner<Integer> playerCountSpinner;
+
+    @FXML
+    private VBox nameFieldsContainer;
+
+    private final List<TextField> nameFields = new ArrayList<>();
+
+    @FXML
+    private void initialize() {
+        headingLabel.setText("New game");
+        headingLabel.setFont(Font.font(null, FontWeight.BOLD, 18));
+
+        SpinnerValueFactory.IntegerSpinnerValueFactory factory =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                        GameConstants.MIN_PLAYERS,
+                        GameConstants.MAX_PLAYERS,
+                        DEFAULT_PLAYERS);
+        playerCountSpinner.setValueFactory(factory);
+        playerCountSpinner.setEditable(false);
+        playerCountSpinner.valueProperty().addListener((obs, ignored, next) ->
+                rebuildNameFields(next.intValue()));
+
+        rebuildNameFields(factory.getValue());
+    }
+
+    /**
+     * Returns the player map from the last successful {@link #handleStartGame()}, or {@code null}.
+     */
+    public Map<PlayerColor, String> getValidatedPlayerInfo() {
+        return validatedPlayerInfo;
+    }
+
+    @FXML
+    private void handleStartGame() {
+        int count = playerCountSpinner.getValue();
+        if (nameFields.size() != count) {
+            showError("Setup is out of sync with the player count. Try adjusting the number of players.");
+            return;
+        }
+
+        PlayerColor[] colors = PlayerColor.values();
+        Map<PlayerColor, String> map = new LinkedHashMap<>(count);
+        Set<String> seenLower = new HashSet<>(count);
+
+        for (int i = 0; i < count; i++) {
+            PlayerColor color = colors[i];
+            TextField field = nameFields.get(i);
+            String raw = field.getText();
+            String name = raw == null ? "" : raw.trim();
+            if (name.isEmpty()) {
+                showError("Enter a name for " + displayName(color) + " (player " + (i + 1) + ").");
+                return;
+            }
+            String dedupeKey = name.toLowerCase(Locale.ROOT);
+            if (!seenLower.add(dedupeKey)) {
+                showError("Each player must have a different name (duplicate: \"" + name + "\").");
+                return;
+            }
+            map.put(color, name);
+        }
+
+        validatedPlayerInfo = Collections.unmodifiableMap(map);
+
+        final RiskGame game;
+        try {
+            game = new RiskGame(validatedPlayerInfo);
+        } catch (IllegalArgumentException e) {
+            showError(e.getMessage());
+            return;
+        }
+
+        switchToGameBoard(game);
+    }
+
+    @FXML
+    private void handleQuit() {
+        Platform.exit();
+    }
+
+    private void switchToGameBoard(RiskGame game) {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/game-board-view.fxml"));
+            Parent root = loader.load();
+
+            GameBoardController controller = loader.getController();
+            controller.initGame(game);
+
+            Stage stage = (Stage) headingLabel.getScene().getWindow();
+            Scene scene = new Scene(root, 1100, 750);
+            stage.setScene(scene);
+            stage.setTitle("Risk");
+            stage.setMinWidth(900);
+            stage.setMinHeight(600);
+        } catch (Exception e) {
+            showError("Failed to load game board: " + e.getMessage());
+        }
+    }
+
+    private void rebuildNameFields(int count) {
+        nameFieldsContainer.getChildren().clear();
+        nameFields.clear();
+
+        PlayerColor[] colors = PlayerColor.values();
+
+        for (int i = 1; i <= count; i++) {
+            PlayerColor color = colors[i - 1];
+
+            Region swatch = new Region();
+            swatch.setMinSize(20, 20);
+            swatch.setPrefSize(20, 20);
+            swatch.setMaxSize(20, 20);
+            String hex = toCssHex(fxColor(color));
+            swatch.setStyle(
+                    "-fx-background-color: " + hex + "; "
+                            + "-fx-border-color: #333333; -fx-border-width: 1px;");
+
+            Label colorLabel = new Label(displayName(color));
+            colorLabel.setPrefWidth(64);
+
+            Label slotLabel = new Label("Player " + i);
+            slotLabel.setPrefWidth(64);
+
+            TextField field = new TextField("Player " + i);
+            HBox.setHgrow(field, Priority.ALWAYS);
+            nameFields.add(field);
+
+            HBox row = new HBox(8, swatch, colorLabel, slotLabel, field);
+            row.setAlignment(Pos.CENTER_LEFT);
+            row.setPrefWidth(Double.MAX_VALUE);
+            nameFieldsContainer.getChildren().add(row);
+        }
+    }
+
+    private static Color fxColor(PlayerColor color) {
+        switch (color) {
+            case RED:
+                return Color.web("#c62828");
+            case BLUE:
+                return Color.web("#1565c0");
+            case GREEN:
+                return Color.web("#2e7d32");
+            case ORANGE:
+                return Color.web("#ef6c00");
+            case PINK:
+                return Color.web("#ad1457");
+            case CYAN:
+                return Color.web("#00838f");
+            default:
+                throw new IllegalArgumentException(color.toString());
+        }
+    }
+
+    private static String displayName(PlayerColor color) {
+        switch (color) {
+            case RED:
+                return "Red";
+            case BLUE:
+                return "Blue";
+            case GREEN:
+                return "Green";
+            case ORANGE:
+                return "Orange";
+            case PINK:
+                return "Pink";
+            case CYAN:
+                return "Cyan";
+            default:
+                throw new IllegalArgumentException(color.toString());
+        }
+    }
+
+    private static String toCssHex(Color color) {
+        int r = (int) Math.round(color.getRed() * 255);
+        int g = (int) Math.round(color.getGreen() * 255);
+        int b = (int) Math.round(color.getBlue() * 255);
+        return String.format("#%02x%02x%02x", r, g, b);
+    }
+
+    private static void showError(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Cannot start game");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

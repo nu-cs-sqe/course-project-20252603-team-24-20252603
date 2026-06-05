@@ -11,6 +11,7 @@
 
 ## Dependencies
 - JDK 11
+- JavaFX (OpenJFX) 17.0.12
 - JUnit 5.10
 - Gradle 8.10
 
