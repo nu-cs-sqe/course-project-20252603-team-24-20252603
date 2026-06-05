@@ -146,4 +146,16 @@ public class PlayerTests {
         player.addCard(alaska);
         assertEquals(List.of(alaska), player.getCards());
     }
+
+    @Test
+    public void GetCards_PlayerHasThreeCards_ReturnsListWithAllThreeCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        assertEquals(List.of(alaska, alberta, brazil), player.getCards());
+    }
 }
