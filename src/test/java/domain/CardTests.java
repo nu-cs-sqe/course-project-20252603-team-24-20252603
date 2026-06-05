@@ -49,4 +49,10 @@ public class CardTests {
     public void ConstructWildCardWithTerritory_ThrowsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, () -> new Card(CardType.WILD, TerritoryName.ALASKA));
     }
+
+    @Test
+    public void GetType_InfantryCard_ReturnsInfantry() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(CardType.INFANTRY, card.getType());
+    }
 }
