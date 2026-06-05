@@ -6,6 +6,7 @@ import domain.GamePhase;
 import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -102,7 +103,7 @@ public final class GameBoardController {
         engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) engine.executeScript("window");
-                javaBridge = new JavaBridge();
+                javaBridge = new JavaBridge(this);
                 window.setMember("javaBridge", javaBridge);
                 applyMapStyling();
                 updateMapColors();
@@ -139,9 +140,18 @@ public final class GameBoardController {
         engine.executeScript(js);
     }
 
-    public final class JavaBridge {
+    public static final class JavaBridge {
+        private final WeakReference<GameBoardController> controller;
+
+        JavaBridge(GameBoardController controller) {
+            this.controller = new WeakReference<>(controller);
+        }
+
         public void onTerritoryClicked(String svgId) {
-            Platform.runLater(() -> handleTerritoryClick(svgId));
+            GameBoardController currentController = controller.get();
+            if (currentController != null) {
+                Platform.runLater(() -> currentController.handleTerritoryClick(svgId));
+            }
         }
     }
 
@@ -400,19 +410,22 @@ public final class GameBoardController {
 
     private void updateActionControls(GamePhase phase) {
         boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
-        boolean fortifyPhase = phase == GamePhase.FORTIFY;
-        boolean gameOver = phase == GamePhase.GAME_OVER;
-        boolean tradeReady = game != null
-                && phase == GamePhase.ATTACK
-                && game.canTradeCards(getSelectedCards());
         attackDiceSpinner.setDisable(!attackPhase);
         endAttackButton.setDisable(!attackPhase);
+
+        boolean fortifyPhase = phase == GamePhase.FORTIFY;
         fortifyArmiesSpinner.setDisable(!fortifyPhase);
         fortifyButton.setDisable(!fortifyPhase
                 || selectedFortifyFrom == null
                 || selectedFortifyTo == null);
         endTurnButton.setDisable(!fortifyPhase);
+
+        boolean tradeReady = game != null
+                && phase == GamePhase.ATTACK
+                && game.canTradeCards(getSelectedCards());
         tradeCardsButton.setDisable(!tradeReady);
+
+        boolean gameOver = phase == GamePhase.GAME_OVER;
         cardListView.setDisable(gameOver);
     }
 
