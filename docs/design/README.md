@@ -64,23 +64,26 @@ INFANTRY, CAVALRY, ARTILLERY, WILD
 | `int countTerritoriesOwnedBy(PlayerColor color)` | Returns number of territories owned by player |
 | `Set<TerritoryName> getTerritoriesOwnedBy(PlayerColor color)` | Returns a copy of territories owned by player |
 
-### `Card` (package-private)
+### `Card` (public)
 **Purpose:** Represents one Risk card. Each card has a territory and a troop type, or is a wild card with no territory.
 
 | Method | Description |
 |--------|-------------|
+| `Card(CardType type, TerritoryName territory)` | Constructs a card. territory must be null if and only if type is WILD. Throws IllegalArgumentException if type is null, if a non-wild card has a null territory, or if a wild card has a non-null territory. |
 | `TerritoryName getTerritory()` | Returns the territory on this card, or null if wild |
-| `CardType getCardType()` | Returns the troop type on this card |
+| `CardType getType()` | Returns the troop type on this card |
 | `boolean isWild()` | Returns true if this is a wild card |
+| `boolean matchesTerritory(TerritoryName territory)` | Returns true if this card's territory equals the given territory. Returns false for wild cards or if territory is null. |
 
 ### `Deck` (package-private)
-**Purpose:** Holds and manages the draw pile of Risk cards. One card per territory plus two wild cards.
+**Purpose:** Holds and manages the draw and discard piles of Risk cards. One card per territory plus two wild cards.
 
 | Method | Description |
 |--------|-------------|
-| `Card draw()` | Draws and returns the top card, throws IllegalStateException if deck is empty |
-| `int size()` | Returns the number of cards remaining in the deck |
-| `void returnCards(List<Card> cards)` | Returns traded cards to the bottom of the deck |
+| `Card draw()` | Draws and returns the top card. If the draw pile is empty, reshuffles the discard pile into it first. Throws IllegalStateException if both piles are empty. |
+| `int getDrawPileSize()` | Returns the number of cards remaining in the draw pile |
+| `int getDiscardPileSize()` | Returns the number of cards in the discard pile |
+| `void discard(List<Card> cards)` | Adds the given cards to the discard pile. Throws IllegalArgumentException if list is null, empty, or contains null. |
 
 ### `Player` (package-private)
 **Purpose:** Represents one player in the game. Tracks identity, armies to place, and card hand.
@@ -93,9 +96,11 @@ INFANTRY, CAVALRY, ARTILLERY, WILD
 | `boolean hasArmiesToPlace()` | Returns true if armiesToPlace > 0 |
 | `void decreaseArmiesToPlace(int count)` | Decreases army count, throws IllegalArgumentException if count < 1 or count > armiesToPlace |
 | `void increaseArmiesToPlace(int count)` | Increases army count, throws IllegalArgumentException if count < 1 |
+| `int getCardCount()` | Returns the number of cards in the player's hand |
 | `List<Card> getCards()` | Returns a copy of the player's current card hand |
-| `void addCard(Card card)` | Adds a card to the player's hand |
-| `void removeCards(List<Card> cards)` | Removes the given cards from the player's hand, throws IllegalArgumentException if player does not own all cards |
+| `void addCard(Card card)` | Adds a card to the player's hand, throws IllegalArgumentException if card is null |
+| `boolean hasCards(List<Card> cards)` | Returns true if the player owns all cards in the list (accounting for duplicates). Returns true for an empty list. Throws IllegalArgumentException if list is null. |
+| `void removeCards(List<Card> cards)` | Removes the given cards from the player's hand. No-op for an empty list. Throws IllegalArgumentException if player does not own all cards or list is null. |
 
 ### `GameConstants` (public)
 **Purpose:** Exposes public constants for use by GUI and other non-domain code.
