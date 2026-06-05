@@ -1459,6 +1459,16 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_ThreeOfSameType_ReturnsTrue() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        List<Card> cards = List.of(
+                new Card(CardType.INFANTRY, TerritoryName.ALASKA),
+                new Card(CardType.INFANTRY, TerritoryName.ALBERTA),
+                new Card(CardType.INFANTRY, TerritoryName.BRAZIL));
+        assertTrue(game.canTradeCards(cards));
+    }
+
+    @Test
     public void EndTurn_AfterCardAward_ResetsCaptureFlagForNextPlayer() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);

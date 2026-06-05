@@ -422,6 +422,42 @@ public final class RiskGame {
         hasFortifiedThisTurn = true;
     }
 
+    public boolean canTradeCards(List<Card> cards) {
+        if (cards == null) {
+            return false;
+        }
+        if (cards.size() != 3) {
+            return false;
+        }
+        for (Card card : cards) {
+            if (card == null) {
+                return false;
+            }
+        }
+        int wildcards = 0;
+        int infantry = 0;
+        int cavalry = 0;
+        int artillery = 0;
+        for (Card card : cards) {
+            if (card.isWild()) {
+                wildcards++;
+            } else if (card.getType() == CardType.INFANTRY) {
+                infantry++;
+            } else if (card.getType() == CardType.CAVALRY) {
+                cavalry++;
+            } else {
+                artillery++;
+            }
+        }
+        if (wildcards > 0) {
+            return true;
+        }
+        if (infantry == 3 || cavalry == 3 || artillery == 3) {
+            return true;
+        }
+        return infantry == 1 && cavalry == 1 && artillery == 1;
+    }
+
     public List<Card> getCards(PlayerColor color) {
         for (Player p : players) {
             if (p.getColor() == color) {
