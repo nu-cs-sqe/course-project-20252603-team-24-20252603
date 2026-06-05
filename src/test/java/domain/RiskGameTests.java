@@ -1479,6 +1479,15 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_FewerThanThreeCards_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        List<Card> cards = List.of(
+                new Card(CardType.INFANTRY, TerritoryName.ALASKA),
+                new Card(CardType.INFANTRY, TerritoryName.ALBERTA));
+        assertFalse(game.canTradeCards(cards));
+    }
+
+    @Test
     public void CanTradeCards_TwoSameAndOneDifferentNonWild_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = List.of(
