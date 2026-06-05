@@ -111,7 +111,7 @@
         - territory: null
     - **Expected output**: false
 
-## Method: `Card(CardType type, TerritoryName territory)` - public API case
+## Method: `Card(CardType type, TerritoryName territory)`
 
 - **TC19: Construct card from outside domain package** ( :x: )
     - **State of the system**:
@@ -121,7 +121,7 @@
         - Card is accessible outside domain
         - constructor is accessible outside domain
 
-## Method: `CardType getType()` - public API case
+## Method: `CardType getType()`
 
 - **TC20: Get card type from outside domain package** ( :x: )
     - **State of the system**:
@@ -130,7 +130,7 @@
         - CardType is accessible outside domain
         - getType() returns INFANTRY
 
-## Method: `TerritoryName getTerritory()` - public API case
+## Method: `TerritoryName getTerritory()`
 
 - **TC21: Get card territory from outside domain package** ( :x: )
     - **State of the system**:
