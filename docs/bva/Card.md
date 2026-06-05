@@ -110,3 +110,31 @@
         - card territory: ALASKA
         - territory: null
     - **Expected output**: false
+
+## Method: `Card(CardType type, TerritoryName territory)` - public API case
+
+- **TC19: Construct card from outside domain package** ( :x: )
+    - **State of the system**:
+        - code outside the domain package constructs an INFANTRY card
+        - territory: ALASKA
+    - **Expected output**:
+        - Card is accessible outside domain
+        - constructor is accessible outside domain
+
+## Method: `CardType getType()` - public API case
+
+- **TC20: Get card type from outside domain package** ( :x: )
+    - **State of the system**:
+        - code outside the domain package has an INFANTRY card
+    - **Expected output**:
+        - CardType is accessible outside domain
+        - getType() returns INFANTRY
+
+## Method: `TerritoryName getTerritory()` - public API case
+
+- **TC21: Get card territory from outside domain package** ( :x: )
+    - **State of the system**:
+        - code outside the domain package has an ALASKA card
+    - **Expected output**:
+        - getTerritory() is accessible outside domain
+        - getTerritory() returns ALASKA
