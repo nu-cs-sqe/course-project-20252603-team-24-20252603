@@ -533,6 +533,7 @@ public final class RiskGame {
 
     // helpers
     void setCapturedThisTurn(boolean value) { this.capturedThisTurn = value; }
+    void setTradeSetCount(int count) { this.tradeSetCount = count; }
     void provideWorldMap(WorldMap map) { this.worldMap = map; }
     void providePlayers(List<Player> players) { this.players = players; }
     void setPhase(GamePhase phase) { this.phase = phase; }
