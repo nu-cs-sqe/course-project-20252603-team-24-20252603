@@ -5,6 +5,7 @@ import java.util.List;
 
 class Deck {
     private static final int WILD_CARD_COUNT = 2;
+    private static final int CARDS_PER_TYPE = 14;
 
     private final List<Card> drawPile;
     private final List<Card> discardPile;
@@ -69,11 +70,22 @@ class Deck {
     }
 
     private void initializeDrawPile() {
-        for (TerritoryName territory : TerritoryName.values()) {
-            drawPile.add(new Card(CardType.INFANTRY, territory));
+        TerritoryName[] territories = TerritoryName.values();
+        for (int i = 0; i < territories.length; i++) {
+            drawPile.add(new Card(getCardType(i), territories[i]));
         }
         for (int i = 0; i < WILD_CARD_COUNT; i++) {
             drawPile.add(new Card(CardType.WILD, null));
         }
+    }
+
+    private CardType getCardType(int index) {
+        if (index < CARDS_PER_TYPE) {
+            return CardType.INFANTRY;
+        }
+        if (index < CARDS_PER_TYPE * 2) {
+            return CardType.CAVALRY;
+        }
+        return CardType.ARTILLERY;
     }
 }
