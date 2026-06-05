@@ -1420,6 +1420,12 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetCards_ColorNotInGame_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertThrows(IllegalArgumentException.class, () -> game.getCards(PlayerColor.CYAN));
+    }
+
+    @Test
     public void GetCards_PlayerHasThreeCards_ReturnsListWithAllThreeCards() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
