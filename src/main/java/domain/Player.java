@@ -4,6 +4,7 @@ class Player {
     private final PlayerColor color;
     private final String name;
     private int armiesToPlace;
+    private final java.util.List<Card> cards = new java.util.ArrayList<>();
 
     Player(PlayerColor color, String name, int armiesToPlace) {
         this.color = color;
@@ -25,6 +26,10 @@ class Player {
 
     boolean hasArmiesToPlace() {
         return armiesToPlace > 0;
+    }
+
+    int getCardCount() {
+        return cards.size();
     }
 
     void decreaseArmiesToPlace(int count) {

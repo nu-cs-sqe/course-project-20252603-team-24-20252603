@@ -108,4 +108,10 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 5);
         assertThrows(IllegalArgumentException.class, () -> player.decreaseArmiesToPlace(-1));
     }
+
+    @Test
+    public void GetCardCount_PlayerHasNoCards_ReturnsZero() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertEquals(0, player.getCardCount());
+    }
 }
