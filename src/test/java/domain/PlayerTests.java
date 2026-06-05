@@ -158,4 +158,11 @@ public class PlayerTests {
         player.addCard(brazil);
         assertEquals(List.of(alaska, alberta, brazil), player.getCards());
     }
+
+    @Test
+    public void AddCard_PlayerHasNoCards_PlayerHasOneCard() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertEquals(1, player.getCardCount());
+    }
 }
