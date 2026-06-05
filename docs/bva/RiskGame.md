@@ -1159,3 +1159,51 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED owns ALASKA
     - **Expected output**:
         - draftArmy(ALASKA) succeeds
+
+## Method: `void tradeCards(List<Card> cards)` - deck discard case
+
+- **TC140: Trade valid set moves traded cards to deck discard pile** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - cards passed in are a valid set
+        - deck discard pile has 0 cards
+    - **Expected output**:
+        - RED loses the 3 traded cards
+        - deck discard pile has 3 cards
+
+## Method: `void endTurn()` - eliminated player cases
+
+- **TC141: End turn skips next player with no territories** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - BLUE is next in turn order
+        - BLUE owns 0 territories
+        - GREEN owns at least 1 territory
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == GREEN
+
+- **TC142: End turn wraps past eliminated players to first active player** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: GREEN
+        - RED owns at least 1 territory
+        - BLUE owns 0 territories
+        - GREEN owns at least 1 territory
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
+
+- **TC143: End turn skips multiple eliminated players** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - BLUE owns 0 territories
+        - GREEN owns 0 territories
+        - ORANGE owns at least 1 territory
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == ORANGE
