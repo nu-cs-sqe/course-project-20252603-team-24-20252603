@@ -40,4 +40,13 @@ public class DeckTests {
         deck.draw();
         assertEquals(43, deck.getDrawPileSize());
     }
+
+    @Test
+    public void GetDrawPileSize_EmptyDrawPile_ReturnsZero() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        assertEquals(0, deck.getDrawPileSize());
+    }
 }
