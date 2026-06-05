@@ -84,4 +84,15 @@ public class DeckTests {
         assertNotNull(card);
         assertEquals(43, deck.getDrawPileSize());
     }
+
+    @Test
+    public void DrawLastCardFromDrawPile_ReturnsCardAndLeavesEmptyDrawPile() {
+        Deck deck = new Deck();
+        Card card = null;
+        for (int i = 0; i < 44; i++) {
+            card = deck.draw();
+        }
+        assertNotNull(card);
+        assertEquals(0, deck.getDrawPileSize());
+    }
 }
