@@ -1425,7 +1425,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_FirstCapture_AwardsOneCardOnEndTurn() {
-        // scriptedDice: 0=constructor, 5=attacker roll (6), 0=defender roll (1) → attacker wins/captures
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -2012,7 +2011,6 @@ public class RiskGameTests {
         game.setCurrentPlayer(PlayerColor.RED);
         game.setCapturedThisTurn(true);
         game.endTurn();
-        // RED got the card; now it's BLUE's turn — BLUE should not be pre-eligible for a card
         game.setPhase(GamePhase.FORTIFY);
         game.endTurn();
         assertEquals(0, game.getCards(PlayerColor.BLUE).size());
@@ -2049,7 +2047,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_CapturesFinalTerritory_TransfersDefeatedPlayerCards() {
-        // BLUE has exactly 1 territory (ALBERTA) and 2 cards; RED captures it
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         Card blueCard1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         Card blueCard2 = new Card(CardType.CAVALRY, TerritoryName.CHINA);
@@ -2090,7 +2087,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_TwoCapturesSameTurn_AwardsOneCardOnEndTurn() {
-        // 0=constructor, 5,0=first capture (attacker 6, defender 1), 5,0=second capture
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0, 5, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -2137,7 +2133,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_WithoutCapture_DoesNotMarkCardAward() {
-        // scriptedDice: 0=constructor, 0=attacker roll (1), 5=defender roll (6) → defender wins
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
