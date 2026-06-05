@@ -235,4 +235,10 @@ public class PlayerTests {
         player.addCard(alaska);
         assertFalse(player.hasCards(List.of(alaska, alaska)));
     }
+
+    @Test
+    public void HasCards_NullCardList_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.hasCards(null));
+    }
 }
