@@ -120,3 +120,15 @@
         - discard pile has any number of cards
         - cards contains null
     - **Expected output**: throw IllegalArgumentException
+
+- **TC21: Construct deck with fourteen infantry territory cards** ( :x: )
+    - **State of the system**: new deck constructed
+    - **Expected output**: deck contains 14 non-wild cards with type INFANTRY
+
+- **TC22: Construct deck with fourteen cavalry territory cards** ( :x: )
+    - **State of the system**: new deck constructed
+    - **Expected output**: deck contains 14 non-wild cards with type CAVALRY
+
+- **TC23: Construct deck with fourteen artillery territory cards** ( :x: )
+    - **State of the system**: new deck constructed
+    - **Expected output**: deck contains 14 non-wild cards with type ARTILLERY
