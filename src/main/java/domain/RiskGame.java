@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public final class RiskGame {
     private static final int MIN_PLAYERS = 3;
@@ -20,6 +21,66 @@ public final class RiskGame {
     private static final int MAX_ATTACK_DICE = 3;
     private static final int MAX_DEFEND_DICE = 2;
     private static final int DIE_SIDES = 6;
+    private static final int NORTH_AMERICA_BONUS = 5;
+    private static final int SOUTH_AMERICA_BONUS = 2;
+    private static final int EUROPE_BONUS = 5;
+    private static final int AFRICA_BONUS = 3;
+    private static final int ASIA_BONUS = 7;
+    private static final int AUSTRALIA_BONUS = 2;
+    private static final List<TerritoryName> NORTH_AMERICA = List.of(
+            TerritoryName.ALASKA,
+            TerritoryName.NORTHWEST_TERRITORY,
+            TerritoryName.GREENLAND,
+            TerritoryName.ALBERTA,
+            TerritoryName.ONTARIO,
+            TerritoryName.QUEBEC,
+            TerritoryName.WESTERN_UNITED_STATES,
+            TerritoryName.EASTERN_UNITED_STATES,
+            TerritoryName.CENTRAL_AMERICA
+    );
+    private static final List<TerritoryName> SOUTH_AMERICA = List.of(
+            TerritoryName.VENEZUELA,
+            TerritoryName.PERU,
+            TerritoryName.BRAZIL,
+            TerritoryName.ARGENTINA
+    );
+    private static final List<TerritoryName> EUROPE = List.of(
+            TerritoryName.ICELAND,
+            TerritoryName.GREAT_BRITAIN,
+            TerritoryName.WESTERN_EUROPE,
+            TerritoryName.NORTHERN_EUROPE,
+            TerritoryName.SOUTHERN_EUROPE,
+            TerritoryName.SCANDINAVIA,
+            TerritoryName.UKRAINE
+    );
+    private static final List<TerritoryName> AFRICA = List.of(
+            TerritoryName.NORTH_AFRICA,
+            TerritoryName.EGYPT,
+            TerritoryName.EAST_AFRICA,
+            TerritoryName.CONGO,
+            TerritoryName.SOUTH_AFRICA,
+            TerritoryName.MADAGASCAR
+    );
+    private static final List<TerritoryName> ASIA = List.of(
+            TerritoryName.MIDDLE_EAST,
+            TerritoryName.AFGHANISTAN,
+            TerritoryName.URAL,
+            TerritoryName.SIBERIA,
+            TerritoryName.YAKUTSK,
+            TerritoryName.KAMCHATKA,
+            TerritoryName.IRKUTSK,
+            TerritoryName.MONGOLIA,
+            TerritoryName.JAPAN,
+            TerritoryName.CHINA,
+            TerritoryName.INDIA,
+            TerritoryName.SIAM
+    );
+    private static final List<TerritoryName> AUSTRALIA = List.of(
+            TerritoryName.EASTERN_AUSTRALIA,
+            TerritoryName.WESTERN_AUSTRALIA,
+            TerritoryName.NEW_GUINEA,
+            TerritoryName.INDONESIA
+    );
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -138,7 +199,7 @@ public final class RiskGame {
             return draftArmiesRemaining;
         }
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-        return Math.max(MIN_DRAFT_ARMIES, owned / 3);
+        return Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
     }
 
     public void draftArmy(TerritoryName territory) {
@@ -147,7 +208,7 @@ public final class RiskGame {
         }
         if (draftArmiesRemaining == 0 && !isDraftInitialized) {
             int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3);
+            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
             isDraftInitialized = true;
         }
         if (!worldMap.isOwnedBy(territory, getCurrentPlayerColor())) {
@@ -219,6 +280,34 @@ public final class RiskGame {
         if (getWinner() != null) {
             phase = GamePhase.GAME_OVER;
         }
+    }
+
+    private int getContinentBonus() {
+        Set<TerritoryName> owned = worldMap.getTerritoriesOwnedBy(getCurrentPlayerColor());
+        int bonus = 0;
+        if (ownsAll(owned, NORTH_AMERICA)) {
+            bonus += NORTH_AMERICA_BONUS;
+        }
+        if (ownsAll(owned, SOUTH_AMERICA)) {
+            bonus += SOUTH_AMERICA_BONUS;
+        }
+        if (ownsAll(owned, EUROPE)) {
+            bonus += EUROPE_BONUS;
+        }
+        if (ownsAll(owned, AFRICA)) {
+            bonus += AFRICA_BONUS;
+        }
+        if (ownsAll(owned, ASIA)) {
+            bonus += ASIA_BONUS;
+        }
+        if (ownsAll(owned, AUSTRALIA)) {
+            bonus += AUSTRALIA_BONUS;
+        }
+        return bonus;
+    }
+
+    private boolean ownsAll(Set<TerritoryName> owned, List<TerritoryName> territories) {
+        return owned.containsAll(territories);
     }
 
     private int[] rollDiceDescending(int count) {
