@@ -561,7 +561,7 @@ turn-order wrap-around, fresh draft state at the start of each new turn, the `GA
 transition triggered when the final territory is captured, and the enforcement that no
 further game actions are permitted once `GAME_OVER` is set.
 
-## Method: `void endTurn()` — additional case
+## Method: `void endTurn()`
 
 - **TC71: Turn order wraps from last player back to first player** ( :x: )
     - **State of the system**:
@@ -572,7 +572,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase == ATTACK
         - current player == RED
 
-## Method: `boolean isDraftComplete()` — additional case
+## Method: `boolean isDraftComplete()`
 
 - **TC72: Draft not complete at start of a brand-new turn** ( :x: )
     - **State of the system**:
@@ -583,7 +583,7 @@ further game actions are permitted once `GAME_OVER` is set.
       this tests the case where the draft has not been initialized at all for the new turn
       (`isDraftInitialized == false`, `draftArmiesRemaining == 0`).
 
-## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` — additional case
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)`
 
 - **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :x: )
     - **State of the system**:
@@ -703,7 +703,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - numAttackers: 1
     - **Expected output**: throw IllegalStateException
 
-## Method: `int getDraftArmies()` — additional case
+## Method: `int getDraftArmies()`
 
 - **TC86: Draft armies after all draft armies are placed returns zero** ( :x: )
     - **State of the system**:
@@ -714,7 +714,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - isDraftComplete() returns true
     - **Expected output**: getDraftArmies() == 0
 
-## Method: `void endAttack()` — additional case
+## Method: `void endAttack()`
 
 - **TC87: End attack before draft is complete throws IllegalStateException** ( :x: )
     - **State of the system**:
@@ -723,7 +723,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED has not placed all draft armies
     - **Expected output**: throw IllegalStateException
 
-## Method: `void placeArmy(TerritoryName territory)` — additional case
+## Method: `void placeArmy(TerritoryName territory)`
 
 - **TC88: Last setup army transitions to ATTACK with first setup player active** ( :x: )
     - **State of the system**:
@@ -740,7 +740,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 # Continent Bonuses
 
-## Method: `int getDraftArmies()` — continent bonus cases
+## Method: `int getDraftArmies()`
 
 - **TC89: Draft armies with no complete continent uses only territory count** ( :x: )
     - **State of the system**:
@@ -851,7 +851,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - getCards(CYAN) is called
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` - card award setup
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)`
 
 - **TC102: Attack without capture does not mark card award** ( :x: )
     - **State of the system**:
@@ -896,7 +896,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - BLUE has 0 cards
         - RED receives BLUE's 2 cards
 
-## Method: `void endTurn()` - card award cases
+## Method: `void endTurn()`
 
 - **TC106: End turn after no captures awards no card** ( :x: )
     - **State of the system**:
@@ -1123,7 +1123,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - cards contains 4 cards
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `void draftArmy(TerritoryName territory)` - mandatory card trade cases
+## Method: `void draftArmy(TerritoryName territory)`
 
 - **TC136: Player with 4 cards may draft without trading** ( :x: )
     - **State of the system**:
@@ -1160,7 +1160,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - draftArmy(ALASKA) succeeds
 
-## Method: `void tradeCards(List<Card> cards)` - deck discard case
+## Method: `void tradeCards(List<Card> cards)`
 
 - **TC140: Trade valid set moves traded cards to deck discard pile** ( :x: )
     - **State of the system**:
@@ -1173,7 +1173,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED loses the 3 traded cards
         - deck discard pile has 3 cards
 
-## Method: `void endTurn()` - eliminated player cases
+## Method: `void endTurn()`
 
 - **TC141: End turn skips next player with no territories** ( :x: )
     - **State of the system**:
