@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
@@ -78,5 +79,11 @@ public class CardTests {
     public void GetTerritory_WildCard_ReturnsNull() {
         Card card = new Card(CardType.WILD, null);
         assertEquals(null, card.getTerritory());
+    }
+
+    @Test
+    public void IsWild_NonWildCard_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.isWild());
     }
 }

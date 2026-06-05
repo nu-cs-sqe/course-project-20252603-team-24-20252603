@@ -25,4 +25,8 @@ class Card {
     TerritoryName getTerritory() {
         return territory;
     }
+
+    boolean isWild() {
+        return type == CardType.WILD;
+    }
 }
