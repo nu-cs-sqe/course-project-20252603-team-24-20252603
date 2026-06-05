@@ -824,3 +824,338 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED owns no complete continent
     - **Expected output**: getDraftArmies() == 3
       (minimum 3 territory armies + 0 continent bonus)
+
+## Method: `List<RiskCard> getCards(PlayerColor color)`
+
+- **TC98: Get cards for player with no cards** ( :x: )
+    - **State of the system**:
+        - RED is in the game
+        - RED has 0 cards
+    - **Expected output**: empty list
+
+- **TC99: Get cards for player with 1 card** ( :x: )
+    - **State of the system**:
+        - RED is in the game
+        - RED has ALASKA card
+    - **Expected output**: list containing ALASKA card
+
+- **TC100: Get cards for player with more than 1 card** ( :x: )
+    - **State of the system**:
+        - RED is in the game
+        - RED has ALASKA, ALBERTA, and BRAZIL cards
+    - **Expected output**: list containing ALASKA, ALBERTA, and BRAZIL cards
+
+- **TC101: Get cards for color not in game** ( :x: )
+    - **State of the system**:
+        - CYAN is not in the game
+        - getCards(CYAN) is called
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` - card award setup
+
+- **TC102: Attack without capture does not mark card award** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has completed draft
+        - RED attacks BLUE territory
+        - BLUE keeps the territory
+        - RED has 0 cards before attack
+    - **Expected output**:
+        - RED has 0 cards before endTurn()
+
+- **TC103: First capture marks player for one card award** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has completed draft
+        - RED captures one BLUE territory
+        - RED has 0 cards before attack
+    - **Expected output**:
+        - RED has 0 cards before endTurn()
+        - RED is eligible to receive one card when the turn ends
+
+- **TC104: Second capture in same turn does not mark second card award** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has completed draft
+        - RED captures two BLUE territories in the same turn
+        - RED has 0 cards before attack
+    - **Expected output**:
+        - RED is eligible to receive exactly one card when the turn ends
+
+- **TC105: Capturing final territory from defeated player transfers defeated player's cards** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - BLUE owns exactly 1 territory
+        - BLUE has 2 cards
+        - RED captures BLUE's final territory
+    - **Expected output**:
+        - BLUE has 0 cards
+        - RED receives BLUE's 2 cards
+
+## Method: `void endTurn()` - card award cases
+
+- **TC106: End turn after no captures awards no card** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED captured 0 territories this turn
+        - RED has 0 cards before endTurn()
+    - **Expected output**:
+        - RED has 0 cards after endTurn()
+        - turn advances to next player
+
+- **TC107: End turn after one capture awards one card** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED captured 1 territory this turn
+        - RED has 0 cards before endTurn()
+    - **Expected output**:
+        - RED has 1 card after endTurn()
+        - turn advances to next player
+
+- **TC108: End turn after more than one capture awards one card** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED captured more than 1 territory this turn
+        - RED has 0 cards before endTurn()
+    - **Expected output**:
+        - RED has 1 card after endTurn()
+        - turn advances to next player
+
+- **TC109: End turn after card award resets capture tracking for next player** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED captured 1 territory this turn
+    - **Expected output**:
+        - next player is not eligible for a card award
+
+## Method: `boolean canTradeCards(List<RiskCard> cards)`
+
+- **TC110: Trade three cards of same type is valid** ( :x: )
+    - **State of the system**: cards contains 3 infantry cards
+    - **Expected output**: true
+
+- **TC111: Trade one infantry one cavalry and one artillery is valid** ( :x: )
+    - **State of the system**: cards contains 1 infantry, 1 cavalry, and 1 artillery
+    - **Expected output**: true
+
+- **TC112: Trade two same type cards and one wild card is valid** ( :x: )
+    - **State of the system**: cards contains 2 infantry cards and 1 wild card
+    - **Expected output**: true
+
+- **TC113: Trade two different type cards and one wild card is valid** ( :x: )
+    - **State of the system**: cards contains 1 infantry, 1 cavalry, and 1 wild card
+    - **Expected output**: true
+
+- **TC114: Trade one card and two wild cards is valid** ( :x: )
+    - **State of the system**: cards contains 1 infantry card and 2 wild cards
+    - **Expected output**: true
+
+- **TC115: Trade two same type cards and one different card is invalid** ( :x: )
+    - **State of the system**: cards contains 2 infantry cards and 1 cavalry card
+    - **Expected output**: false
+
+- **TC116: Trade fewer than 3 cards is invalid** ( :x: )
+    - **State of the system**: cards contains 2 cards
+    - **Expected output**: false
+
+- **TC117: Trade more than 3 cards is invalid** ( :x: )
+    - **State of the system**: cards contains 4 cards
+    - **Expected output**: false
+
+- **TC118: Trade null card list is invalid** ( :x: )
+    - **State of the system**: cards is null
+    - **Expected output**: false
+
+- **TC119: Trade list containing null card is invalid** ( :x: )
+    - **State of the system**: cards contains null
+    - **Expected output**: false
+
+## Method: `void tradeCards(List<RiskCard> cards)`
+
+- **TC120: Trade first valid set adds 4 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - no card sets have been traded in this game
+    - **Expected output**:
+        - RED receives 4 draft armies
+        - RED loses the 3 traded cards
+
+- **TC121: Trade second valid set adds 6 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 1 card set has already been traded in this game
+    - **Expected output**:
+        - RED receives 6 draft armies
+        - RED loses the 3 traded cards
+
+- **TC122: Trade third valid set adds 8 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 2 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 8 draft armies
+        - RED loses the 3 traded cards
+
+- **TC123: Trade fourth valid set adds 10 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 3 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 10 draft armies
+        - RED loses the 3 traded cards
+
+- **TC124: Trade fifth valid set adds 12 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 4 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 12 draft armies
+        - RED loses the 3 traded cards
+
+- **TC125: Trade sixth valid set adds 15 draft armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 5 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 15 draft armies
+        - RED loses the 3 traded cards
+
+- **TC126: Trade after sixth set increases by 5 armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 6 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 20 draft armies
+        - RED loses the 3 traded cards
+
+- **TC127: Trade card matching owned territory adds 2 armies to that territory** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns ALASKA
+        - RED trades a valid set containing the ALASKA card
+    - **Expected output**:
+        - ALASKA gains 2 armies
+        - RED receives the trade draft armies
+
+- **TC128: Trade card matching unowned territory adds no territory armies** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - BLUE owns ALASKA
+        - RED trades a valid set containing the ALASKA card
+    - **Expected output**:
+        - ALASKA does not gain 2 armies
+        - RED receives the trade draft armies
+
+- **TC129: Trade invalid card set throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - cards passed in are not a valid set
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC130: Trade cards not owned by current player throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - at least 1 card passed in is not owned by RED
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC131: Trade cards in wrong phase throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - cards passed in are a valid set
+    - **Expected output**: throw IllegalStateException
+
+- **TC132: Trade null card list throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - cards is null
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC133: Trade list containing null card throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - cards contains null
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC134: Trade fewer than 3 cards throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the cards passed in
+        - cards contains 2 cards
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC135: Trade more than 3 cards throws IllegalArgumentException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the cards passed in
+        - cards contains 4 cards
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `void draftArmy(TerritoryName territory)` - mandatory card trade cases
+
+- **TC136: Player with 4 cards may draft without trading** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has 4 cards
+        - RED owns ALASKA
+    - **Expected output**:
+        - draftArmy(ALASKA) succeeds
+
+- **TC137: Player with 5 cards must trade before drafting** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has 5 cards
+        - RED owns ALASKA
+    - **Expected output**: draftArmy(ALASKA) throws IllegalStateException
+
+- **TC138: Player with more than 5 cards must trade before drafting** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED has 6 cards
+        - RED owns ALASKA
+    - **Expected output**: draftArmy(ALASKA) throws IllegalStateException
+
+- **TC139: Player with 5 cards may draft after valid trade** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED starts with 5 cards
+        - RED trades a valid set
+        - RED owns ALASKA
+    - **Expected output**:
+        - draftArmy(ALASKA) succeeds
