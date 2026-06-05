@@ -3,6 +3,8 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class DeckTests {
@@ -54,5 +56,13 @@ public class DeckTests {
     public void GetDiscardPileSize_EmptyDiscardPile_ReturnsZero() {
         Deck deck = new Deck();
         assertEquals(0, deck.getDiscardPileSize());
+    }
+
+    @Test
+    public void GetDiscardPileSize_WithOneDiscardedCard_ReturnsOne() {
+        Deck deck = new Deck();
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        deck.discard(List.of(card));
+        assertEquals(1, deck.getDiscardPileSize());
     }
 }

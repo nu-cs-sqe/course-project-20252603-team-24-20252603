@@ -27,6 +27,10 @@ class Deck {
         return drawPile.remove(0);
     }
 
+    void discard(List<Card> cards) {
+        discardPile.addAll(cards);
+    }
+
     boolean containsTerritoryCard(TerritoryName territory) {
         for (Card card : drawPile) {
             if (card.matchesTerritory(territory)) {
