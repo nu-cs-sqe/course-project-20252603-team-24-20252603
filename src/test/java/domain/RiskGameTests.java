@@ -1459,6 +1459,47 @@ public class RiskGameTests {
     }
 
     @Test
+    public void Attack_CapturesFinalTerritory_TransfersDefeatedPlayerCards() {
+        // BLUE has exactly 1 territory (ALBERTA) and 2 cards; RED captures it
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        Card blueCard1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card blueCard2 = new Card(CardType.CAVALRY, TerritoryName.CHINA);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        Player blue = new Player(PlayerColor.BLUE, "Justin", 35);
+        blue.addCard(blueCard1);
+        blue.addCard(blueCard2);
+        Player green = new Player(PlayerColor.GREEN, "Prashant", 35);
+        game.providePlayers(List.of(red, blue, green));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED)).andStubReturn(false);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.BLUE)).andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(2);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA)).andStubReturn(1);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(10);
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        mockMap.assignTerritory(TerritoryName.ALBERTA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        mockMap.removeArmies(TerritoryName.ALASKA, 1);
+        EasyMock.expectLastCall();
+        mockMap.addArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertEquals(0, game.getCards(PlayerColor.BLUE).size());
+        assertEquals(2, game.getCards(PlayerColor.RED).size());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void Attack_TwoCapturesSameTurn_AwardsOneCardOnEndTurn() {
         // 0=constructor, 5,0=first capture (attacker 6, defender 1), 5,0=second capture
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0, 5, 0));
