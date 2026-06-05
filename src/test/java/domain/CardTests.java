@@ -19,4 +19,11 @@ public class CardTests {
         assertEquals(CardType.CAVALRY, card.getType());
         assertEquals(TerritoryName.BRAZIL, card.getTerritory());
     }
+
+    @Test
+    public void ConstructArtilleryCardWithLastTerritory_ReturnsArtilleryAndIndonesia() {
+        Card card = new Card(CardType.ARTILLERY, TerritoryName.INDONESIA);
+        assertEquals(CardType.ARTILLERY, card.getType());
+        assertEquals(TerritoryName.INDONESIA, card.getTerritory());
+    }
 }
