@@ -55,4 +55,10 @@ public class CardTests {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertEquals(CardType.INFANTRY, card.getType());
     }
+
+    @Test
+    public void GetType_WildCard_ReturnsWild() {
+        Card card = new Card(CardType.WILD, null);
+        assertEquals(CardType.WILD, card.getType());
+    }
 }
