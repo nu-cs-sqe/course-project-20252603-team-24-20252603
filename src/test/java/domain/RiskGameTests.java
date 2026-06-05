@@ -1885,6 +1885,24 @@ public class RiskGameTests {
     }
 
     @Test
+    public void DraftArmy_PlayerHasSixCards_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        red.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        red.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        red.addCard(new Card(CardType.INFANTRY, TerritoryName.CHINA));
+        red.addCard(new Card(CardType.CAVALRY, TerritoryName.INDIA));
+        red.addCard(new Card(CardType.ARTILLERY, TerritoryName.JAPAN));
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalStateException.class, () -> game.draftArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
     public void CanTradeCards_ListContainingNull_ReturnsFalse() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = new java.util.ArrayList<>();
