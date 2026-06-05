@@ -1459,6 +1459,19 @@ public class RiskGameTests {
     }
 
     @Test
+    public void EndTurn_AfterCardAward_ResetsCaptureFlagForNextPlayer() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setCapturedThisTurn(true);
+        game.endTurn();
+        // RED got the card; now it's BLUE's turn — BLUE should not be pre-eligible for a card
+        game.setPhase(GamePhase.FORTIFY);
+        game.endTurn();
+        assertEquals(0, game.getCards(PlayerColor.BLUE).size());
+    }
+
+    @Test
     public void EndTurn_AfterMoreThanOneCapture_AwardsOneCard() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);
