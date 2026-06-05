@@ -40,6 +40,19 @@ class Player {
         return Collections.unmodifiableList(cards);
     }
 
+    boolean hasCards(List<Card> requested) {
+        if (requested == null) {
+            throw new IllegalArgumentException("cards cannot be null");
+        }
+        List<Card> remaining = new ArrayList<>(cards);
+        for (Card card : requested) {
+            if (!remaining.remove(card)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     void addCard(Card card) {
         if (card == null) {
             throw new IllegalArgumentException("card cannot be null");

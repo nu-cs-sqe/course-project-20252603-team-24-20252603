@@ -189,4 +189,11 @@ public class PlayerTests {
         Player player = new Player(PlayerColor.RED, "Justin", 35);
         assertThrows(IllegalArgumentException.class, () -> player.addCard(null));
     }
+
+    @Test
+    public void HasCards_EmptyRequestedList_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertTrue(player.hasCards(List.of()));
+    }
 }
