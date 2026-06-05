@@ -25,6 +25,9 @@ class Deck {
 
     Card draw() {
         if (drawPile.isEmpty()) {
+            if (discardPile.isEmpty()) {
+                throw new IllegalStateException("no cards available to draw");
+            }
             drawPile.addAll(discardPile);
             discardPile.clear();
         }

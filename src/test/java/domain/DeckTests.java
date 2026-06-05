@@ -2,6 +2,7 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -124,5 +125,14 @@ public class DeckTests {
         assertNotNull(drawn);
         assertEquals(2, deck.getDrawPileSize());
         assertEquals(0, deck.getDiscardPileSize());
+    }
+
+    @Test
+    public void DrawFromEmptyDrawPileWithEmptyDiscardPile_ThrowsIllegalStateException() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        assertThrows(IllegalStateException.class, deck::draw);
     }
 }
