@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -174,5 +175,11 @@ public class DeckTests {
     public void DiscardNullCardsList_ThrowsIllegalArgumentException() {
         Deck deck = new Deck();
         assertThrows(IllegalArgumentException.class, () -> deck.discard(null));
+    }
+
+    @Test
+    public void DiscardListContainingNullCard_ThrowsIllegalArgumentException() {
+        Deck deck = new Deck();
+        assertThrows(IllegalArgumentException.class, () -> deck.discard(Collections.singletonList(null)));
     }
 }

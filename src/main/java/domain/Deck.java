@@ -41,6 +41,11 @@ class Deck {
         if (cards.isEmpty()) {
             throw new IllegalArgumentException("cards cannot be empty");
         }
+        for (Card card : cards) {
+            if (card == null) {
+                throw new IllegalArgumentException("cards cannot contain null");
+            }
+        }
         discardPile.addAll(cards);
     }
 
