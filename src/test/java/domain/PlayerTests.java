@@ -183,4 +183,10 @@ public class PlayerTests {
         player.addCard(new Card(CardType.INFANTRY, TerritoryName.CHINA));
         assertEquals(4, player.getCardCount());
     }
+
+    @Test
+    public void AddCard_NullCard_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.addCard(null));
+    }
 }
