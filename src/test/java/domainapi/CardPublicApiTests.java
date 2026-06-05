@@ -22,4 +22,10 @@ public class CardPublicApiTests {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertEquals(CardType.INFANTRY, card.getType());
     }
+
+    @Test
+    public void GetCardTerritoryFromOutsideDomainPackage_ReturnsAlaska() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(TerritoryName.ALASKA, card.getTerritory());
+    }
 }

@@ -22,7 +22,7 @@ public class Card {
         return type;
     }
 
-    TerritoryName getTerritory() {
+    public TerritoryName getTerritory() {
         return territory;
     }
 
