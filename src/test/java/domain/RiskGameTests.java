@@ -1479,6 +1479,16 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_TwoSameAndOneDifferentNonWild_ReturnsFalse() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        List<Card> cards = List.of(
+                new Card(CardType.INFANTRY, TerritoryName.ALASKA),
+                new Card(CardType.INFANTRY, TerritoryName.ALBERTA),
+                new Card(CardType.CAVALRY, TerritoryName.BRAZIL));
+        assertFalse(game.canTradeCards(cards));
+    }
+
+    @Test
     public void CanTradeCards_OneCardAndTwoWilds_ReturnsTrue() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = List.of(
