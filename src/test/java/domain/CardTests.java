@@ -67,4 +67,10 @@ public class CardTests {
         Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
         assertEquals(TerritoryName.ALASKA, card.getTerritory());
     }
+
+    @Test
+    public void GetTerritory_LastTerritoryCard_ReturnsIndonesia() {
+        Card card = new Card(CardType.ARTILLERY, TerritoryName.INDONESIA);
+        assertEquals(TerritoryName.INDONESIA, card.getTerritory());
+    }
 }
