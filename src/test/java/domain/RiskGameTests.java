@@ -1292,6 +1292,23 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
+        // TC_new: ALASKA (RED, 4) attacks ALBERTA (BLUE, 1) with 1 die, attacker wins.
+        // captureTerritory auto-moves 1 (numAttackers): ALASKA=3, ALBERTA=1.
+        // moveArmiesAfterCapture(ALASKA, ALBERTA, 2) moves 2 more: ALASKA=1, ALBERTA=3.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+        assertEquals(3, game.getArmies(TerritoryName.ALBERTA));
+    }
+
+    @Test
     public void Fortify_FirstFortifySucceeds_ArmiesMove() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
