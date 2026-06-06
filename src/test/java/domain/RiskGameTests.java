@@ -1201,7 +1201,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_WrongPhase_ThrowsIllegalStateException() {
-        // TC118: method called during FORTIFY phase instead of ATTACK.
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);
         game.setCurrentPlayer(PlayerColor.RED);
@@ -1211,7 +1210,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_NoPriorCapture_ThrowsIllegalStateException() {
-        // TC119: called during ATTACK phase but no capture has occurred this turn.
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
@@ -1222,8 +1220,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_ZeroArmies_ThrowsIllegalArgumentException() {
-        // TC120: armies=0, below minimum of 1.
-        // After capture no auto-move: ALASKA still has 4 armies.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1237,8 +1233,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_AllArmiesNoneLeftBehind_ThrowsIllegalArgumentException() {
-        // TC121: armies=4=from.armies, would leave 0 behind.
-        // After capture no auto-move: ALASKA still has 4 armies.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1248,6 +1242,19 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
         assertThrows(IllegalArgumentException.class, () ->
                 game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 4));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_AboveMaximum_ThrowsIllegalArgumentException() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 6);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertThrows(IllegalArgumentException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 6));
     }
 
     @Test
@@ -1284,8 +1291,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_SourceHasTwoArmies_MovesMinimumOne_Succeeds() {
-        // TC144: ALASKA=2 -> min=min(3,1)=1; armies=1 -> ALASKA=1, ALBERTA=1, pending cleared.
-        // ALASKA=2 -> numAttackers=1, ALBERTA=1 -> numDefenders=1. att=[6] def=[1]: capture.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 2);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1302,9 +1307,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_CalledTwice_ThrowsIllegalStateException() {
-        // TC152: first call succeeds; second call throws because pending is cleared after first.
-        // ALASKA=4 -> capture ALBERTA -> first moveArmiesAfterCapture(3) succeeds.
-        // Second call with armies=1 must throw IllegalStateException (pending cleared).
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1319,7 +1321,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_BelowMinimum_ThrowsIllegalArgumentException() {
-        // TC147: ALASKA=4 -> min=min(3,3)=3; armies=2 < 3 -> throws.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1426,8 +1427,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_AfterDraftComplete_Succeeds() {
-        // ALASKA=3 (stub) -> numAttackers=2; ALBERTA=1 -> 0 after capture.
-        // Att=[6,5] def=[1]: 6>1 -> ALBERTA captured. Verify no exception thrown.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
