@@ -1263,6 +1263,22 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_SourceHasThreeArmies_MovesMinimumTwo_Succeeds() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 3);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+        assertEquals(2, game.getArmies(TerritoryName.ALBERTA));
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_SourceHasTwoArmies_MovesMinimumOne_Succeeds() {
         // TC144: ALASKA=2 -> min=min(3,1)=1; armies=1 -> ALASKA=1, ALBERTA=1, pending cleared.
         // ALASKA=2 -> numAttackers=1, ALBERTA=1 -> numDefenders=1. att=[6] def=[1]: capture.
@@ -2248,9 +2264,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_TwoCapturesSameTurn_AwardsOneCardOnEndTurn() {
-        // Attack 1: ALASKA=3 -> numAttackers=2 vs ALBERTA=1 -> att=[6,5] def=[1] -> capture.
-        // Attack 2: ALASKA=3 -> numAttackers=2 vs NW=1 -> att=[6,5] def=[1] -> capture.
-        // Only one card awarded regardless of capture count.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0, 5, 4, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -2292,8 +2305,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_WithoutCapture_DoesNotMarkCardAward() {
-        // ALASKA=2 -> numAttackers=1 vs ALBERTA=1 -> numDefenders=1. Att=1 def=6: attacker loses.
-        // ALASKA modelled as dropping to 1 -> loop exits. No capture, no card awarded.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
