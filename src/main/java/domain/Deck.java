@@ -1,7 +1,9 @@
 package domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 class Deck {
     private static final int WILD_CARD_COUNT = 2;
@@ -9,8 +11,14 @@ class Deck {
 
     private final List<Card> drawPile;
     private final List<Card> discardPile;
+    private final Random random;
 
     Deck() {
+        this(new Random());
+    }
+
+    Deck(Random random) {
+        this.random = random;
         this.drawPile = new ArrayList<>();
         this.discardPile = new ArrayList<>();
         initializeDrawPile();
@@ -31,6 +39,7 @@ class Deck {
             }
             drawPile.addAll(discardPile);
             discardPile.clear();
+            Collections.shuffle(drawPile, random);
         }
         return drawPile.remove(0);
     }
@@ -77,6 +86,7 @@ class Deck {
         for (int i = 0; i < WILD_CARD_COUNT; i++) {
             drawPile.add(new Card(CardType.WILD, null));
         }
+        Collections.shuffle(drawPile, random);
     }
 
     private CardType getCardType(int index) {

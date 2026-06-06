@@ -93,7 +93,7 @@ public final class RiskGame {
     private int tradeSetCount;
     private boolean hasFortifiedThisTurn;
     private boolean capturedThisTurn;
-    private final Deck deck = new Deck();
+    private Deck deck;
     private Random random;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
@@ -105,6 +105,7 @@ public final class RiskGame {
         this.worldMap = new WorldMap();
         this.players = new ArrayList<>();
         this.random = random;
+        this.deck = new Deck();
         initializePlayers(playerInfo);
         this.currentPlayerIndex = random.nextInt(players.size());
         this.firstSetupPlayerIndex = currentPlayerIndex;

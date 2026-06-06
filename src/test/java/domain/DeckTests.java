@@ -1,12 +1,14 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +33,20 @@ public class DeckTests {
     public void ConstructDeckWithTwoWildCards_ReturnsTwoWildCards() {
         Deck deck = new Deck();
         assertEquals(2, deck.countWildCards());
+    }
+
+    @Test
+    public void Draw_FirstTenCardsFromShuffledDeck_NotAllInfantry() {
+        Deck deck = new Deck(new Random(0L));
+        boolean foundNonInfantry = false;
+        for (int i = 0; i < 10; i++) {
+            Card card = deck.draw();
+            if (!card.isWild() && card.getType() != CardType.INFANTRY) {
+                foundNonInfantry = true;
+                break;
+            }
+        }
+        assertTrue(foundNonInfantry);
     }
 
     @Test
