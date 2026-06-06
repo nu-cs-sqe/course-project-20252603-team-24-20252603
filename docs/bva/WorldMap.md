@@ -231,7 +231,7 @@
         - count: 1
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)` — additional cases
+## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)`
 
 - **TC38: Default map has adjacent territories** ( :white_check_mark: )
     - **State of the system**:
@@ -249,28 +249,51 @@
 
 ## Method: `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)`
 
-Returns true if `to` is reachable from `from` by traversing only territories owned by `owner` (BFS). The `to` territory itself need not be owned; only intermediate nodes must be.
-
-- **TC40: Adjacent territories both owned by same player** ( :white_check_mark: )
+- **TC40: Adjacent territories owned by same player are connected** ( :white_check_mark: )
     - **State of the system**:
-        - WorldMap constructed with default constructor (real map)
-        - ALASKA owned by RED, ALBERTA owned by RED
-        - from: ALASKA, to: ALBERTA, owner: RED
-    - **Expected output**: true
-
-- **TC41: Non-adjacent territories connected through owned chain** ( :white_check_mark: )
-    - **State of the system**:
-        - WorldMap constructed with default constructor (real map)
-        - ALASKA owned by RED, NORTHWEST_TERRITORY owned by RED, ONTARIO owned by RED
-        - from: ALASKA, to: ONTARIO (not direct neighbors; path: ALASKA→NORTHWEST_TERRITORY→ONTARIO)
+        - ALASKA owned by RED
+        - ALBERTA owned by RED
+        - from: ALASKA
+        - to: ALBERTA
         - owner: RED
     - **Expected output**: true
 
-- **TC42: Non-adjacent territories with broken ownership chain** ( :white_check_mark: )
+- **TC41: Non-adjacent territories connected through owned chain are connected** ( :white_check_mark: )
     - **State of the system**:
-        - WorldMap constructed with default constructor (real map)
-        - ALASKA owned by RED, NORTHWEST_TERRITORY not owned by RED, ONTARIO owned by RED
-        - from: ALASKA, to: ONTARIO
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: true
+
+- **TC42: Broken owned chain is not connected** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by BLUE
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
         - owner: RED
     - **Expected output**: false
-    - **Expected output**: true
+
+- **TC43: Destination not owned by player is not connected** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by BLUE
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
+
+- **TC44: Source not owned by player is not connected** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA owned by BLUE
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
