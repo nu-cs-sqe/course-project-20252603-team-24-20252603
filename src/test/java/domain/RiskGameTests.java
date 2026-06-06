@@ -1263,6 +1263,23 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_CalledTwice_ThrowsIllegalStateException() {
+        // TC152: first call succeeds; second call throws because pending is cleared after first.
+        // ALASKA=4 -> capture ALBERTA -> first moveArmiesAfterCapture(3) succeeds.
+        // Second call with armies=1 must throw IllegalStateException (pending cleared).
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3);
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_BelowMinimum_ThrowsIllegalArgumentException() {
         // TC147: ALASKA=4 -> min=min(3,3)=3; armies=2 < 3 -> throws.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));

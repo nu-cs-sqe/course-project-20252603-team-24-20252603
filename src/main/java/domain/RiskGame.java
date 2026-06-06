@@ -392,6 +392,8 @@ public final class RiskGame {
         }
         worldMap.removeArmies(from, armies);
         worldMap.addArmies(to, armies);
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
     }
 
     public PlayerColor getWinner() {
