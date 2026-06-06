@@ -233,7 +233,7 @@ public final class GameBoardController {
             selectedFortifyFrom = territory;
             selectedFortifyTo = null;
             statusLabel.setText("Selected " + formatName(territory.name())
-                    + " as fortify source.");
+                    + " as the territory to move from.");
             return;
         }
         if (territory == selectedFortifyFrom) {
@@ -286,7 +286,7 @@ public final class GameBoardController {
     @FXML
     private void handleFortify() {
         if (selectedFortifyFrom == null || selectedFortifyTo == null) {
-            statusLabel.setText("Select a source and destination before fortifying.");
+            statusLabel.setText("Select territories to move from and to before fortifying.");
             return;
         }
         try {
@@ -416,7 +416,7 @@ public final class GameBoardController {
                 if (selectedAttackFrom == null) {
                     statusLabel.setText("Select one of your territories as the starting territory.");
                 } else {
-                    statusLabel.setText("Select an enemy target or choose a different source.");
+                    statusLabel.setText("Select an enemy target or choose a different starting territory.");
                 }
             } else if (mustTradeBeforeDraft()) {
                 statusLabel.setText("Select a valid card set to trade before drafting.");
