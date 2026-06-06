@@ -233,16 +233,44 @@
 
 ## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)` — additional cases
 
-- **TC38: Default map has adjacent territories** ( :x: )
+- **TC38: Default map has adjacent territories** ( :white_check_mark: )
     - **State of the system**:
         - WorldMap constructed with default constructor (real map)
         - first: ALASKA
         - second: ALBERTA
     - **Expected output**: true
 
-- **TC39: Default map adjacency is bidirectional** ( :x: )
+- **TC39: Default map adjacency is bidirectional** ( :white_check_mark: )
     - **State of the system**:
         - WorldMap constructed with default constructor (real map)
         - first: ALBERTA
         - second: ALASKA
+    - **Expected output**: true
+
+## Method: `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)`
+
+Returns true if `to` is reachable from `from` by traversing only territories owned by `owner` (BFS). The `to` territory itself need not be owned; only intermediate nodes must be.
+
+- **TC40: Adjacent territories both owned by same player** ( :white_check_mark: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - ALASKA owned by RED, ALBERTA owned by RED
+        - from: ALASKA, to: ALBERTA, owner: RED
+    - **Expected output**: true
+
+- **TC41: Non-adjacent territories connected through owned chain** ( :white_check_mark: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - ALASKA owned by RED, NORTHWEST_TERRITORY owned by RED, ONTARIO owned by RED
+        - from: ALASKA, to: ONTARIO (not direct neighbors; path: ALASKA→NORTHWEST_TERRITORY→ONTARIO)
+        - owner: RED
+    - **Expected output**: true
+
+- **TC42: Non-adjacent territories with broken ownership chain** ( :white_check_mark: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - ALASKA owned by RED, NORTHWEST_TERRITORY not owned by RED, ONTARIO owned by RED
+        - from: ALASKA, to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
     - **Expected output**: true
