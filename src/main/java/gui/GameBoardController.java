@@ -1,18 +1,28 @@
 package gui;
 
+import domain.Card;
+import domain.CardType;
 import domain.GamePhase;
 import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
-
-import java.util.Map;
 
 /**
  * FXML controller for the interactive Risk board (scramble and setup phases).
@@ -37,9 +47,54 @@ public final class GameBoardController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private Spinner<Integer> captureArmiesSpinner;
+
+    @FXML
+    private Button moveAfterCaptureButton;
+
+    @FXML
+    private Spinner<Integer> fortifyArmiesSpinner;
+
+    @FXML
+    private Button endAttackButton;
+
+    @FXML
+    private Button fortifyButton;
+
+    @FXML
+    private Button endTurnButton;
+
+    @FXML
+    private ListView<String> cardListView;
+
+    @FXML
+    private Button tradeCardsButton;
+
     private RiskGame game;
     private WebEngine engine;
     private JavaBridge javaBridge;
+    private TerritoryName selectedAttackFrom;
+    private TerritoryName selectedFortifyFrom;
+    private TerritoryName selectedFortifyTo;
+    private final List<Card> visibleCards = new ArrayList<>();
+    private String actionStatusMessage;
+
+    @FXML
+    private void initialize() {
+        captureArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
+        fortifyArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
+        cardListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        cardListView.getSelectionModel().getSelectedIndices().addListener(
+                (ListChangeListener<Integer>) change -> {
+                    if (game != null) {
+                        updateActionControls(game.getPhase());
+                    }
+                });
+        updateActionControls(GamePhase.SCRAMBLE);
+    }
 
     void initGame(RiskGame game) {
         this.game = game;
@@ -51,7 +106,7 @@ public final class GameBoardController {
         engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
                 JSObject window = (JSObject) engine.executeScript("window");
-                javaBridge = new JavaBridge();
+                javaBridge = new JavaBridge(this);
                 window.setMember("javaBridge", javaBridge);
                 applyMapStyling();
                 updateMapColors();
@@ -88,10 +143,20 @@ public final class GameBoardController {
         engine.executeScript(js);
     }
 
-    public final class JavaBridge {
-        public void onTerritoryClicked(String svgId) {
-            Platform.runLater(() -> handleTerritoryClick(svgId));
+    public static final class JavaBridge {
+        private final WeakReference<GameBoardController> controller;
+
+        JavaBridge(GameBoardController controller) {
+            this.controller = new WeakReference<>(controller);
         }
+
+        public void onTerritoryClicked(String svgId) {
+            GameBoardController currentController = controller.get();
+            if (currentController != null) {
+                Platform.runLater(() -> currentController.handleTerritoryClick(svgId));
+            }
+        }
+
     }
 
     private void handleTerritoryClick(String svgId) {
@@ -102,14 +167,197 @@ public final class GameBoardController {
 
         GamePhase phase = game.getPhase();
         try {
+            actionStatusMessage = null;
             if (phase == GamePhase.SCRAMBLE) {
                 game.claimTerritory(territory);
             } else if (phase == GamePhase.SETUP) {
                 game.placeArmy(territory);
+            } else if (phase == GamePhase.ATTACK && game.isCaptureMovementPending()) {
+                actionStatusMessage = "Move armies into the captured territory.";
+            } else if (phase == GamePhase.ATTACK && mustTradeBeforeDraft()) {
+                actionStatusMessage = "Select a valid card set to trade before drafting.";
+            } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
+                game.draftArmy(territory);
+            } else if (phase == GamePhase.ATTACK) {
+                handleAttackClick(territory);
+            } else if (phase == GamePhase.FORTIFY) {
+                handleFortifyClick(territory);
             }
             updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+            updateGameOverOverlay();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    private void handleAttackClick(TerritoryName territory) {
+        PlayerColor current = game.getCurrentPlayerColor();
+        if (game.isOwnedBy(territory, current)) {
+            selectedAttackFrom = territory;
+            statusLabel.setText("Selected " + formatName(territory.name())
+                    + " to attack from.");
+            return;
+        }
+        if (selectedAttackFrom == null) {
+            statusLabel.setText("Select one of your territories before choosing a target.");
+            return;
+        }
+        TerritoryName from = selectedAttackFrom;
+        int fromBefore = game.getArmies(from);
+        int toBefore = game.getArmies(territory);
+        PlayerColor eliminated = null;
+        PlayerColor defender = getOwner(territory);
+        int defenderTerritoriesBefore = defender == null ? 0 : game.getTerritoryCount(defender);
+        game.attack(from, territory);
+        int fromAfter = game.getArmies(from);
+        int toAfter = game.getArmies(territory);
+        boolean captured = game.isOwnedBy(territory, current);
+        if (defender != null
+                && defender != current
+                && defenderTerritoriesBefore > 0
+                && game.getTerritoryCount(defender) == 0) {
+            eliminated = defender;
+        }
+        selectedAttackFrom = null;
+        if (captured) {
+            actionStatusMessage = "Captured " + formatName(territory.name())
+                    + " from " + formatName(from.name()) + ". Move "
+                    + game.getMinimumCaptureMove() + "-"
+                    + game.getMaximumCaptureMove() + " armies.";
+            if (eliminated != null) {
+                actionStatusMessage += " " + eliminated.name() + " was eliminated.";
+            }
+        } else {
+            actionStatusMessage = "Attack resolved: " + formatName(from.name())
+                    + " " + fromBefore + "->" + fromAfter
+                    + ", " + formatName(territory.name()) + " "
+                    + toBefore + "->" + toAfter + ".";
+        }
+    }
+
+    private void handleFortifyClick(TerritoryName territory) {
+        PlayerColor current = game.getCurrentPlayerColor();
+        if (!game.isOwnedBy(territory, current)) {
+            statusLabel.setText("Select territories owned by the current player.");
+            return;
+        }
+        if (selectedFortifyFrom == null || selectedFortifyTo != null) {
+            selectedFortifyFrom = territory;
+            selectedFortifyTo = null;
+            updateFortifySpinner();
+            statusLabel.setText("Selected " + formatName(territory.name())
+                    + " as the territory to move from.");
+            return;
+        }
+        if (territory == selectedFortifyFrom) {
+            actionStatusMessage = "Select a different territory to fortify to.";
+            return;
+        }
+        selectedFortifyTo = territory;
+        updateFortifySpinner();
+        statusLabel.setText("Selected " + formatName(territory.name())
+                + " as fortify destination.");
+    }
+
+    @FXML
+    private void handleEndAttack() {
+        try {
+            if (game.isCaptureMovementPending()) {
+                statusLabel.setText("Move armies into the captured territory first.");
+                return;
+            }
+            clearAttackSelection();
+            game.endAttack();
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleMoveAfterCapture() {
+        try {
+            if (!game.isCaptureMovementPending()) {
+                statusLabel.setText("No captured territory needs armies.");
+                return;
+            }
+            TerritoryName from = game.getPendingCaptureFrom();
+            TerritoryName to = game.getPendingCaptureTo();
+            int armies = captureArmiesSpinner.getValue();
+            game.moveArmiesAfterCapture(from, to, armies);
+            actionStatusMessage = "Moved " + armies + " armies from "
+                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
+            updateMapColors();
+            updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleFortify() {
+        if (selectedFortifyFrom == null || selectedFortifyTo == null) {
+            statusLabel.setText("Select territories to move from and to before fortifying.");
+            return;
+        }
+        try {
+            int armies = fortifyArmiesSpinner.getValue();
+            TerritoryName from = selectedFortifyFrom;
+            TerritoryName to = selectedFortifyTo;
+            game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
+            clearFortifySelection();
+            actionStatusMessage = "Fortified " + armies + " from "
+                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleTradeCards() {
+        List<Card> selectedCards = getSelectedCards();
+        try {
+            int beforeDraftArmies = game.getDraftArmies();
+            List<String> territoryBonuses = new ArrayList<>();
+            for (Card card : selectedCards) {
+                if (!card.isWild()
+                        && game.isOwnedBy(card.getTerritory(), game.getCurrentPlayerColor())) {
+                    territoryBonuses.add(formatName(card.getTerritory().name()));
+                }
+            }
+            game.tradeCards(selectedCards);
+            int gainedArmies = game.getDraftArmies() - beforeDraftArmies;
+            cardListView.getSelectionModel().clearSelection();
+            actionStatusMessage = "Traded cards for " + gainedArmies + " draft armies.";
+            if (!territoryBonuses.isEmpty()) {
+                actionStatusMessage += " +2 on " + String.join(", ", territoryBonuses) + ".";
+            }
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleEndTurn() {
+        try {
+            clearAttackSelection();
+            clearFortifySelection();
+            game.endTurn();
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
         }
     }
@@ -131,13 +379,42 @@ public final class GameBoardController {
             }
 
             int armies = game.getArmies(territory);
+            boolean selected = territory == selectedAttackFrom
+                    || territory == selectedFortifyFrom
+                    || territory == selectedFortifyTo;
+            String strokeColor = selected ? "#f8e16c" : "#555";
+            String strokeWidth = selected ? "3" : "1.5";
+            String armyDisplay = armies > 0 ? "block" : "none";
             String script = "(function() {"
                     + "  var el = document.getElementById('" + svgId + "');"
                     + "  if (el) {"
                     + "    el.style.fill = '" + fillColor + "';"
+                    + "    el.style.stroke = '" + strokeColor + "';"
+                    + "    el.style.strokeWidth = '" + strokeWidth + "';"
                     + "    el.dataset.owner = '" + ownerData + "';"
                     + "    el.dataset.armies = '" + armies + "';"
-                    + "    el.title = '" + territory.name() + " (" + armies + ")';"
+                    + "    el.title = '" + formatName(territory.name()) + " (" + armies + ")';"
+                    + "    var labelId = 'army-label-" + svgId + "';"
+                    + "    var label = document.getElementById(labelId);"
+                    + "    if (!label) {"
+                    + "      label = document.createElementNS('http://www.w3.org/2000/svg', 'text');"
+                    + "      label.id = labelId;"
+                    + "      label.style.pointerEvents = 'none';"
+                    + "      label.style.fontSize = '12px';"
+                    + "      label.style.fontWeight = '700';"
+                    + "      label.style.fill = '#111827';"
+                    + "      label.style.stroke = '#f8fafc';"
+                    + "      label.style.strokeWidth = '0.8px';"
+                    + "      label.style.paintOrder = 'stroke';"
+                    + "      label.setAttribute('text-anchor', 'middle');"
+                    + "      label.setAttribute('dominant-baseline', 'central');"
+                    + "      el.parentNode.appendChild(label);"
+                    + "    }"
+                    + "    var box = el.getBBox();"
+                    + "    label.setAttribute('x', box.x + box.width / 2);"
+                    + "    label.setAttribute('y', box.y + box.height / 2);"
+                    + "    label.textContent = '" + armies + "';"
+                    + "    label.style.display = '" + armyDisplay + "';"
                     + "  }"
                     + "})();";
             engine.executeScript(script);
@@ -146,6 +423,8 @@ public final class GameBoardController {
 
     private void updateStatusBar() {
         GamePhase phase = game.getPhase();
+        syncSelectionsWithPhase(phase);
+        updateCardHand();
         phaseLabel.setText(phase.name());
         playerLabel.setText(game.getCurrentPlayerName()
                 + " (" + game.getCurrentPlayerColor().name() + ")");
@@ -157,14 +436,200 @@ public final class GameBoardController {
             armiesLabel.setText("Armies: " + game.getArmiesToPlace());
             statusLabel.setText("Click one of your territories to place an army.");
         } else if (phase == GamePhase.ATTACK) {
+            armiesLabel.setText("Draft: " + game.getDraftArmies());
+            if (game.isCaptureMovementPending()) {
+                statusLabel.setText("Move " + game.getMinimumCaptureMove() + "-"
+                        + game.getMaximumCaptureMove()
+                        + " armies into " + formatName(game.getPendingCaptureTo().name()) + ".");
+            } else if (game.isDraftComplete()) {
+                if (selectedAttackFrom == null) {
+                    statusLabel.setText("Select one of your territories as the starting territory.");
+                } else {
+                    statusLabel.setText("Select an enemy target or choose a different starting territory.");
+                }
+            } else if (mustTradeBeforeDraft()) {
+                statusLabel.setText("Select a valid card set to trade before drafting.");
+            } else {
+                statusLabel.setText("Click your territories to place draft armies.");
+            }
+        } else if (phase == GamePhase.FORTIFY) {
             armiesLabel.setText("");
-            statusLabel.setText("Attack phase — coming soon.");
+            if (selectedFortifyFrom == null) {
+                statusLabel.setText("Select one of your territories to fortify from.");
+            } else if (selectedFortifyTo == null) {
+                statusLabel.setText("Select one of your territories to fortify to.");
+            } else {
+                statusLabel.setText("Choose army count, then fortify or end turn.");
+            }
         } else if (phase == GamePhase.GAME_OVER) {
-            statusLabel.setText("Game over! " + game.getCurrentPlayerName() + " wins!");
+            armiesLabel.setText("");
+            PlayerColor winner = game.getWinner();
+            String winnerText = winner == null ? "Winner pending" : winner.name() + " wins";
+            statusLabel.setText("Game over! " + winnerText + ".");
         }
 
+        if (actionStatusMessage != null && phase != GamePhase.GAME_OVER) {
+            statusLabel.setText(actionStatusMessage);
+        }
+        updateActionControls(phase);
         String playerColor = PLAYER_COLORS.get(game.getCurrentPlayerColor());
         playerLabel.setStyle("-fx-text-fill: " + playerColor + "; -fx-font-weight: bold;");
+        updateGameOverOverlay();
+    }
+
+    private void updateGameOverOverlay() {
+        if (engine == null || game == null) {
+            return;
+        }
+        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner() == null) {
+            engine.executeScript("var overlay = document.getElementById('game-over-overlay');"
+                    + "if (overlay) { overlay.remove(); }");
+            return;
+        }
+        PlayerColor winner = game.getWinner();
+        String winnerName = game.getPlayerName(winner);
+        String winnerColor = PLAYER_COLORS.get(winner);
+        String text = escapeJs(winnerName.toUpperCase() + " WINS!");
+        String script = "var overlay = document.getElementById('game-over-overlay');"
+                + "if (!overlay) {"
+                + "  overlay = document.createElement('div');"
+                + "  overlay.id = 'game-over-overlay';"
+                + "  document.body.appendChild(overlay);"
+                + "}"
+                + "overlay.textContent = '" + text + "';"
+                + "overlay.style.position = 'fixed';"
+                + "overlay.style.inset = '0';"
+                + "overlay.style.display = 'flex';"
+                + "overlay.style.alignItems = 'center';"
+                + "overlay.style.justifyContent = 'center';"
+                + "overlay.style.zIndex = '9999';"
+                + "overlay.style.pointerEvents = 'none';"
+                + "overlay.style.background = 'rgba(15, 25, 35, 0.54)';"
+                + "overlay.style.color = '" + winnerColor + "';"
+                + "overlay.style.fontFamily = 'Arial, sans-serif';"
+                + "overlay.style.fontSize = '64px';"
+                + "overlay.style.fontWeight = '900';"
+                + "overlay.style.letterSpacing = '2px';"
+                + "overlay.style.textShadow = '0 4px 18px #000, 0 0 8px #fff';";
+        engine.executeScript(script);
+    }
+
+    private void updateActionControls(GamePhase phase) {
+        boolean capturePending = game != null && game.isCaptureMovementPending();
+        boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
+        captureArmiesSpinner.setDisable(!capturePending);
+        moveAfterCaptureButton.setDisable(!capturePending);
+        if (capturePending) {
+            captureArmiesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                    game.getMinimumCaptureMove(),
+                    game.getMaximumCaptureMove(),
+                    game.getMaximumCaptureMove()));
+        }
+        endAttackButton.setDisable(!attackPhase || capturePending);
+
+        boolean fortifyPhase = phase == GamePhase.FORTIFY;
+        fortifyArmiesSpinner.setDisable(!fortifyPhase);
+        fortifyButton.setDisable(!fortifyPhase
+                || selectedFortifyFrom == null
+                || selectedFortifyTo == null);
+        endTurnButton.setDisable(!fortifyPhase);
+
+        boolean tradeReady = game != null
+                && phase == GamePhase.ATTACK
+                && !game.isDraftComplete()
+                && game.canTradeCards(getSelectedCards());
+        tradeCardsButton.setDisable(!tradeReady);
+
+        boolean gameOver = phase == GamePhase.GAME_OVER;
+        cardListView.setDisable(gameOver);
+    }
+
+    private void updateFortifySpinner() {
+        if (game == null || selectedFortifyFrom == null) {
+            fortifyArmiesSpinner.setValueFactory(
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1, 1));
+            return;
+        }
+        int maxArmies = Math.max(1, game.getArmies(selectedFortifyFrom) - 1);
+        fortifyArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxArmies, maxArmies));
+    }
+
+    private void updateCardHand() {
+        visibleCards.clear();
+        cardListView.getItems().clear();
+        if (game == null) {
+            return;
+        }
+        visibleCards.addAll(game.getCards(game.getCurrentPlayerColor()));
+        for (Card card : visibleCards) {
+            cardListView.getItems().add(formatCard(card));
+        }
+    }
+
+    private List<Card> getSelectedCards() {
+        List<Card> selectedCards = new ArrayList<>();
+        for (Integer index : cardListView.getSelectionModel().getSelectedIndices()) {
+            if (index >= 0 && index < visibleCards.size()) {
+                selectedCards.add(visibleCards.get(index));
+            }
+        }
+        return selectedCards;
+    }
+
+    private boolean mustTradeBeforeDraft() {
+        return game != null && game.getCards(game.getCurrentPlayerColor()).size() >= 5;
+    }
+
+    private PlayerColor getOwner(TerritoryName territory) {
+        for (PlayerColor color : PlayerColor.values()) {
+            if (game.isOwnedBy(territory, color)) {
+                return color;
+            }
+        }
+        return null;
+    }
+
+    private String formatCard(Card card) {
+        if (card.getType() == CardType.WILD) {
+            return "Wild";
+        }
+        return formatName(card.getType().name())
+                + " - " + formatName(card.getTerritory().name());
+    }
+
+    private String formatName(String name) {
+        StringBuilder formatted = new StringBuilder();
+        for (String part : name.split("_")) {
+            if (formatted.length() > 0) {
+                formatted.append(" ");
+            }
+            formatted.append(part.charAt(0));
+            formatted.append(part.substring(1).toLowerCase());
+        }
+        return formatted.toString();
+    }
+
+    private String escapeJs(String value) {
+        return value.replace("\\", "\\\\").replace("'", "\\'");
+    }
+
+    private void syncSelectionsWithPhase(GamePhase phase) {
+        if (phase != GamePhase.ATTACK || !game.isDraftComplete()) {
+            clearAttackSelection();
+        }
+        if (phase != GamePhase.FORTIFY) {
+            clearFortifySelection();
+        }
+    }
+
+    private void clearAttackSelection() {
+        selectedAttackFrom = null;
+    }
+
+    private void clearFortifySelection() {
+        selectedFortifyFrom = null;
+        selectedFortifyTo = null;
     }
 
     private String buildMapHtml() {
@@ -178,7 +643,8 @@ public final class GameBoardController {
             svgContent = svgContent.replaceFirst("<\\?xml[^?]*\\?>", "");
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
-                    + "html, body { width: 100%; height: 100%; background: #1a2633; overflow: hidden; }"
+                    + "html, body { width: 100%; height: 100%;"
+                    + " background: #87ceeb; overflow: hidden; }"
                     + "svg { width: 100%; height: 100%; display: block; }"
                     + "</style></head><body>"
                     + svgContent

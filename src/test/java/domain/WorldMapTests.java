@@ -558,4 +558,59 @@ public class WorldMapTests {
         assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 1));
         EasyMock.verify(mockAlaska);
     }
+
+    @Test
+    public void AreNeighbors_DefaultMap_AlaskaAndAlbertaAreNeighbors() {
+        WorldMap map = new WorldMap();
+        assertTrue(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA));
+    }
+
+    @Test
+    public void AreNeighbors_DefaultMap_AlbertaAndAlaskaAreNeighbors() {
+        WorldMap map = new WorldMap();
+        assertTrue(map.areNeighbors(TerritoryName.ALBERTA, TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void AreConnectedThrough_AdjacentTerritoriesOwnedBySamePlayer_ReturnsTrue() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.RED);
+        map.claim(TerritoryName.ALBERTA, PlayerColor.RED);
+        assertTrue(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ALBERTA, PlayerColor.RED));
+    }
+
+    @Test
+    public void AreConnectedThrough_NonAdjacentTerritoriesConnectedThroughOwnedChain_ReturnsTrue() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.RED);
+        map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
+        map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
+        assertTrue(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+    }
+
+    @Test
+    public void AreConnectedThrough_IntermediateTerritoryNotOwned_ReturnsFalse() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.RED);
+        map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
+        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+    }
+
+    @Test
+    public void AreConnectedThrough_DestinationNotOwnedByPlayer_ReturnsFalse() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.RED);
+        map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
+        map.claim(TerritoryName.ONTARIO, PlayerColor.BLUE);
+        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+    }
+
+    @Test
+    public void AreConnectedThrough_SourceNotOwnedByPlayer_ReturnsFalse() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.BLUE);
+        map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
+        map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
+        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+    }
 }

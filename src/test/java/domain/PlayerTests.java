@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class PlayerTests {
@@ -107,5 +109,195 @@ public class PlayerTests {
     public void DecreaseArmiesToPlace_NegativeCount_ThrowsIllegalArgumentException() {
         Player player = new Player(PlayerColor.RED, "Justin", 5);
         assertThrows(IllegalArgumentException.class, () -> player.decreaseArmiesToPlace(-1));
+    }
+
+    @Test
+    public void GetCardCount_PlayerHasNoCards_ReturnsZero() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertEquals(0, player.getCardCount());
+    }
+
+    @Test
+    public void GetCardCount_PlayerHasOneCard_ReturnsOne() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertEquals(1, player.getCardCount());
+    }
+
+    @Test
+    public void GetCardCount_PlayerHasThreeCards_ReturnsThree() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        player.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        assertEquals(3, player.getCardCount());
+    }
+
+    @Test
+    public void GetCards_PlayerHasNoCards_ReturnsEmptyList() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertEquals(List.of(), player.getCards());
+    }
+
+    @Test
+    public void GetCards_PlayerHasOneCard_ReturnsListWithThatCard() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        assertEquals(List.of(alaska), player.getCards());
+    }
+
+    @Test
+    public void GetCards_PlayerHasThreeCards_ReturnsListWithAllThreeCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        assertEquals(List.of(alaska, alberta, brazil), player.getCards());
+    }
+
+    @Test
+    public void AddCard_PlayerHasNoCards_PlayerHasOneCard() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertEquals(1, player.getCardCount());
+    }
+
+    @Test
+    public void AddCard_PlayerHasOneCard_PlayerHasTwoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        assertEquals(2, player.getCardCount());
+    }
+
+    @Test
+    public void AddCard_PlayerHasThreeCards_PlayerHasFourCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        player.addCard(new Card(CardType.CAVALRY, TerritoryName.ALBERTA));
+        player.addCard(new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.CHINA));
+        assertEquals(4, player.getCardCount());
+    }
+
+    @Test
+    public void AddCard_NullCard_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.addCard(null));
+    }
+
+    @Test
+    public void HasCards_EmptyRequestedList_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        player.addCard(new Card(CardType.INFANTRY, TerritoryName.ALASKA));
+        assertTrue(player.hasCards(List.of()));
+    }
+
+    @Test
+    public void HasCards_PlayerHasRequestedCard_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        assertTrue(player.hasCards(List.of(alaska)));
+    }
+
+    @Test
+    public void HasCards_PlayerHasAllRequestedCards_ReturnsTrue() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        assertTrue(player.hasCards(List.of(alaska, alberta, brazil)));
+    }
+
+    @Test
+    public void HasCards_PlayerMissingOneRequestedCard_ReturnsFalse() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        assertFalse(player.hasCards(List.of(alaska, alberta, brazil)));
+    }
+
+    @Test
+    public void HasCards_PlayerHasCardOnceButRequestedTwice_ReturnsFalse() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        assertFalse(player.hasCards(List.of(alaska, alaska)));
+    }
+
+    @Test
+    public void HasCards_NullCardList_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.hasCards(null));
+    }
+
+    @Test
+    public void RemoveCards_PlayerHasOneCard_RemoveThatCard_PlayerHasNoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        player.removeCards(List.of(alaska));
+        assertEquals(0, player.getCardCount());
+    }
+
+    @Test
+    public void RemoveCards_PlayerHasThreeCards_RemoveOne_PlayerHasTwoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        player.removeCards(List.of(alaska));
+        assertEquals(List.of(alberta, brazil), player.getCards());
+    }
+
+    @Test
+    public void RemoveCards_PlayerHasThreeCards_RemoveAll_PlayerHasNoCards() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card alberta = new Card(CardType.CAVALRY, TerritoryName.ALBERTA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        player.addCard(alberta);
+        player.addCard(brazil);
+        player.removeCards(List.of(alaska, alberta, brazil));
+        assertEquals(0, player.getCardCount());
+    }
+
+    @Test
+    public void RemoveCards_EmptyList_PlayerCardCountUnchanged() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        player.addCard(alaska);
+        player.removeCards(List.of());
+        assertEquals(1, player.getCardCount());
+    }
+
+    @Test
+    public void RemoveCards_CardPlayerDoesNotOwn_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        Card alaska = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card brazil = new Card(CardType.ARTILLERY, TerritoryName.BRAZIL);
+        player.addCard(alaska);
+        assertThrows(IllegalArgumentException.class, () -> player.removeCards(List.of(brazil)));
+    }
+
+    @Test
+    public void RemoveCards_NullCardList_ThrowsIllegalArgumentException() {
+        Player player = new Player(PlayerColor.RED, "Justin", 35);
+        assertThrows(IllegalArgumentException.class, () -> player.removeCards(null));
     }
 }
