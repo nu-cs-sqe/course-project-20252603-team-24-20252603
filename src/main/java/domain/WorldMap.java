@@ -2,7 +2,9 @@ package domain;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 class WorldMap {
@@ -24,6 +26,29 @@ class WorldMap {
     boolean areNeighbors(TerritoryName first, TerritoryName second) {
         return neighbors.containsKey(first) &&
                 neighbors.get(first).contains(second);
+    }
+
+    boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner) {
+        if (!isOwnedBy(from, owner)) {
+            return false;
+        }
+        Set<TerritoryName> visited = new HashSet<>();
+        Queue<TerritoryName> queue = new LinkedList<>();
+        queue.add(from);
+        visited.add(from);
+        while (!queue.isEmpty()) {
+            TerritoryName current = queue.poll();
+            for (TerritoryName neighbor : neighbors.get(current)) {
+                if (neighbor.equals(to)) {
+                    return isOwnedBy(to, owner);
+                }
+                if (isOwnedBy(neighbor, owner) && !visited.contains(neighbor)) {
+                    visited.add(neighbor);
+                    queue.add(neighbor);
+                }
+            }
+        }
+        return false;
     }
 
     private void initializeTerritories() {

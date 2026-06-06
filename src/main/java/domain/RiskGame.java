@@ -93,7 +93,9 @@ public final class RiskGame {
     private int tradeSetCount;
     private boolean hasFortifiedThisTurn;
     private boolean capturedThisTurn;
-    private final Deck deck = new Deck();
+    private TerritoryName pendingCaptureFrom;
+    private TerritoryName pendingCaptureTo;
+    private Deck deck;
     private Random random;
 
     public RiskGame(Map<PlayerColor, String> playerInfo) {
@@ -105,6 +107,7 @@ public final class RiskGame {
         this.worldMap = new WorldMap();
         this.players = new ArrayList<>();
         this.random = random;
+        this.deck = new Deck();
         initializePlayers(playerInfo);
         this.currentPlayerIndex = random.nextInt(players.size());
         this.firstSetupPlayerIndex = currentPlayerIndex;
@@ -149,13 +152,9 @@ public final class RiskGame {
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
-        boolean setupStarted = false;
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
         if (territoriesClaimed == TOTAL_TERRITORIES) {
             phase = GamePhase.SETUP;
-            setupStarted = true;
-        }
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        if (setupStarted) {
             firstSetupPlayerIndex = currentPlayerIndex;
         }
     }
@@ -198,9 +197,6 @@ public final class RiskGame {
         if (isDraftInitialized) {
             return draftArmiesRemaining;
         }
-        if (draftArmiesRemaining > 0) {
-            return draftArmiesRemaining;
-        }
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
         return Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
     }
@@ -231,7 +227,7 @@ public final class RiskGame {
         return isDraftInitialized && draftArmiesRemaining == 0;
     }
 
-    public void attack(TerritoryName from, TerritoryName to, int numAttackers) {
+    public void attack(TerritoryName from, TerritoryName to) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
@@ -248,43 +244,36 @@ public final class RiskGame {
         if (!worldMap.areNeighbors(from, to)) {
             throw new IllegalArgumentException("territories are not neighbors");
         }
-        if (numAttackers < MIN_ATTACK_DICE || numAttackers > MAX_ATTACK_DICE) {
-            throw new IllegalArgumentException("numAttackers must be between 1 and 3");
+        if (worldMap.getArmies(from) < 2) {
+            throw new IllegalArgumentException("must have at least 2 armies to attack");
         }
-        if (numAttackers >= worldMap.getArmies(from)) {
-            throw new IllegalArgumentException("must leave at least 1 army behind");
-        }
-        int defenderArmies = worldMap.getArmies(to);
-        int numDefenders = Math.min(MAX_DEFEND_DICE, defenderArmies);
-        int[] attackerRolls = rollDiceDescending(numAttackers);
-        int[] defenderRolls = rollDiceDescending(numDefenders);
-        int comparisons = Math.min(numAttackers, numDefenders);
-        int attackerLosses = 0;
-        int defenderLosses = 0;
-        for (int i = 0; i < comparisons; i++) {
-            if (attackerRolls[i] > defenderRolls[i]) {
-                defenderLosses++;
-            } else {
-                attackerLosses++;
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
+        while (worldMap.getArmies(from) > 1 && worldMap.getArmies(to) > 0) {
+            int numAttackers = Math.min(MAX_ATTACK_DICE, worldMap.getArmies(from) - 1);
+            int numDefenders = Math.min(MAX_DEFEND_DICE, worldMap.getArmies(to));
+            int[] attackerRolls = rollDiceDescending(numAttackers);
+            int[] defenderRolls = rollDiceDescending(numDefenders);
+            int comparisons = Math.min(numAttackers, numDefenders);
+            for (int i = 0; i < comparisons; i++) {
+                if (attackerRolls[i] > defenderRolls[i]) {
+                    worldMap.removeArmies(to, 1);
+                } else {
+                    worldMap.removeArmies(from, 1);
+                }
             }
         }
-        if (attackerLosses > 0) {
-            worldMap.removeArmies(from, attackerLosses);
-        }
-        if (defenderLosses > 0) {
-            worldMap.removeArmies(to, defenderLosses);
-        }
-        if (defenderLosses == defenderArmies) {
-            captureTerritory(from, to, numAttackers);
+        if (worldMap.getArmies(to) == 0) {
+            captureTerritory(from, to);
         }
     }
 
-    private void captureTerritory(TerritoryName from, TerritoryName to, int armiesToMove) {
+    private void captureTerritory(TerritoryName from, TerritoryName to) {
         PlayerColor defenderColor = getOwnerOf(to);
         worldMap.assignTerritory(to, getCurrentPlayerColor());
-        worldMap.removeArmies(from, armiesToMove);
-        worldMap.addArmies(to, armiesToMove);
         capturedThisTurn = true;
+        pendingCaptureFrom = from;
+        pendingCaptureTo = to;
         if (defenderColor != null && worldMap.countTerritoriesOwnedBy(defenderColor) == 0) {
             transferCards(defenderColor, getCurrentPlayerColor());
         }
@@ -382,7 +371,29 @@ public final class RiskGame {
         if (!isDraftComplete()) {
             throw new IllegalStateException("must complete draft before ending attack");
         }
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
         phase = GamePhase.FORTIFY;
+    }
+
+    public void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies) {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only move armies after capture during ATTACK phase");
+        }
+        if (pendingCaptureFrom == null || !pendingCaptureFrom.equals(from) || !pendingCaptureTo.equals(to)) {
+            throw new IllegalStateException("no pending capture from the specified territories");
+        }
+        int minMove = Math.min(3, worldMap.getArmies(from) - 1);
+        if (armies < minMove) {
+            throw new IllegalArgumentException("armies must be at least " + minMove);
+        }
+        if (armies >= worldMap.getArmies(from)) {
+            throw new IllegalArgumentException("must leave at least 1 army behind");
+        }
+        worldMap.removeArmies(from, armies);
+        worldMap.addArmies(to, armies);
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
     }
 
     public PlayerColor getWinner() {
@@ -425,8 +436,8 @@ public final class RiskGame {
         if (!worldMap.isOwnedBy(to, current)) {
             throw new IllegalArgumentException("to territory not owned by current player");
         }
-        if (!worldMap.areNeighbors(from, to)) {
-            throw new IllegalArgumentException("territories are not neighbors");
+        if (!worldMap.areConnectedThrough(from, to, current)) {
+            throw new IllegalArgumentException("territories are not connected through owned chain");
         }
         if (armies < 1) {
             throw new IllegalArgumentException("armies must be at least 1");
@@ -479,6 +490,9 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only trade cards during ATTACK phase");
         }
+        if (isDraftComplete()) {
+            throw new IllegalStateException("cannot trade cards after draft is complete");
+        }
         if (cards == null) {
             throw new IllegalArgumentException("cards cannot be null");
         }
@@ -501,8 +515,12 @@ public final class RiskGame {
         int bonus = tradeSetCount <= 6
                 ? bonusTable[tradeSetCount - 1]
                 : 15 + 5 * (tradeSetCount - 6);
+        if (!isDraftInitialized) {
+            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
+            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+            isDraftInitialized = true;
+        }
         draftArmiesRemaining += bonus;
-        isDraftInitialized = true;
         for (Card card : cards) {
             if (!card.isWild() && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
                 worldMap.addArmies(card.getTerritory(), 2);
