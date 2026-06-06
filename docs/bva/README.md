@@ -21,30 +21,30 @@ Here are 2 formats as references. You can use any of them or a revised version o
 
 |              | State of the System | Expected output | Implemented?              |
 |--------------|---------------------|-----------------|---------------------------|
-| Test Case 1  |                     |                 | :white_check_mark: or :white_check_mark: |
-| Test Case 2  |                     |                 | :white_check_mark: or :white_check_mark: |
+| Test Case 1  |                     |                 | :x: or :white_check_mark: |
+| Test Case 2  |                     |                 | :x: or :white_check_mark: |
 
 
 ### Method under test: `efg()`
 
 |              | State of the System | Expected output | Implemented?              |
 |--------------|---------------------|-----------------|---------------------------|
-| Test Case 3  |                     |                 | :white_check_mark: or :white_check_mark: |
+| Test Case 3  |                     |                 | :x: or :white_check_mark: |
 | Test Case 4  |                     |                 | implemented in Test Case 1 |
 
 ## Format 2:
 
 ### Method under test: `abc()`
-- **TC1: NAME OF THE TEST CASE** ( :white_check_mark: or :white_check_mark: )
+- **TC1: NAME OF THE TEST CASE** ( :x: or :white_check_mark: )
     - **State of the system**: abc
     - **Expected output**: abc
 
-- **TC2: NAME OF THE TEST CASE** ( :white_check_mark: or :white_check_mark: )
+- **TC2: NAME OF THE TEST CASE** ( :x: or :white_check_mark: )
     - **State of the system**: abc
     - **Expected output**: abc
 
 ### Method under test: `efg()`
-- **TC3: NAME OF THE TEST CASE** ( :white_check_mark: or :white_check_mark: )
+- **TC3: NAME OF THE TEST CASE** ( :x: or :white_check_mark: )
     - **State of the system**: abc
     - **Expected output**: abc
 
