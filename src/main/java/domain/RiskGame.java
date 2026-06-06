@@ -383,8 +383,9 @@ public final class RiskGame {
         if (pendingCaptureFrom == null || !pendingCaptureFrom.equals(from) || !pendingCaptureTo.equals(to)) {
             throw new IllegalStateException("no pending capture from the specified territories");
         }
-        if (armies < 1) {
-            throw new IllegalArgumentException("armies must be at least 1");
+        int minMove = Math.min(3, worldMap.getArmies(from) - 1);
+        if (armies < minMove) {
+            throw new IllegalArgumentException("armies must be at least " + minMove);
         }
         if (armies >= worldMap.getArmies(from)) {
             throw new IllegalArgumentException("must leave at least 1 army behind");

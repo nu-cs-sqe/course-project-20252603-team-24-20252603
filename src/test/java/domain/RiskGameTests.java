@@ -1198,7 +1198,7 @@ public class RiskGameTests {
     @Test
     public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
         // ALASKA=4 -> numAttackers=3 vs ALBERTA=1 -> att=[6,5,4] def=[1]: capture. No auto-move.
-        // moveArmiesAfterCapture(ALASKA, ALBERTA, 2): ALASKA=2, ALBERTA=2.
+        // moveArmiesAfterCapture(ALASKA, ALBERTA, 3): min=min(3,3)=3; ALASKA=1, ALBERTA=3.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1206,9 +1206,9 @@ public class RiskGameTests {
         game.setCurrentPlayer(PlayerColor.RED);
         game.setDraftComplete();
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
-        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2);
-        assertEquals(2, game.getArmies(TerritoryName.ALASKA));
-        assertEquals(2, game.getArmies(TerritoryName.ALBERTA));
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+        assertEquals(3, game.getArmies(TerritoryName.ALBERTA));
     }
 
     @Test
@@ -1260,6 +1260,20 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
         assertThrows(IllegalArgumentException.class, () ->
                 game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 4));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_BelowMinimum_ThrowsIllegalArgumentException() {
+        // TC147: ALASKA=4 -> min=min(3,3)=3; armies=2 < 3 -> throws.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertThrows(IllegalArgumentException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 2));
     }
 
     @Test
