@@ -48,7 +48,10 @@ public final class GameBoardController {
     private Label statusLabel;
 
     @FXML
-    private Spinner<Integer> attackDiceSpinner;
+    private Spinner<Integer> captureArmiesSpinner;
+
+    @FXML
+    private Button moveAfterCaptureButton;
 
     @FXML
     private Spinner<Integer> fortifyArmiesSpinner;
@@ -79,8 +82,8 @@ public final class GameBoardController {
 
     @FXML
     private void initialize() {
-        attackDiceSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 3, 1));
+        captureArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
         fortifyArmiesSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 50, 1));
         cardListView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -168,6 +171,8 @@ public final class GameBoardController {
                 game.claimTerritory(territory);
             } else if (phase == GamePhase.SETUP) {
                 game.placeArmy(territory);
+            } else if (phase == GamePhase.ATTACK && game.isCaptureMovementPending()) {
+                actionStatusMessage = "Move armies into the captured territory.";
             } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
                 game.draftArmy(territory);
             } else if (phase == GamePhase.ATTACK) {
@@ -195,18 +200,19 @@ public final class GameBoardController {
             statusLabel.setText("Select one of your territories before choosing a target.");
             return;
         }
-        int dice = attackDiceSpinner.getValue();
         TerritoryName from = selectedAttackFrom;
         int fromBefore = game.getArmies(from);
         int toBefore = game.getArmies(territory);
-        game.attack(from, territory, dice);
+        game.attack(from, territory);
         int fromAfter = game.getArmies(from);
         int toAfter = game.getArmies(territory);
         boolean captured = game.isOwnedBy(territory, current);
         selectedAttackFrom = null;
         if (captured) {
             actionStatusMessage = "Captured " + formatName(territory.name())
-                    + " from " + formatName(from.name()) + ".";
+                    + " from " + formatName(from.name()) + ". Move "
+                    + game.getMinimumCaptureMove() + "-"
+                    + game.getMaximumCaptureMove() + " armies.";
         } else {
             actionStatusMessage = "Attack resolved: " + formatName(from.name())
                     + " " + fromBefore + "->" + fromAfter
@@ -240,12 +246,37 @@ public final class GameBoardController {
     @FXML
     private void handleEndAttack() {
         try {
+            if (game.isCaptureMovementPending()) {
+                statusLabel.setText("Move armies into the captured territory first.");
+                return;
+            }
             clearAttackSelection();
             game.endAttack();
             updateMapColors();
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleMoveAfterCapture() {
+        try {
+            if (!game.isCaptureMovementPending()) {
+                statusLabel.setText("No captured territory needs armies.");
+                return;
+            }
+            TerritoryName from = game.getPendingCaptureFrom();
+            TerritoryName to = game.getPendingCaptureTo();
+            int armies = captureArmiesSpinner.getValue();
+            game.moveArmiesAfterCapture(from, to, armies);
+            actionStatusMessage = "Moved " + armies + " armies from "
+                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
         }
     }
@@ -375,9 +406,13 @@ public final class GameBoardController {
             statusLabel.setText("Click one of your territories to place an army.");
         } else if (phase == GamePhase.ATTACK) {
             armiesLabel.setText("Draft: " + game.getDraftArmies());
-            if (game.isDraftComplete()) {
+            if (game.isCaptureMovementPending()) {
+                statusLabel.setText("Move " + game.getMinimumCaptureMove() + "-"
+                        + game.getMaximumCaptureMove()
+                        + " armies into " + formatName(game.getPendingCaptureTo().name()) + ".");
+            } else if (game.isDraftComplete()) {
                 if (selectedAttackFrom == null) {
-                    statusLabel.setText("Select one of your territories to attack from.");
+                    statusLabel.setText("Select one of your territories as the starting territory.");
                 } else {
                     statusLabel.setText("Select an enemy target or choose a different source.");
                 }
@@ -409,9 +444,17 @@ public final class GameBoardController {
     }
 
     private void updateActionControls(GamePhase phase) {
+        boolean capturePending = game != null && game.isCaptureMovementPending();
         boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
-        attackDiceSpinner.setDisable(!attackPhase);
-        endAttackButton.setDisable(!attackPhase);
+        captureArmiesSpinner.setDisable(!capturePending);
+        moveAfterCaptureButton.setDisable(!capturePending);
+        if (capturePending) {
+            captureArmiesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                    game.getMinimumCaptureMove(),
+                    game.getMaximumCaptureMove(),
+                    game.getMinimumCaptureMove()));
+        }
+        endAttackButton.setDisable(!attackPhase || capturePending);
 
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
         fortifyArmiesSpinner.setDisable(!fortifyPhase);

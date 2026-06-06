@@ -396,6 +396,32 @@ public final class RiskGame {
         pendingCaptureTo = null;
     }
 
+    public boolean isCaptureMovementPending() {
+        return pendingCaptureFrom != null;
+    }
+
+    public TerritoryName getPendingCaptureFrom() {
+        return pendingCaptureFrom;
+    }
+
+    public TerritoryName getPendingCaptureTo() {
+        return pendingCaptureTo;
+    }
+
+    public int getMinimumCaptureMove() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
+        return Math.min(3, worldMap.getArmies(pendingCaptureFrom) - 1);
+    }
+
+    public int getMaximumCaptureMove() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
+        return worldMap.getArmies(pendingCaptureFrom) - 1;
+    }
+
     public PlayerColor getWinner() {
         for (Player p : players) {
             if (worldMap.countTerritoriesOwnedBy(p.getColor()) == TOTAL_TERRITORIES) {

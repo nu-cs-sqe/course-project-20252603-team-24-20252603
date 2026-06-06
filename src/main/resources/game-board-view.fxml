@@ -78,8 +78,9 @@
             </HBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Label text="Attack dice" style="-fx-text-fill: #7a9ab8; -fx-font-size: 12px;" />
-                <Spinner fx:id="attackDiceSpinner" prefWidth="72.0" />
+                <Label text="Capture armies" style="-fx-text-fill: #7a9ab8; -fx-font-size: 12px;" />
+                <Spinner fx:id="captureArmiesSpinner" prefWidth="72.0" />
+                <Button fx:id="moveAfterCaptureButton" text="Move" onAction="#handleMoveAfterCapture" />
                 <Button fx:id="endAttackButton" text="End Attack" onAction="#handleEndAttack" />
 
                 <Region prefWidth="1.0" style="-fx-background-color: #2a3f55;" prefHeight="30.0" />
