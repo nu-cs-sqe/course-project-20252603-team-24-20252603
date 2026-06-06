@@ -231,7 +231,7 @@
         - count: 1
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)` — additional cases
+## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)`
 
 - **TC38: Default map has adjacent territories** ( :x: )
     - **State of the system**:
@@ -246,3 +246,54 @@
         - first: ALBERTA
         - second: ALASKA
     - **Expected output**: true
+
+## Method: `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)`
+
+- **TC40: Adjacent territories owned by same player are connected** ( :x: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - ALBERTA owned by RED
+        - from: ALASKA
+        - to: ALBERTA
+        - owner: RED
+    - **Expected output**: true
+
+- **TC41: Non-adjacent territories connected through owned chain are connected** ( :x: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: true
+
+- **TC42: Broken owned chain is not connected** ( :x: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by BLUE
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
+
+- **TC43: Destination not owned by player is not connected** ( :x: )
+    - **State of the system**:
+        - ALASKA owned by RED
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by BLUE
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
+
+- **TC44: Source not owned by player is not connected** ( :x: )
+    - **State of the system**:
+        - ALASKA owned by BLUE
+        - NORTHWEST_TERRITORY owned by RED
+        - ONTARIO owned by RED
+        - from: ALASKA
+        - to: ONTARIO
+        - owner: RED
+    - **Expected output**: false
