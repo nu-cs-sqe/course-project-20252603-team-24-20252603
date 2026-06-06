@@ -1172,6 +1172,41 @@ public class RiskGameTests {
     }
 
     @Test
+    public void ClaimTerritory_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        assertThrows(IllegalStateException.class,
+                () -> game.claimTerritory(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void PlaceArmy_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        assertThrows(IllegalStateException.class,
+                () -> game.placeArmy(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void TradeCards_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        List<Card> cards = List.of(
+                new Card(CardType.INFANTRY, TerritoryName.ALASKA),
+                new Card(CardType.INFANTRY, TerritoryName.ALBERTA),
+                new Card(CardType.INFANTRY, TerritoryName.BRAZIL));
+        assertThrows(IllegalStateException.class, () -> game.tradeCards(cards));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_GameOverPhase_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.GAME_OVER);
+        assertThrows(IllegalStateException.class,
+                () -> game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
     public void Attack_RealMap_CapturesAlberta_AlbertaOwnedByRed() {
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 3);

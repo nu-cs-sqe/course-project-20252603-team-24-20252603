@@ -1322,25 +1322,25 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Actions additionally blocked in GAME_OVER phase
 
-- **TC155: `claimTerritory()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC155: `claimTerritory()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
         - territory: ALASKA unclaimed
     - **Expected output**: throw IllegalStateException
 
-- **TC156: `placeArmy()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC156: `placeArmy()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
         - ALASKA owned by RED
     - **Expected output**: throw IllegalStateException
 
-- **TC157: `tradeCards()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC157: `tradeCards()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
         - RED holds a valid tradeable set of 3 cards
     - **Expected output**: throw IllegalStateException
 
-- **TC158: `moveArmiesAfterCapture()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC158: `moveArmiesAfterCapture()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
         - ALASKA owned by RED, ALBERTA owned by RED
