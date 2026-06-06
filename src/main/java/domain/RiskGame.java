@@ -495,8 +495,12 @@ public final class RiskGame {
         int bonus = tradeSetCount <= 6
                 ? bonusTable[tradeSetCount - 1]
                 : 15 + 5 * (tradeSetCount - 6);
+        if (!isDraftInitialized) {
+            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
+            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+            isDraftInitialized = true;
+        }
         draftArmiesRemaining += bonus;
-        isDraftInitialized = true;
         for (Card card : cards) {
             if (!card.isWild() && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
                 worldMap.addArmies(card.getTerritory(), 2);

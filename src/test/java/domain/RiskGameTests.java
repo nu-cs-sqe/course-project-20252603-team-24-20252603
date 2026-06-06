@@ -1533,6 +1533,36 @@ public class RiskGameTests {
     }
 
     @Test
+    public void TradeCards_BeforeDraftInitialized_TotalIncludesTerritoryAndCardBonus() {
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(3);
+        EasyMock.expect(mockMap.getTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(territories());
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.eq(PlayerColor.RED)))
+                .andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall().anyTimes();
+        EasyMock.replay(mockMap);
+        Card c1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card c2 = new Card(CardType.INFANTRY, TerritoryName.ALBERTA);
+        Card c3 = new Card(CardType.INFANTRY, TerritoryName.BRAZIL);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(c1); red.addCard(c2); red.addCard(c3);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.tradeCards(List.of(c1, c2, c3));
+        for (int i = 0; i < 7; i++) {
+            game.draftArmy(TerritoryName.ALASKA);
+        }
+        assertTrue(game.isDraftComplete());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void TradeCards_FirstTrade_AddsFourDraftArmies() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
@@ -1556,10 +1586,9 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.tradeCards(List.of(c1, c2, c3));
-        game.draftArmy(TerritoryName.ALASKA);
-        game.draftArmy(TerritoryName.ALASKA);
-        game.draftArmy(TerritoryName.ALASKA);
-        game.draftArmy(TerritoryName.ALASKA);
+        for (int i = 0; i < 7; i++) {
+            game.draftArmy(TerritoryName.ALASKA);
+        }
         assertTrue(game.isDraftComplete());
         EasyMock.verify(mockMap);
     }
@@ -1588,6 +1617,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(1);
+        game.setDraftComplete();
         game.tradeCards(List.of(c4, c5, c6));
         game.draftArmy(TerritoryName.ALASKA);
         game.draftArmy(TerritoryName.ALASKA);
@@ -1619,6 +1649,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(2);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         for (int i = 0; i < 8; i++) {
             game.draftArmy(TerritoryName.ALASKA);
@@ -1647,6 +1678,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(3);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         for (int i = 0; i < 10; i++) {
             game.draftArmy(TerritoryName.ALASKA);
@@ -1675,6 +1707,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(4);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         for (int i = 0; i < 12; i++) {
             game.draftArmy(TerritoryName.ALASKA);
@@ -1703,6 +1736,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(5);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         for (int i = 0; i < 15; i++) {
             game.draftArmy(TerritoryName.ALASKA);
@@ -1731,6 +1765,7 @@ public class RiskGameTests {
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
         game.setTradeSetCount(6);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         for (int i = 0; i < 20; i++) {
             game.draftArmy(TerritoryName.ALASKA);
@@ -1763,6 +1798,7 @@ public class RiskGameTests {
         game.provideWorldMap(mockMap);
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         EasyMock.verify(mockMap);
     }
@@ -1785,6 +1821,7 @@ public class RiskGameTests {
         game.provideWorldMap(mockMap);
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         EasyMock.verify(mockMap);
     }
@@ -1996,6 +2033,7 @@ public class RiskGameTests {
         game.provideWorldMap(mockMap);
         game.setPhase(GamePhase.ATTACK);
         game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
         game.tradeCards(List.of(c1, c2, c3));
         game.draftArmy(TerritoryName.ALASKA);
         EasyMock.verify(mockMap);
