@@ -29,6 +29,9 @@ class WorldMap {
     }
 
     boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner) {
+        if (!isOwnedBy(from, owner)) {
+            return false;
+        }
         Set<TerritoryName> visited = new HashSet<>();
         Queue<TerritoryName> queue = new LinkedList<>();
         queue.add(from);

@@ -608,4 +608,13 @@ public class WorldMapTests {
         map.claim(TerritoryName.ONTARIO, PlayerColor.BLUE);
         assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
     }
+
+    @Test
+    public void AreConnectedThrough_SourceNotOwnedByPlayer_ReturnsFalse() {
+        WorldMap map = new WorldMap();
+        map.claim(TerritoryName.ALASKA, PlayerColor.BLUE);
+        map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
+        map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
+        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+    }
 }
