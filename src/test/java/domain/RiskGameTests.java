@@ -1309,6 +1309,57 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_WrongPhase_ThrowsIllegalStateException() {
+        // TC118: method called during FORTIFY phase instead of ATTACK.
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_NoPriorCapture_ThrowsIllegalStateException() {
+        // TC119: called during ATTACK phase but no capture has occurred this turn.
+        RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_ZeroArmies_ThrowsIllegalArgumentException() {
+        // TC120: armies = 0 (below minimum boundary of 1).
+        // After capture: ALASKA=3 (4-1 auto-moved).
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertThrows(IllegalArgumentException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 0));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_AllArmiesNoneLeftBehind_ThrowsIllegalArgumentException() {
+        // TC121: armies = from.armies (boundary — would leave 0 behind).
+        // After capture: ALASKA=3. Moving 3 would leave 0.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertThrows(IllegalArgumentException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 3));
+    }
+
+    @Test
     public void Fortify_FirstFortifySucceeds_ArmiesMove() {
         RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
