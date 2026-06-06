@@ -909,3 +909,97 @@ After capturing a territory, the current player may move additional armies (beyo
         - ALASKA armies = 1
         - ALBERTA armies = 3
         - current player == RED
+
+## Method: `List<Card> getCards(PlayerColor color)`
+
+Returns the list of cards held by the player with the given color.
+
+- **TC123: player with no cards returns empty list** ( :white_check_mark: )
+    - **State of the system**: RED has no cards
+    - **Expected output**: empty list
+
+- **TC124: player with one card returns list with that card** ( :white_check_mark: )
+    - **State of the system**: RED holds exactly 1 card (INFANTRY/ALASKA)
+    - **Expected output**: list containing that card
+
+- **TC125: player with three cards returns all three** ( :white_check_mark: )
+    - **State of the system**: RED holds 3 cards (INFANTRY/ALASKA, CAVALRY/ALBERTA, ARTILLERY/BRAZIL)
+    - **Expected output**: list of all three cards in insertion order
+
+- **TC126: color not in game throws IllegalArgumentException** ( :white_check_mark: )
+    - **State of the system**: 3-player game (RED, BLUE, GREEN); color = CYAN
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `void draftArmy(TerritoryName territory)` — additional cases
+
+- **TC127: player with 4 cards may draft** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - RED holds 4 cards (boundary: one below the 5-card forced-trade threshold)
+        - RED owns ALASKA
+    - **Expected output**: draftArmy succeeds; 1 army placed on ALASKA
+
+- **TC128: player with 5 cards must trade before drafting** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - RED holds exactly 5 cards (boundary: at the forced-trade threshold)
+    - **Expected output**: throw IllegalStateException
+
+- **TC129: player with 6 cards must trade before drafting** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - RED holds 6 cards (above the forced-trade threshold)
+    - **Expected output**: throw IllegalStateException
+
+## Method: `void endTurn()` — additional card-award cases
+
+- **TC130: capturing one territory awards one card on endTurn** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: FORTIFY; capturedThisTurn = true
+        - RED is current player
+    - **Expected output**: RED receives 1 card; RED card count == 1
+
+- **TC131: capturing more than one territory still awards only one card** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: FORTIFY; capturedThisTurn = true (set after multiple captures)
+        - RED is current player
+    - **Expected output**: RED receives exactly 1 card
+
+- **TC132: no capture this turn awards no card** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: FORTIFY; capturedThisTurn = false
+        - RED is current player
+    - **Expected output**: next player (BLUE) receives no card; BLUE card count == 0
+
+- **TC133: capture flag resets for next player after endTurn** ( :white_check_mark: )
+    - **State of the system**:
+        - RED captures a territory and calls endTurn (capturedThisTurn = true → reset)
+        - BLUE does not capture; calls endTurn
+    - **Expected output**: BLUE card count == 0 (capture flag was reset, not inherited)
+
+## Method: `void attack(TerritoryName from, TerritoryName to, int numAttackers)` — card-related cases
+
+- **TC134: capture marks card award for end of turn** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; attacker wins and captures ALBERTA
+        - endAttack() then endTurn() called
+    - **Expected output**: RED receives 1 card on endTurn
+
+- **TC135: two captures in same turn still awards one card** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; RED captures ALBERTA then NORTHWEST_TERRITORY in the same turn
+        - endTurn() called
+    - **Expected output**: RED receives exactly 1 card
+
+- **TC136: failed attack (no capture) does not mark card award** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; defender wins — attacker loses armies, no territory captured
+    - **Expected output**: RED card count remains 0
+
+- **TC137: capturing the last territory of a defeated player transfers their cards** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; BLUE owns 0 territories after RED captures their last one
+        - BLUE held 2 cards before capture
+    - **Expected output**:
+        - BLUE card count == 0
+        - RED card count == 2 (BLUE's cards transferred immediately)
