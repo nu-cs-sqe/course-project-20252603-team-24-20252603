@@ -205,16 +205,28 @@ public final class GameBoardController {
         TerritoryName from = selectedAttackFrom;
         int fromBefore = game.getArmies(from);
         int toBefore = game.getArmies(territory);
+        PlayerColor eliminated = null;
+        PlayerColor defender = getOwner(territory);
+        int defenderTerritoriesBefore = defender == null ? 0 : game.getTerritoryCount(defender);
         game.attack(from, territory);
         int fromAfter = game.getArmies(from);
         int toAfter = game.getArmies(territory);
         boolean captured = game.isOwnedBy(territory, current);
+        if (defender != null
+                && defender != current
+                && defenderTerritoriesBefore > 0
+                && game.getTerritoryCount(defender) == 0) {
+            eliminated = defender;
+        }
         selectedAttackFrom = null;
         if (captured) {
             actionStatusMessage = "Captured " + formatName(territory.name())
                     + " from " + formatName(from.name()) + ". Move "
                     + game.getMinimumCaptureMove() + "-"
                     + game.getMaximumCaptureMove() + " armies.";
+            if (eliminated != null) {
+                actionStatusMessage += " " + eliminated.name() + " was eliminated.";
+            }
         } else {
             actionStatusMessage = "Attack resolved: " + formatName(from.name())
                     + " " + fromBefore + "->" + fromAfter
@@ -311,8 +323,21 @@ public final class GameBoardController {
     private void handleTradeCards() {
         List<Card> selectedCards = getSelectedCards();
         try {
+            int beforeDraftArmies = game.getDraftArmies();
+            List<String> territoryBonuses = new ArrayList<>();
+            for (Card card : selectedCards) {
+                if (!card.isWild()
+                        && game.isOwnedBy(card.getTerritory(), game.getCurrentPlayerColor())) {
+                    territoryBonuses.add(formatName(card.getTerritory().name()));
+                }
+            }
             game.tradeCards(selectedCards);
+            int gainedArmies = game.getDraftArmies() - beforeDraftArmies;
             cardListView.getSelectionModel().clearSelection();
+            actionStatusMessage = "Traded cards for " + gainedArmies + " draft armies.";
+            if (!territoryBonuses.isEmpty()) {
+                actionStatusMessage += " +2 on " + String.join(", ", territoryBonuses) + ".";
+            }
             updateMapColors();
             updateCardHand();
             updateStatusBar();
@@ -514,6 +539,15 @@ public final class GameBoardController {
 
     private boolean mustTradeBeforeDraft() {
         return game != null && game.getCards(game.getCurrentPlayerColor()).size() >= 5;
+    }
+
+    private PlayerColor getOwner(TerritoryName territory) {
+        for (PlayerColor color : PlayerColor.values()) {
+            if (game.isOwnedBy(territory, color)) {
+                return color;
+            }
+        }
+        return null;
     }
 
     private String formatCard(Card card) {
