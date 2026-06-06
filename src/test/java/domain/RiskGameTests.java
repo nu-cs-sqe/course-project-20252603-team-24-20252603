@@ -1263,6 +1263,24 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_SourceHasTwoArmies_MovesMinimumOne_Succeeds() {
+        // TC144: ALASKA=2 -> min=min(3,1)=1; armies=1 -> ALASKA=1, ALBERTA=1, pending cleared.
+        // ALASKA=2 -> numAttackers=1, ALBERTA=1 -> numDefenders=1. att=[6] def=[1]: capture.
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 2);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+        assertEquals(1, game.getArmies(TerritoryName.ALBERTA));
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_CalledTwice_ThrowsIllegalStateException() {
         // TC152: first call succeeds; second call throws because pending is cleared after first.
         // ALASKA=4 -> capture ALBERTA -> first moveArmiesAfterCapture(3) succeeds.
