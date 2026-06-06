@@ -306,7 +306,7 @@ Returns `true` when the current player has placed all their draft armies (`draft
 
 Current player attacks an adjacent enemy territory using all armies available from the attacking territory while leaving 1 army behind. Dice are rolled internally until the defender is eliminated or the attacking territory has only 1 army left. If all defending armies are eliminated, the attacker captures the territory and may move armies into the captured territory.
 
-- **TC43: Attack from territory with 2 armies (minimum valid)** ( :x: )
+- **TC43: Attack from territory with 2 armies (minimum valid)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 2
@@ -314,7 +314,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - ALASKA and ALBERTA are neighbors
     - **Expected output**: attack executes using 1 available attacking army
 
-- **TC44: Attack from territory with more than 2 armies** ( :x: )
+- **TC44: Attack from territory with more than 2 armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 4
@@ -357,7 +357,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - ALASKA and BRAZIL are not neighbors
     - **Expected output**: throw IllegalArgumentException
 
-- **TC50: Attack target territory with 1 army (minimum defender)** ( :x: )
+- **TC50: Attack target territory with 1 army (minimum defender)** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -365,7 +365,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - ALASKA and ALBERTA are neighbors
     - **Expected output**: attack executes
 
-- **TC51: Attack target territory with more than 1 army** ( :x: )
+- **TC51: Attack target territory with more than 1 army** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 5
@@ -381,7 +381,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - ALASKA and ALBERTA are neighbors
     - **Expected output**: throw IllegalArgumentException
 
-- **TC53: Attack stops as loss when attacking territory reaches 1 army** ( :x: )
+- **TC53: Attack stops as loss when attacking territory reaches 1 army** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 2
@@ -392,7 +392,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - ALBERTA still owned by BLUE
         - ALASKA armies = 1
 
-- **TC54: Batch attack wins and captures territory** ( :x: )
+- **TC54: Batch attack wins and captures territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -404,7 +404,7 @@ Current player attacks an adjacent enemy territory using all armies available fr
         - capture movement is pending
         - ALASKA armies >= 1
 
-- **TC55: Batch attack loses and does not capture territory** ( :x: )
+- **TC55: Batch attack loses and does not capture territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - ALASKA owned by RED (current player), armies = 3
@@ -479,7 +479,7 @@ Current player moves armies from one owned territory to another owned territory 
         - armies: 1
     - **Expected output**: throw IllegalArgumentException
 
-- **TC63: Fortify between territories not connected through owned chain** ( :x: )
+- **TC63: Fortify between territories not connected through owned chain** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -555,7 +555,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endTurn()`
 
-- **TC71: Turn order wraps from last player back to first player** ( :x: )
+- **TC71: Turn order wraps from last player back to first player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - 3-player game: RED, BLUE, GREEN (in that order)
@@ -566,7 +566,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `boolean isDraftComplete()`
 
-- **TC72: Draft not complete at start of a brand-new turn** ( :x: )
+- **TC72: Draft not complete at start of a brand-new turn** ( :white_check_mark: )
     - **State of the system**:
         - GREEN just called `endTurn()`, RED is now the current player
         - RED has not yet called `draftArmy()` (draft not initialized for this turn)
@@ -577,7 +577,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void attack(TerritoryName from, TerritoryName to)`
 
-- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :x: )
+- **TC73: Capturing the final enemy territory transitions phase to GAME_OVER** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - RED owns 41 territories; BLUE owns only ALBERTA (armies = 1)
@@ -591,32 +591,32 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Actions blocked in GAME_OVER phase
 
-- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC74: `draftArmy()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC75: `attack()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC76: `endAttack()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC76: `endAttack()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC77: `fortify()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC77: `fortify()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :x: )
+- **TC78: `endTurn()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC79: Attacker captures already-owned defender territory with real map** ( :x: )
+- **TC79: Attacker captures already-owned defender territory with real map** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - real WorldMap used (not mocked)
@@ -630,7 +630,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies = 1
         - ALASKA armies >= 1
 
-- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :x: )
+- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -643,7 +643,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 1
         - hasFortifiedThisTurn set to true
 
-- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :x: )
+- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -653,7 +653,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - hasFortifiedThisTurn: true
     - **Expected output**: throw IllegalStateException
 
-- **TC82: hasFortifiedThisTurn resets after endTurn** ( :x: )
+- **TC82: hasFortifiedThisTurn resets after endTurn** ( :white_check_mark: )
     - **State of the system**:
         - RED successfully called fortify() this turn
         - RED calls endTurn()
@@ -661,7 +661,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - BLUE calls fortify() on valid adjacent owned territories
     - **Expected output**: fortify succeeds — no exception thrown
 
-- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :x: )
+- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player has not called `draftArmy()` this turn
@@ -671,7 +671,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALASKA and ALBERTA are neighbors
     - **Expected output**: throw IllegalStateException
 
-- **TC84: Attack after draft fully complete succeeds** ( :x: )
+- **TC84: Attack after draft fully complete succeeds** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - isDraftInitialized == true
@@ -683,7 +683,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - Random mocked so attacker wins all dice
     - **Expected output**: attack executes — no exception thrown
 
-- **TC85: After endTurn new player cannot attack without drafting** ( :x: )
+- **TC85: After endTurn new player cannot attack without drafting** ( :white_check_mark: )
     - **State of the system**:
         - RED ends turn, BLUE is new current player
         - BLUE has not called draftArmy()
@@ -692,7 +692,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `int getDraftArmies()`
 
-- **TC86: Draft armies after all draft armies are placed returns zero** ( :x: )
+- **TC86: Draft armies after all draft armies are placed returns zero** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -703,7 +703,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endAttack()`
 
-- **TC87: End attack before draft is complete throws IllegalStateException** ( :x: )
+- **TC87: End attack before draft is complete throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -712,7 +712,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void placeArmy(TerritoryName territory)`
 
-- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :x: )
+- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
         - 3-player game: RED, BLUE, GREEN (in that order)
@@ -729,7 +729,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `int getDraftArmies()`
 
-- **TC89: Draft armies with no complete continent uses only territory count** ( :x: )
+- **TC89: Draft armies with no complete continent uses only territory count** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -738,7 +738,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 3
       (minimum 3 territory armies + 0 continent bonus)
 
-- **TC90: Draft armies include South America continent bonus** ( :x: )
+- **TC90: Draft armies include South America continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -747,7 +747,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 5
       (minimum 3 territory armies + 2 South America bonus)
 
-- **TC91: Draft armies include Australia continent bonus** ( :x: )
+- **TC91: Draft armies include Australia continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -756,7 +756,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 5
       (minimum 3 territory armies + 2 Australia bonus)
 
-- **TC92: Draft armies include Africa continent bonus** ( :x: )
+- **TC92: Draft armies include Africa continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -765,7 +765,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 6
       (minimum 3 territory armies + 3 Africa bonus)
 
-- **TC93: Draft armies include North America continent bonus** ( :x: )
+- **TC93: Draft armies include North America continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -774,7 +774,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 8
       (minimum 3 territory armies + 5 North America bonus)
 
-- **TC94: Draft armies include Europe continent bonus** ( :x: )
+- **TC94: Draft armies include Europe continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -783,7 +783,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 8
       (minimum 3 territory armies + 5 Europe bonus)
 
-- **TC95: Draft armies include Asia continent bonus** ( :x: )
+- **TC95: Draft armies include Asia continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -792,7 +792,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 11
       (4 territory armies + 7 Asia bonus)
 
-- **TC96: Draft armies stack multiple continent bonuses** ( :x: )
+- **TC96: Draft armies stack multiple continent bonuses** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -802,7 +802,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**: getDraftArmies() == 7
       (minimum 3 territory armies + 2 South America bonus + 2 Australia bonus)
 
-- **TC97: Draft armies do not include partial continent bonus** ( :x: )
+- **TC97: Draft armies do not include partial continent bonus** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player: RED
@@ -814,25 +814,25 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `List<Card> getCards(PlayerColor color)`
 
-- **TC98: Get cards for player with no cards** ( :x: )
+- **TC98: Get cards for player with no cards** ( :white_check_mark: )
     - **State of the system**:
         - RED is in the game
         - RED has 0 cards
     - **Expected output**: empty list
 
-- **TC99: Get cards for player with 1 card** ( :x: )
+- **TC99: Get cards for player with 1 card** ( :white_check_mark: )
     - **State of the system**:
         - RED is in the game
         - RED has ALASKA card
     - **Expected output**: list containing ALASKA card
 
-- **TC100: Get cards for player with more than 1 card** ( :x: )
+- **TC100: Get cards for player with more than 1 card** ( :white_check_mark: )
     - **State of the system**:
         - RED is in the game
         - RED has ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: list containing ALASKA, ALBERTA, and BRAZIL cards
 
-- **TC101: Get cards for color not in game** ( :x: )
+- **TC101: Get cards for color not in game** ( :white_check_mark: )
     - **State of the system**:
         - CYAN is not in the game
         - getCards(CYAN) is called
@@ -840,7 +840,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void attack(TerritoryName from, TerritoryName to)`
 
-- **TC102: Attack without capture does not mark card award** ( :x: )
+- **TC102: Attack without capture does not mark card award** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -851,7 +851,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - RED has 0 cards before endTurn()
 
-- **TC103: First capture marks player for one card award** ( :x: )
+- **TC103: First capture marks player for one card award** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -862,7 +862,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED has 0 cards before endTurn()
         - RED is eligible to receive one card when the turn ends
 
-- **TC104: Second capture in same turn does not mark second card award** ( :x: )
+- **TC104: Second capture in same turn does not mark second card award** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -872,7 +872,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - RED is eligible to receive exactly one card when the turn ends
 
-- **TC105: Capturing final territory from defeated player transfers defeated player's cards** ( :x: )
+- **TC105: Capturing final territory from defeated player transfers defeated player's cards** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -885,7 +885,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endTurn()`
 
-- **TC106: End turn after no captures awards no card** ( :x: )
+- **TC106: End turn after no captures awards no card** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -895,7 +895,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED has 0 cards after endTurn()
         - turn advances to next player
 
-- **TC107: End turn after one capture awards one card** ( :x: )
+- **TC107: End turn after one capture awards one card** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -905,7 +905,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED has 1 card after endTurn()
         - turn advances to next player
 
-- **TC108: End turn after more than one capture awards one card** ( :x: )
+- **TC108: End turn after more than one capture awards one card** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -915,7 +915,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED has 1 card after endTurn()
         - turn advances to next player
 
-- **TC109: End turn after card award resets capture tracking for next player** ( :x: )
+- **TC109: End turn after card award resets capture tracking for next player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -925,49 +925,49 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `boolean canTradeCards(List<Card> cards)`
 
-- **TC110: Trade three cards of same type is valid** ( :x: )
+- **TC110: Trade three cards of same type is valid** ( :white_check_mark: )
     - **State of the system**: cards contains 3 infantry cards
     - **Expected output**: true
 
-- **TC111: Trade one infantry one cavalry and one artillery is valid** ( :x: )
+- **TC111: Trade one infantry one cavalry and one artillery is valid** ( :white_check_mark: )
     - **State of the system**: cards contains 1 infantry, 1 cavalry, and 1 artillery
     - **Expected output**: true
 
-- **TC112: Trade two same type cards and one wild card is valid** ( :x: )
+- **TC112: Trade two same type cards and one wild card is valid** ( :white_check_mark: )
     - **State of the system**: cards contains 2 infantry cards and 1 wild card
     - **Expected output**: true
 
-- **TC113: Trade two different type cards and one wild card is valid** ( :x: )
+- **TC113: Trade two different type cards and one wild card is valid** ( :white_check_mark: )
     - **State of the system**: cards contains 1 infantry, 1 cavalry, and 1 wild card
     - **Expected output**: true
 
-- **TC114: Trade one card and two wild cards is valid** ( :x: )
+- **TC114: Trade one card and two wild cards is valid** ( :white_check_mark: )
     - **State of the system**: cards contains 1 infantry card and 2 wild cards
     - **Expected output**: true
 
-- **TC115: Trade two same type cards and one different card is invalid** ( :x: )
+- **TC115: Trade two same type cards and one different card is invalid** ( :white_check_mark: )
     - **State of the system**: cards contains 2 infantry cards and 1 cavalry card
     - **Expected output**: false
 
-- **TC116: Trade fewer than 3 cards is invalid** ( :x: )
+- **TC116: Trade fewer than 3 cards is invalid** ( :white_check_mark: )
     - **State of the system**: cards contains 2 cards
     - **Expected output**: false
 
-- **TC117: Trade more than 3 cards is invalid** ( :x: )
+- **TC117: Trade more than 3 cards is invalid** ( :white_check_mark: )
     - **State of the system**: cards contains 4 cards
     - **Expected output**: false
 
-- **TC118: Trade null card list is invalid** ( :x: )
+- **TC118: Trade null card list is invalid** ( :white_check_mark: )
     - **State of the system**: cards is null
     - **Expected output**: false
 
-- **TC119: Trade list containing null card is invalid** ( :x: )
+- **TC119: Trade list containing null card is invalid** ( :white_check_mark: )
     - **State of the system**: cards contains null
     - **Expected output**: false
 
 ## Method: `void tradeCards(List<Card> cards)`
 
-- **TC120: Trade first valid set adds 4 draft armies** ( :x: )
+- **TC120: Trade first valid set adds 4 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -977,7 +977,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 4 draft armies
         - RED loses the 3 traded cards
 
-- **TC121: Trade second valid set adds 6 draft armies** ( :x: )
+- **TC121: Trade second valid set adds 6 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -987,7 +987,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 6 draft armies
         - RED loses the 3 traded cards
 
-- **TC122: Trade third valid set adds 8 draft armies** ( :x: )
+- **TC122: Trade third valid set adds 8 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -997,7 +997,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 8 draft armies
         - RED loses the 3 traded cards
 
-- **TC123: Trade fourth valid set adds 10 draft armies** ( :x: )
+- **TC123: Trade fourth valid set adds 10 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1007,7 +1007,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 10 draft armies
         - RED loses the 3 traded cards
 
-- **TC124: Trade fifth valid set adds 12 draft armies** ( :x: )
+- **TC124: Trade fifth valid set adds 12 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1017,7 +1017,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 12 draft armies
         - RED loses the 3 traded cards
 
-- **TC125: Trade sixth valid set adds 15 draft armies** ( :x: )
+- **TC125: Trade sixth valid set adds 15 draft armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1027,7 +1027,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 15 draft armies
         - RED loses the 3 traded cards
 
-- **TC126: Trade after sixth set increases by 5 armies** ( :x: )
+- **TC126: Trade after sixth set increases by 5 armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1037,7 +1037,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED receives 20 draft armies
         - RED loses the 3 traded cards
 
-- **TC127: Trade card matching owned territory adds 2 armies to that territory** ( :x: )
+- **TC127: Trade card matching owned territory adds 2 armies to that territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1047,7 +1047,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALASKA gains 2 armies
         - RED receives the trade draft armies
 
-- **TC128: Trade card matching unowned territory adds no territory armies** ( :x: )
+- **TC128: Trade card matching unowned territory adds no territory armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1057,7 +1057,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALASKA does not gain 2 armies
         - RED receives the trade draft armies
 
-- **TC129: Trade invalid card set throws IllegalArgumentException** ( :x: )
+- **TC129: Trade invalid card set throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1065,14 +1065,14 @@ further game actions are permitted once `GAME_OVER` is set.
         - cards passed in are not a valid set
     - **Expected output**: throw IllegalArgumentException
 
-- **TC130: Trade cards not owned by current player throws IllegalArgumentException** ( :x: )
+- **TC130: Trade cards not owned by current player throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - at least 1 card passed in is not owned by RED
     - **Expected output**: throw IllegalArgumentException
 
-- **TC131: Trade cards in wrong phase throws IllegalStateException** ( :x: )
+- **TC131: Trade cards in wrong phase throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -1080,21 +1080,21 @@ further game actions are permitted once `GAME_OVER` is set.
         - cards passed in are a valid set
     - **Expected output**: throw IllegalStateException
 
-- **TC132: Trade null card list throws IllegalArgumentException** ( :x: )
+- **TC132: Trade null card list throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - cards is null
     - **Expected output**: throw IllegalArgumentException
 
-- **TC133: Trade list containing null card throws IllegalArgumentException** ( :x: )
+- **TC133: Trade list containing null card throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - cards contains null
     - **Expected output**: throw IllegalArgumentException
 
-- **TC134: Trade fewer than 3 cards throws IllegalArgumentException** ( :x: )
+- **TC134: Trade fewer than 3 cards throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1102,7 +1102,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - cards contains 2 cards
     - **Expected output**: throw IllegalArgumentException
 
-- **TC135: Trade more than 3 cards throws IllegalArgumentException** ( :x: )
+- **TC135: Trade more than 3 cards throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1112,7 +1112,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void draftArmy(TerritoryName territory)`
 
-- **TC136: Player with 4 cards may draft without trading** ( :x: )
+- **TC136: Player with 4 cards may draft without trading** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1121,7 +1121,7 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - draftArmy(ALASKA) succeeds
 
-- **TC137: Player with 5 cards must trade before drafting** ( :x: )
+- **TC137: Player with 5 cards must trade before drafting** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1129,7 +1129,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED owns ALASKA
     - **Expected output**: draftArmy(ALASKA) throws IllegalStateException
 
-- **TC138: Player with more than 5 cards must trade before drafting** ( :x: )
+- **TC138: Player with more than 5 cards must trade before drafting** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1137,7 +1137,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - RED owns ALASKA
     - **Expected output**: draftArmy(ALASKA) throws IllegalStateException
 
-- **TC139: Player with 5 cards may draft after valid trade** ( :x: )
+- **TC139: Player with 5 cards may draft after valid trade** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1149,7 +1149,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void tradeCards(List<Card> cards)`
 
-- **TC140: Trade valid set moves traded cards to deck discard pile** ( :x: )
+- **TC140: Trade valid set moves traded cards to deck discard pile** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1162,7 +1162,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endTurn()`
 
-- **TC141: End turn skips next player with no territories** ( :x: )
+- **TC141: End turn skips next player with no territories** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -1173,7 +1173,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase == ATTACK
         - current player == GREEN
 
-- **TC142: End turn wraps past eliminated players to first active player** ( :x: )
+- **TC142: End turn wraps past eliminated players to first active player** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: GREEN
@@ -1184,7 +1184,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase == ATTACK
         - current player == RED
 
-- **TC143: End turn skips multiple eliminated players** ( :x: )
+- **TC143: End turn skips multiple eliminated players** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - current player: RED
@@ -1197,7 +1197,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)`
 
-- **TC144: Move armies after capture when source has 2 armies uses minimum 1** ( :x: )
+- **TC144: Move armies after capture when source has 2 armies uses minimum 1** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1210,7 +1210,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 1
         - capture movement is no longer pending
 
-- **TC145: Move armies after capture when source has 3 armies uses minimum 2** ( :x: )
+- **TC145: Move armies after capture when source has 3 armies uses minimum 2** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1223,7 +1223,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 2
         - capture movement is no longer pending
 
-- **TC146: Move armies after capture when source has 4 armies uses minimum 3** ( :x: )
+- **TC146: Move armies after capture when source has 4 armies uses minimum 3** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1236,7 +1236,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 3
         - capture movement is no longer pending
 
-- **TC147: Move armies after capture below minimum throws IllegalArgumentException** ( :x: )
+- **TC147: Move armies after capture below minimum throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1246,7 +1246,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - armies: 2
     - **Expected output**: throw IllegalArgumentException
 
-- **TC148: Move armies after capture at maximum leaves 1 army behind** ( :x: )
+- **TC148: Move armies after capture at maximum leaves 1 army behind** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1259,7 +1259,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 5
         - capture movement is no longer pending
 
-- **TC149: Move armies after capture above maximum throws IllegalArgumentException** ( :x: )
+- **TC149: Move armies after capture above maximum throws IllegalArgumentException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1269,7 +1269,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - armies: 6
     - **Expected output**: throw IllegalArgumentException
 
-- **TC150: Move armies after capture with no pending capture throws IllegalStateException** ( :x: )
+- **TC150: Move armies after capture with no pending capture throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1279,7 +1279,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - armies: 3
     - **Expected output**: throw IllegalStateException
 
-- **TC151: Move armies after capture with wrong territories throws IllegalStateException** ( :x: )
+- **TC151: Move armies after capture with wrong territories throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1289,7 +1289,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - armies: 3
     - **Expected output**: throw IllegalStateException
 
-- **TC152: Move armies after capture twice throws IllegalStateException** ( :x: )
+- **TC152: Move armies after capture twice throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1301,7 +1301,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void tradeCards(List<Card> cards)`
 
-- **TC153: Trade valid set with multiple owned matching territory cards adds bonus to each owned territory** ( :x: )
+- **TC153: Trade valid set with multiple owned matching territory cards adds bonus to each owned territory** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -1312,7 +1312,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA gains 2 armies
         - RED receives the trade draft armies
 
-- **TC154: Trade cards after draft is complete throws IllegalStateException** ( :x: )
+- **TC154: Trade cards after draft is complete throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED

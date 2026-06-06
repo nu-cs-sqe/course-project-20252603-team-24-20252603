@@ -233,14 +233,14 @@
 
 ## Method: `boolean areNeighbors(TerritoryName first, TerritoryName second)`
 
-- **TC38: Default map has adjacent territories** ( :x: )
+- **TC38: Default map has adjacent territories** ( :white_check_mark: )
     - **State of the system**:
         - WorldMap constructed with default constructor (real map)
         - first: ALASKA
         - second: ALBERTA
     - **Expected output**: true
 
-- **TC39: Default map adjacency is bidirectional** ( :x: )
+- **TC39: Default map adjacency is bidirectional** ( :white_check_mark: )
     - **State of the system**:
         - WorldMap constructed with default constructor (real map)
         - first: ALBERTA
@@ -249,7 +249,7 @@
 
 ## Method: `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)`
 
-- **TC40: Adjacent territories owned by same player are connected** ( :x: )
+- **TC40: Adjacent territories owned by same player are connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by RED
         - ALBERTA owned by RED
@@ -258,7 +258,7 @@
         - owner: RED
     - **Expected output**: true
 
-- **TC41: Non-adjacent territories connected through owned chain are connected** ( :x: )
+- **TC41: Non-adjacent territories connected through owned chain are connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by RED
         - NORTHWEST_TERRITORY owned by RED
@@ -268,7 +268,7 @@
         - owner: RED
     - **Expected output**: true
 
-- **TC42: Broken owned chain is not connected** ( :x: )
+- **TC42: Broken owned chain is not connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by RED
         - NORTHWEST_TERRITORY owned by BLUE
@@ -278,7 +278,7 @@
         - owner: RED
     - **Expected output**: false
 
-- **TC43: Destination not owned by player is not connected** ( :x: )
+- **TC43: Destination not owned by player is not connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by RED
         - NORTHWEST_TERRITORY owned by RED
@@ -288,7 +288,7 @@
         - owner: RED
     - **Expected output**: false
 
-- **TC44: Source not owned by player is not connected** ( :x: )
+- **TC44: Source not owned by player is not connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by BLUE
         - NORTHWEST_TERRITORY owned by RED

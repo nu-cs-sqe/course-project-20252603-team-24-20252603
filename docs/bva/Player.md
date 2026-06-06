@@ -89,53 +89,53 @@
 
 ## Method: `int getCardCount()`
 
-- **TC17: Get card count when player has no cards** ( :x: )
+- **TC17: Get card count when player has no cards** ( :white_check_mark: )
     - **State of the system**: player has 0 cards
     - **Expected output**: 0
 
-- **TC18: Get card count when player has 1 card** ( :x: )
+- **TC18: Get card count when player has 1 card** ( :white_check_mark: )
     - **State of the system**: player has 1 card
     - **Expected output**: 1
 
-- **TC19: Get card count when player has more than 1 card** ( :x: )
+- **TC19: Get card count when player has more than 1 card** ( :white_check_mark: )
     - **State of the system**: player has 3 cards
     - **Expected output**: 3
 
 ## Method: `List<Card> getCards()`
 
-- **TC20: Get cards when player has no cards** ( :x: )
+- **TC20: Get cards when player has no cards** ( :white_check_mark: )
     - **State of the system**: player has 0 cards
     - **Expected output**: empty list
 
-- **TC21: Get cards when player has 1 card** ( :x: )
+- **TC21: Get cards when player has 1 card** ( :white_check_mark: )
     - **State of the system**: player has ALASKA card
     - **Expected output**: list containing ALASKA card
 
-- **TC22: Get cards when player has more than 1 card** ( :x: )
+- **TC22: Get cards when player has more than 1 card** ( :white_check_mark: )
     - **State of the system**: player has ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: list containing ALASKA, ALBERTA, and BRAZIL cards
 
 ## Method: `void addCard(Card card)`
 
-- **TC23: Add 1 card when player has no cards** ( :x: )
+- **TC23: Add 1 card when player has no cards** ( :white_check_mark: )
     - **State of the system**:
         - player has 0 cards
         - card: ALASKA infantry card
     - **Expected output**: player has 1 card
 
-- **TC24: Add 1 card when player has 1 card** ( :x: )
+- **TC24: Add 1 card when player has 1 card** ( :white_check_mark: )
     - **State of the system**:
         - player has 1 card
         - card: ALBERTA cavalry card
     - **Expected output**: player has 2 cards
 
-- **TC25: Add 1 card when player has more than 1 card** ( :x: )
+- **TC25: Add 1 card when player has more than 1 card** ( :white_check_mark: )
     - **State of the system**:
         - player has 3 cards
         - card: BRAZIL artillery card
     - **Expected output**: player has 4 cards
 
-- **TC26: Add null card** ( :x: )
+- **TC26: Add null card** ( :white_check_mark: )
     - **State of the system**:
         - player has any number of cards
         - card: null
@@ -143,37 +143,37 @@
 
 ## Method: `boolean hasCards(List<Card> cards)`
 
-- **TC27: Check player has empty card list** ( :x: )
+- **TC27: Check player has empty card list** ( :white_check_mark: )
     - **State of the system**:
         - player has 1 card
         - cards is empty
     - **Expected output**: true
 
-- **TC28: Check player has exactly 1 requested card** ( :x: )
+- **TC28: Check player has exactly 1 requested card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA card
         - cards contains ALASKA card
     - **Expected output**: true
 
-- **TC29: Check player has more than 1 requested card** ( :x: )
+- **TC29: Check player has more than 1 requested card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA, ALBERTA, and BRAZIL cards
         - cards contains ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: true
 
-- **TC30: Check player missing one requested card** ( :x: )
+- **TC30: Check player missing one requested card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA and ALBERTA cards
         - cards contains ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: false
 
-- **TC31: Check player has duplicate requested card only once** ( :x: )
+- **TC31: Check player has duplicate requested card only once** ( :white_check_mark: )
     - **State of the system**:
         - player has 1 ALASKA card
         - cards contains the same ALASKA card twice
     - **Expected output**: false
 
-- **TC32: Check null card list** ( :x: )
+- **TC32: Check null card list** ( :white_check_mark: )
     - **State of the system**:
         - player has any number of cards
         - cards is null
@@ -181,37 +181,37 @@
 
 ## Method: `void removeCards(List<Card> cards)`
 
-- **TC33: Remove 1 card when player has 1 card** ( :x: )
+- **TC33: Remove 1 card when player has 1 card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA card
         - cards contains ALASKA card
     - **Expected output**: player has 0 cards
 
-- **TC34: Remove 1 card when player has more than 1 card** ( :x: )
+- **TC34: Remove 1 card when player has more than 1 card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA, ALBERTA, and BRAZIL cards
         - cards contains ALASKA card
     - **Expected output**: player has ALBERTA and BRAZIL cards
 
-- **TC35: Remove more than 1 card when player has more than 1 card** ( :x: )
+- **TC35: Remove more than 1 card when player has more than 1 card** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA, ALBERTA, and BRAZIL cards
         - cards contains ALASKA, ALBERTA, and BRAZIL cards
     - **Expected output**: player has 0 cards
 
-- **TC36: Remove zero cards** ( :x: )
+- **TC36: Remove zero cards** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA card
         - cards is empty
     - **Expected output**: player still has ALASKA card
 
-- **TC37: Remove card player does not own** ( :x: )
+- **TC37: Remove card player does not own** ( :white_check_mark: )
     - **State of the system**:
         - player has ALASKA card
         - cards contains BRAZIL card
     - **Expected output**: throw IllegalArgumentException
 
-- **TC38: Remove null card list** ( :x: )
+- **TC38: Remove null card list** ( :white_check_mark: )
     - **State of the system**:
         - player has any number of cards
         - cards is null
