@@ -93,6 +93,8 @@ public final class RiskGame {
     private int tradeSetCount;
     private boolean hasFortifiedThisTurn;
     private boolean capturedThisTurn;
+    private TerritoryName pendingCaptureFrom;
+    private TerritoryName pendingCaptureTo;
     private Deck deck;
     private Random random;
 
@@ -229,6 +231,8 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
         if (!isDraftInitialized || draftArmiesRemaining > 0) {
             throw new IllegalStateException("must complete draft before attacking");
         }
@@ -279,6 +283,8 @@ public final class RiskGame {
         worldMap.removeArmies(from, armiesToMove);
         worldMap.addArmies(to, armiesToMove);
         capturedThisTurn = true;
+        pendingCaptureFrom = from;
+        pendingCaptureTo = to;
         if (defenderColor != null && worldMap.countTerritoriesOwnedBy(defenderColor) == 0) {
             transferCards(defenderColor, getCurrentPlayerColor());
         }
@@ -376,7 +382,26 @@ public final class RiskGame {
         if (!isDraftComplete()) {
             throw new IllegalStateException("must complete draft before ending attack");
         }
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
         phase = GamePhase.FORTIFY;
+    }
+
+    public void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies) {
+        if (phase != GamePhase.ATTACK) {
+            throw new IllegalStateException("can only move armies after capture during ATTACK phase");
+        }
+        if (pendingCaptureFrom == null || !pendingCaptureFrom.equals(from) || !pendingCaptureTo.equals(to)) {
+            throw new IllegalStateException("no pending capture from the specified territories");
+        }
+        if (armies < 1) {
+            throw new IllegalArgumentException("armies must be at least 1");
+        }
+        if (armies >= worldMap.getArmies(from)) {
+            throw new IllegalArgumentException("must leave at least 1 army behind");
+        }
+        worldMap.removeArmies(from, armies);
+        worldMap.addArmies(to, armies);
     }
 
     public PlayerColor getWinner() {
