@@ -139,6 +139,11 @@ public final class GameBoardController {
                 + "  p.addEventListener('click', function() {"
                 + "    window.javaBridge.onTerritoryClicked(this.id);"
                 + "  });"
+                + "  p.addEventListener('mousedown', function() { window.riskDragging = true; });"
+                + "  p.addEventListener('mouseup', function() { window.riskDragging = false; });"
+                + "  p.addEventListener('mouseenter', function() {"
+                + "    if (window.riskDragging) { window.javaBridge.onTerritoryDragged(this.id); }"
+                + "  });"
                 + "});";
         engine.executeScript(js);
     }
@@ -154,6 +159,13 @@ public final class GameBoardController {
             GameBoardController currentController = controller.get();
             if (currentController != null) {
                 Platform.runLater(() -> currentController.handleTerritoryClick(svgId));
+            }
+        }
+
+        public void onTerritoryDragged(String svgId) {
+            GameBoardController currentController = controller.get();
+            if (currentController != null) {
+                Platform.runLater(() -> currentController.handleTerritoryDrag(svgId));
             }
         }
     }
@@ -182,6 +194,25 @@ public final class GameBoardController {
             } else if (phase == GamePhase.FORTIFY) {
                 handleFortifyClick(territory);
             }
+            updateMapColors();
+            updateCardHand();
+            updateStatusBar();
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            statusLabel.setText("Invalid: " + e.getMessage());
+        }
+    }
+
+    private void handleTerritoryDrag(String svgId) {
+        TerritoryName territory = SVG_ID_TO_TERRITORY.get(svgId);
+        if (territory == null || game.getPhase() != GamePhase.ATTACK) {
+            return;
+        }
+        if (game.isDraftComplete() || game.isCaptureMovementPending() || mustTradeBeforeDraft()) {
+            return;
+        }
+        try {
+            actionStatusMessage = null;
+            game.draftArmy(territory);
             updateMapColors();
             updateCardHand();
             updateStatusBar();
