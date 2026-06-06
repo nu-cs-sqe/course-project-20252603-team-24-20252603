@@ -573,7 +573,6 @@ public class WorldMapTests {
 
     @Test
     public void AreConnectedThrough_AdjacentTerritoriesOwnedBySamePlayer_ReturnsTrue() {
-        // TC40: ALASKA and ALBERTA are direct neighbors, both owned by RED.
         WorldMap map = new WorldMap();
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.ALBERTA, PlayerColor.RED);
@@ -582,8 +581,6 @@ public class WorldMapTests {
 
     @Test
     public void AreConnectedThrough_NonAdjacentTerritoriesConnectedThroughOwnedChain_ReturnsTrue() {
-        // TC41: ALASKA and ONTARIO are not direct neighbors.
-        // Chain: ALASKA -> NORTHWEST_TERRITORY -> ONTARIO, all owned by RED.
         WorldMap map = new WorldMap();
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
@@ -593,7 +590,6 @@ public class WorldMapTests {
 
     @Test
     public void AreConnectedThrough_IntermediateTerritoryNotOwned_ReturnsFalse() {
-        // TC42: NORTHWEST_TERRITORY not owned by RED, breaking the only path from ALASKA to ONTARIO.
         WorldMap map = new WorldMap();
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
