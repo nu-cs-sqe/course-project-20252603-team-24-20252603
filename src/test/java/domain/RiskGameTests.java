@@ -925,9 +925,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_AttackerWinsAllDice_CapturesTerritory() {
-        // ALASKA=3 -> numAttackers=2; ALBERTA=1 -> numDefenders=1. One comparison.
-        // Att=[6,5] def=[1]: 6>1 -> ALBERTA loses 1 -> ALBERTA=0 -> captured.
-        // No auto-move: territory captured, armies stay pending moveArmiesAfterCapture.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -956,9 +953,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_DefenderWinsAllDice_AttackerLosesArmies() {
-        // ALASKA=3 -> numAttackers=2; ALBERTA=2 -> numDefenders=2. Two comparisons.
-        // Att=[1,1] def=[6,6]: both pairs attacker loses -> ALASKA loses 2 -> modelled as 1 -> loop exits.
-        // ALBERTA still has armies: no capture.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 0, 5, 5));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -1113,8 +1107,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_CapturesLastTerritory_TransitionsToGameOver() {
-        // ALASKA=2 -> numAttackers=1; ALBERTA=1 -> numDefenders=1. Att=6 def=1: attacker wins.
-        // ALBERTA=0 -> captured. RED owns 42 territories -> game over.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
@@ -1181,8 +1173,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_RealMap_CapturesAlberta_AlbertaOwnedByRed() {
-        // ALASKA=3 -> numAttackers=2; ALBERTA=1 -> numDefenders=1.
-        // Att=[6,5] def=[1]: 6>1 -> ALBERTA-1 -> 0 -> captured. No auto-move.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 3);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1197,8 +1187,6 @@ public class RiskGameTests {
 
     @Test
     public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
-        // ALASKA=4 -> numAttackers=3 vs ALBERTA=1 -> att=[6,5,4] def=[1]: capture. No auto-move.
-        // moveArmiesAfterCapture(ALASKA, ALBERTA, 3): min=min(3,3)=3; ALASKA=1, ALBERTA=3.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
         game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
@@ -1260,6 +1248,22 @@ public class RiskGameTests {
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
         assertThrows(IllegalArgumentException.class, () ->
                 game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 4));
+    }
+
+    @Test
+    public void MoveArmiesAfterCapture_AtMaximumLeavesOneArmyBehind_Succeeds() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 6);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 5);
+        assertEquals(1, game.getArmies(TerritoryName.ALASKA));
+        assertEquals(5, game.getArmies(TerritoryName.ALBERTA));
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ALBERTA, 1));
     }
 
     @Test
@@ -1548,8 +1552,6 @@ public class RiskGameTests {
 
     @Test
     public void Attack_FirstCapture_AwardsOneCardOnEndTurn() {
-        // ALASKA=2 -> numAttackers=1; ALBERTA=1 -> numDefenders=1. Att=6 def=1: capture.
-        // Card awarded when endTurn called after capture.
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
         EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED)).andStubReturn(true);
