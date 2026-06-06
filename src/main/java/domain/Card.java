@@ -26,11 +26,11 @@ public class Card {
         return territory;
     }
 
-    boolean isWild() {
+    public boolean isWild() {
         return type == CardType.WILD;
     }
 
-    boolean matchesTerritory(TerritoryName territory) {
+    public boolean matchesTerritory(TerritoryName territory) {
         return this.territory == territory;
     }
 }

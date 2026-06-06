@@ -625,7 +625,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
-- **TC79: Attacker captures already-owned defender territory with real map** ( :x: )
+- **TC79: Attacker captures already-owned defender territory with real map** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
         - real WorldMap used (not mocked)
@@ -640,7 +640,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies = 1
         - ALASKA armies >= 1
 
-- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :x: )
+- **TC80: Fortify once succeeds and hasFortifiedThisTurn is set** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -653,7 +653,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA armies increase by 1
         - hasFortifiedThisTurn set to true
 
-- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :x: )
+- **TC81: Fortify called twice in same turn throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: FORTIFY
         - ALASKA owned by RED (current player), armies = 3
@@ -663,7 +663,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - hasFortifiedThisTurn: true
     - **Expected output**: throw IllegalStateException
 
-- **TC82: hasFortifiedThisTurn resets after endTurn** ( :x: )
+- **TC82: hasFortifiedThisTurn resets after endTurn** ( :white_check_mark: )
     - **State of the system**:
         - RED successfully called fortify() this turn
         - RED calls endTurn()
@@ -671,7 +671,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - BLUE calls fortify() on valid adjacent owned territories
     - **Expected output**: fortify succeeds — no exception thrown
 
-- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :x: )
+- **TC83: Attack before draft ever initialized throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player has not called `draftArmy()` this turn
@@ -682,7 +682,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - numAttackers: 1
     - **Expected output**: throw IllegalStateException
 
-- **TC84: Attack after draft fully complete succeeds** ( :x: )
+- **TC84: Attack after draft fully complete succeeds** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - isDraftInitialized == true
@@ -695,7 +695,7 @@ further game actions are permitted once `GAME_OVER` is set.
         - Random mocked so attacker wins all dice
     - **Expected output**: attack executes — no exception thrown
 
-- **TC85: After endTurn new player cannot attack without drafting** ( :x: )
+- **TC85: After endTurn new player cannot attack without drafting** ( :white_check_mark: )
     - **State of the system**:
         - RED ends turn, BLUE is new current player
         - BLUE has not called draftArmy()
@@ -705,7 +705,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `int getDraftArmies()` — additional case
 
-- **TC86: Draft armies after all draft armies are placed returns zero** ( :x: )
+- **TC86: Draft armies after all draft armies are placed returns zero** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -716,7 +716,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void endAttack()` — additional case
 
-- **TC87: End attack before draft is complete throws IllegalStateException** ( :x: )
+- **TC87: End attack before draft is complete throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
@@ -725,7 +725,7 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void placeArmy(TerritoryName territory)` — additional case
 
-- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :x: )
+- **TC88: Last setup army transitions to ATTACK with first setup player active** ( :white_check_mark: )
     - **State of the system**:
         - phase: SETUP
         - 3-player game: RED, BLUE, GREEN (in that order)
