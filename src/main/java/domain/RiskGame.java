@@ -419,8 +419,8 @@ public final class RiskGame {
         if (!worldMap.isOwnedBy(to, current)) {
             throw new IllegalArgumentException("to territory not owned by current player");
         }
-        if (!worldMap.areNeighbors(from, to)) {
-            throw new IllegalArgumentException("territories are not neighbors");
+        if (!worldMap.areConnectedThrough(from, to, current)) {
+            throw new IllegalArgumentException("territories are not connected through owned chain");
         }
         if (armies < 1) {
             throw new IllegalArgumentException("armies must be at least 1");
