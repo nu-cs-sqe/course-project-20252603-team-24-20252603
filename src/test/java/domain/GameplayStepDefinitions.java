@@ -128,6 +128,7 @@ public class GameplayStepDefinitions {
         runAction(() -> game.attack(territory(fromName), territory(toName)));
     }
 
+    @When("{word} moves {int} army from {word} to {word} after capture")
     @When("{word} moves {int} armies from {word} to {word} after capture")
     public void playerMovesArmiesAfterCapture(
             String colorName,
