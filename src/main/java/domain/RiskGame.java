@@ -573,6 +573,10 @@ public final class RiskGame {
         return worldMap.getArmies(territory);
     }
 
+    public int getTerritoryCount(PlayerColor color) {
+        return worldMap.countTerritoriesOwnedBy(color);
+    }
+
     private void advanceToNextPlayer() {
         if (isSetupComplete()) {
             currentPlayerIndex = firstSetupPlayerIndex;

@@ -232,6 +232,7 @@ public final class GameBoardController {
         if (selectedFortifyFrom == null || selectedFortifyTo != null) {
             selectedFortifyFrom = territory;
             selectedFortifyTo = null;
+            updateFortifySpinner();
             statusLabel.setText("Selected " + formatName(territory.name())
                     + " as the territory to move from.");
             return;
@@ -241,6 +242,7 @@ public final class GameBoardController {
             return;
         }
         selectedFortifyTo = territory;
+        updateFortifySpinner();
         statusLabel.setText("Selected " + formatName(territory.name())
                 + " as fortify destination.");
     }
@@ -456,7 +458,7 @@ public final class GameBoardController {
             captureArmiesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                     game.getMinimumCaptureMove(),
                     game.getMaximumCaptureMove(),
-                    game.getMinimumCaptureMove()));
+                    game.getMaximumCaptureMove()));
         }
         endAttackButton.setDisable(!attackPhase || capturePending);
 
@@ -475,6 +477,17 @@ public final class GameBoardController {
 
         boolean gameOver = phase == GamePhase.GAME_OVER;
         cardListView.setDisable(gameOver);
+    }
+
+    private void updateFortifySpinner() {
+        if (game == null || selectedFortifyFrom == null) {
+            fortifyArmiesSpinner.setValueFactory(
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 1, 1));
+            return;
+        }
+        int maxArmies = Math.max(1, game.getArmies(selectedFortifyFrom) - 1);
+        fortifyArmiesSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, maxArmies, maxArmies));
     }
 
     private void updateCardHand() {
