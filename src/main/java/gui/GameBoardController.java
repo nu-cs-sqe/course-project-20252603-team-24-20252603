@@ -139,16 +139,7 @@ public final class GameBoardController {
                 + "  p.addEventListener('click', function() {"
                 + "    window.javaBridge.onTerritoryClicked(this.id);"
                 + "  });"
-                + "  p.addEventListener('mousedown', function(event) {"
-                + "    window.riskDragging = true;"
-                + "    window.javaBridge.onTerritoryDragged(this.id);"
-                + "    event.preventDefault();"
-                + "  });"
-                + "  p.addEventListener('mouseover', function() {"
-                + "    if (window.riskDragging) { window.javaBridge.onTerritoryDragged(this.id); }"
-                + "  });"
-                + "});"
-                + "document.addEventListener('mouseup', function() { window.riskDragging = false; });";
+                + "});";
         engine.executeScript(js);
     }
 
@@ -166,12 +157,6 @@ public final class GameBoardController {
             }
         }
 
-        public void onTerritoryDragged(String svgId) {
-            GameBoardController currentController = controller.get();
-            if (currentController != null) {
-                Platform.runLater(() -> currentController.handleTerritoryDrag(svgId));
-            }
-        }
     }
 
     private void handleTerritoryClick(String svgId) {
@@ -202,25 +187,6 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
             updateGameOverOverlay();
-        } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
-        }
-    }
-
-    private void handleTerritoryDrag(String svgId) {
-        TerritoryName territory = SVG_ID_TO_TERRITORY.get(svgId);
-        if (territory == null || game.getPhase() != GamePhase.ATTACK) {
-            return;
-        }
-        if (game.isDraftComplete() || game.isCaptureMovementPending() || mustTradeBeforeDraft()) {
-            return;
-        }
-        try {
-            actionStatusMessage = null;
-            game.draftArmy(territory);
-            updateMapColors();
-            updateCardHand();
-            updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
         }
@@ -678,7 +644,7 @@ public final class GameBoardController {
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
                     + "html, body { width: 100%; height: 100%;"
-                    + " background: #e8f5ff; overflow: hidden; }"
+                    + " background: #87ceeb; overflow: hidden; }"
                     + "svg { width: 100%; height: 100%; display: block; }"
                     + "</style></head><body>"
                     + svgContent

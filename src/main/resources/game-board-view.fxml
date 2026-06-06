@@ -15,7 +15,7 @@
         xmlns="http://javafx.com/javafx/17"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="gui.GameBoardController"
-        style="-fx-background-color: #e8f5ff;">
+        style="-fx-background-color: #87ceeb;">
 
     <center>
         <WebView fx:id="mapView" />
@@ -25,7 +25,7 @@
         <VBox
                 prefWidth="260.0"
                 spacing="10.0"
-                style="-fx-background-color: #f4fbff; -fx-border-color: #b8d8ed; -fx-border-width: 0 0 0 1;">
+                style="-fx-background-color: #d8efff; -fx-border-color: #4b8eb8; -fx-border-width: 0 0 0 1;">
             <padding>
                 <Insets top="14" bottom="14" left="14" right="14" />
             </padding>
@@ -43,49 +43,49 @@
     <bottom>
         <VBox
                 spacing="10.0"
-                style="-fx-background-color: #f4fbff; -fx-border-color: #b8d8ed; -fx-border-width: 1 0 0 0;">
+                style="-fx-background-color: #1f5f8b; -fx-border-color: #174765; -fx-border-width: 1 0 0 0;">
             <padding>
                 <Insets top="10" bottom="10" left="16" right="16" />
             </padding>
 
             <HBox spacing="24.0" alignment="CENTER_LEFT">
                 <VBox spacing="2.0">
-                    <Label text="PHASE" style="-fx-text-fill: #376b8d; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label text="PHASE" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
                     <Label fx:id="phaseLabel" text="SCRAMBLE"
-                           style="-fx-text-fill: #26323c; -fx-font-size: 13px; -fx-font-weight: bold;" />
+                           style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
 
-                <Region prefWidth="1.0" style="-fx-background-color: #b8d8ed;" prefHeight="36.0" />
+                <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="36.0" />
 
                 <VBox spacing="2.0">
-                    <Label text="CURRENT PLAYER" style="-fx-text-fill: #376b8d; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label text="CURRENT PLAYER" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
                     <Label fx:id="playerLabel" text="—"
-                           style="-fx-text-fill: #26323c; -fx-font-size: 13px; -fx-font-weight: bold;" />
+                           style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
 
-                <Region prefWidth="1.0" style="-fx-background-color: #b8d8ed;" prefHeight="36.0" />
+                <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="36.0" />
 
                 <VBox spacing="2.0">
-                    <Label text="ARMIES TO PLACE" style="-fx-text-fill: #376b8d; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label text="ARMIES TO PLACE" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
                     <Label fx:id="armiesLabel" text="—"
-                           style="-fx-text-fill: #26323c; -fx-font-size: 13px; -fx-font-weight: bold;" />
+                           style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />
 
                 <Label fx:id="statusLabel" text="Click a territory to begin."
-                       style="-fx-text-fill: #5f6c78; -fx-font-size: 12px; -fx-font-style: italic;" />
+                       style="-fx-text-fill: #d7edf8; -fx-font-size: 12px; -fx-font-style: italic;" />
             </HBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Label text="Capture armies" style="-fx-text-fill: #5f6c78; -fx-font-size: 12px;" />
+                <Label text="Capture armies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
                 <Spinner fx:id="captureArmiesSpinner" prefWidth="72.0" />
                 <Button fx:id="moveAfterCaptureButton" text="Move" onAction="#handleMoveAfterCapture" />
                 <Button fx:id="endAttackButton" text="End Attack" onAction="#handleEndAttack" />
 
-                <Region prefWidth="1.0" style="-fx-background-color: #b8d8ed;" prefHeight="30.0" />
+                <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="30.0" />
 
-                <Label text="Fortify armies" style="-fx-text-fill: #5f6c78; -fx-font-size: 12px;" />
+                <Label text="Fortify armies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
                 <Spinner fx:id="fortifyArmiesSpinner" prefWidth="72.0" />
                 <Button fx:id="fortifyButton" text="Fortify" onAction="#handleFortify" />
                 <Button fx:id="endTurnButton" text="End Turn" onAction="#handleEndTurn" />
