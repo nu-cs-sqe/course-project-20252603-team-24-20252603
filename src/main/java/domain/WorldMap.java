@@ -37,7 +37,7 @@ class WorldMap {
             TerritoryName current = queue.poll();
             for (TerritoryName neighbor : neighbors.get(current)) {
                 if (neighbor.equals(to)) {
-                    return true;
+                    return isOwnedBy(to, owner);
                 }
                 if (isOwnedBy(neighbor, owner) && !visited.contains(neighbor)) {
                     visited.add(neighbor);
