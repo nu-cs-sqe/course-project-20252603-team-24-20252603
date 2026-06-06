@@ -189,6 +189,10 @@ public final class RiskGame {
         return players.get(currentPlayerIndex).getName();
     }
 
+    public String getPlayerName(PlayerColor color) {
+        return getPlayer(color).getName();
+    }
+
     public int getArmiesToPlace() {
         return players.get(currentPlayerIndex).getArmiesToPlace();
     }

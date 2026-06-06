@@ -197,6 +197,7 @@ public final class GameBoardController {
             updateMapColors();
             updateCardHand();
             updateStatusBar();
+            updateGameOverOverlay();
         } catch (IllegalStateException | IllegalArgumentException e) {
             statusLabel.setText("Invalid: " + e.getMessage());
         }
@@ -503,6 +504,44 @@ public final class GameBoardController {
         updateActionControls(phase);
         String playerColor = PLAYER_COLORS.get(game.getCurrentPlayerColor());
         playerLabel.setStyle("-fx-text-fill: " + playerColor + "; -fx-font-weight: bold;");
+        updateGameOverOverlay();
+    }
+
+    private void updateGameOverOverlay() {
+        if (engine == null || game == null) {
+            return;
+        }
+        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner() == null) {
+            engine.executeScript("var overlay = document.getElementById('game-over-overlay');"
+                    + "if (overlay) { overlay.remove(); }");
+            return;
+        }
+        PlayerColor winner = game.getWinner();
+        String winnerName = game.getPlayerName(winner);
+        String winnerColor = PLAYER_COLORS.get(winner);
+        String text = escapeJs(winnerName.toUpperCase() + " WINS!");
+        String script = "var overlay = document.getElementById('game-over-overlay');"
+                + "if (!overlay) {"
+                + "  overlay = document.createElement('div');"
+                + "  overlay.id = 'game-over-overlay';"
+                + "  document.body.appendChild(overlay);"
+                + "}"
+                + "overlay.textContent = '" + text + "';"
+                + "overlay.style.position = 'fixed';"
+                + "overlay.style.inset = '0';"
+                + "overlay.style.display = 'flex';"
+                + "overlay.style.alignItems = 'center';"
+                + "overlay.style.justifyContent = 'center';"
+                + "overlay.style.zIndex = '9999';"
+                + "overlay.style.pointerEvents = 'none';"
+                + "overlay.style.background = 'rgba(15, 25, 35, 0.54)';"
+                + "overlay.style.color = '" + winnerColor + "';"
+                + "overlay.style.fontFamily = 'Arial, sans-serif';"
+                + "overlay.style.fontSize = '64px';"
+                + "overlay.style.fontWeight = '900';"
+                + "overlay.style.letterSpacing = '2px';"
+                + "overlay.style.textShadow = '0 4px 18px #000, 0 0 8px #fff';";
+        engine.executeScript(script);
     }
 
     private void updateActionControls(GamePhase phase) {
@@ -599,6 +638,10 @@ public final class GameBoardController {
             formatted.append(part.substring(1).toLowerCase());
         }
         return formatted.toString();
+    }
+
+    private String escapeJs(String value) {
+        return value.replace("\\", "\\\\").replace("'", "\\'");
     }
 
     private void syncSelectionsWithPhase(GamePhase phase) {
