@@ -173,6 +173,8 @@ public final class GameBoardController {
                 game.placeArmy(territory);
             } else if (phase == GamePhase.ATTACK && game.isCaptureMovementPending()) {
                 actionStatusMessage = "Move armies into the captured territory.";
+            } else if (phase == GamePhase.ATTACK && mustTradeBeforeDraft()) {
+                actionStatusMessage = "Select a valid card set to trade before drafting.";
             } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
                 game.draftArmy(territory);
             } else if (phase == GamePhase.ATTACK) {
@@ -416,6 +418,8 @@ public final class GameBoardController {
                 } else {
                     statusLabel.setText("Select an enemy target or choose a different source.");
                 }
+            } else if (mustTradeBeforeDraft()) {
+                statusLabel.setText("Select a valid card set to trade before drafting.");
             } else {
                 statusLabel.setText("Click your territories to place draft armies.");
             }
@@ -465,6 +469,7 @@ public final class GameBoardController {
 
         boolean tradeReady = game != null
                 && phase == GamePhase.ATTACK
+                && !game.isDraftComplete()
                 && game.canTradeCards(getSelectedCards());
         tradeCardsButton.setDisable(!tradeReady);
 
@@ -492,6 +497,10 @@ public final class GameBoardController {
             }
         }
         return selectedCards;
+    }
+
+    private boolean mustTradeBeforeDraft() {
+        return game != null && game.getCards(game.getCurrentPlayerColor()).size() >= 5;
     }
 
     private String formatCard(Card card) {
