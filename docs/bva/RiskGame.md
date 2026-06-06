@@ -1301,12 +1301,13 @@ further game actions are permitted once `GAME_OVER` is set.
 
 ## Method: `void tradeCards(List<Card> cards)`
 
-- **TC153: Trade valid set with multiple owned matching territory cards adds one territory bonus** ( :x: )
+- **TC153: Trade valid set with multiple owned matching territory cards adds bonus to each owned territory** ( :x: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - RED owns ALASKA and ALBERTA
-        - RED trades a valid set containing the ALASKA and ALBERTA cards
+        - RED trades a valid set containing the ALASKA card, the ALBERTA card, and one other card
     - **Expected output**:
-        - exactly one owned matching territory gains 2 armies
+        - ALASKA gains 2 armies
+        - ALBERTA gains 2 armies
         - RED receives the trade draft armies
