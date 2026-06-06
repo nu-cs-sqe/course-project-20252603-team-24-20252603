@@ -24,6 +24,16 @@ Feature: F1 Drafting and card trade-ins
     When RED drafts 1 army on ALASKA
     Then the action fails with IllegalStateException
 
+  Scenario: Forced card trade allows drafting afterward
+    Given a Risk game with three players
+    And RED is current player in ATTACK phase
+    And RED owns ALASKA with 3 armies
+    And RED has five cards including a valid set
+    When RED trades the cards ALASKA, ALBERTA, and BRAZIL
+    And RED drafts 7 armies on ALASKA
+    Then RED has 2 cards
+    And ALASKA has 12 armies
+
   Scenario: Trading after draft completion is rejected
     Given a Risk game with three players
     And RED is current player in ATTACK phase
