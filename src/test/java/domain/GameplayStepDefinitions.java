@@ -174,6 +174,33 @@ public class GameplayStepDefinitions {
         });
     }
 
+    @When("{word} completes a full turn by drafting on {word} attacking {word} "
+            + "moving {int} armies and fortifying from {word} to {word}")
+    public void playerCompletesFullTurn(
+            String colorName,
+            String draftTerritoryName,
+            String attackedTerritoryName,
+            int movedArmies,
+            String fortifyFromName,
+            String fortifyToName) {
+        PlayerColor color = playerColor(colorName);
+        TerritoryName draftTerritory = territory(draftTerritoryName);
+        TerritoryName attackedTerritory = territory(attackedTerritoryName);
+        TerritoryName fortifyFrom = territory(fortifyFromName);
+        TerritoryName fortifyTo = territory(fortifyToName);
+        game.setCurrentPlayer(color);
+        runAction(() -> {
+            while (!game.isDraftComplete()) {
+                game.draftArmy(draftTerritory);
+            }
+            game.attack(draftTerritory, attackedTerritory);
+            game.moveArmiesAfterCapture(draftTerritory, attackedTerritory, movedArmies);
+            game.endAttack();
+            game.fortify(fortifyFrom, fortifyTo, 1);
+            game.endTurn();
+        });
+    }
+
     @Then("{word} has {int} card")
     @Then("{word} has {int} cards")
     public void playerHasCards(String colorName, int count) {
