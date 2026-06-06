@@ -1245,6 +1245,19 @@ public class RiskGameTests {
     }
 
     @Test
+    public void MoveArmiesAfterCapture_WrongTerritories_ThrowsIllegalStateException() {
+        RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertThrows(IllegalStateException.class, () ->
+                game.moveArmiesAfterCapture(TerritoryName.ALASKA, TerritoryName.ONTARIO, 3));
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_AboveMaximum_ThrowsIllegalArgumentException() {
         RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 6);
