@@ -189,6 +189,10 @@ public final class RiskGame {
         return players.get(currentPlayerIndex).getName();
     }
 
+    public String getPlayerName(PlayerColor color) {
+        return getPlayer(color).getName();
+    }
+
     public int getArmiesToPlace() {
         return players.get(currentPlayerIndex).getArmiesToPlace();
     }
@@ -396,6 +400,32 @@ public final class RiskGame {
         pendingCaptureTo = null;
     }
 
+    public boolean isCaptureMovementPending() {
+        return pendingCaptureFrom != null;
+    }
+
+    public TerritoryName getPendingCaptureFrom() {
+        return pendingCaptureFrom;
+    }
+
+    public TerritoryName getPendingCaptureTo() {
+        return pendingCaptureTo;
+    }
+
+    public int getMinimumCaptureMove() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
+        return Math.min(3, worldMap.getArmies(pendingCaptureFrom) - 1);
+    }
+
+    public int getMaximumCaptureMove() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
+        return worldMap.getArmies(pendingCaptureFrom) - 1;
+    }
+
     public PlayerColor getWinner() {
         for (Player p : players) {
             if (worldMap.countTerritoriesOwnedBy(p.getColor()) == TOTAL_TERRITORIES) {
@@ -545,6 +575,10 @@ public final class RiskGame {
     }
     public int getArmies(TerritoryName territory) {
         return worldMap.getArmies(territory);
+    }
+
+    public int getTerritoryCount(PlayerColor color) {
+        return worldMap.countTerritoriesOwnedBy(color);
     }
 
     private void advanceToNextPlayer() {
