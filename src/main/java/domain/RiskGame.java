@@ -227,12 +227,10 @@ public final class RiskGame {
         return isDraftInitialized && draftArmiesRemaining == 0;
     }
 
-    public void attack(TerritoryName from, TerritoryName to, int numAttackers) {
+    public void attack(TerritoryName from, TerritoryName to) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
-        pendingCaptureFrom = null;
-        pendingCaptureTo = null;
         if (!isDraftInitialized || draftArmiesRemaining > 0) {
             throw new IllegalStateException("must complete draft before attacking");
         }
@@ -246,42 +244,33 @@ public final class RiskGame {
         if (!worldMap.areNeighbors(from, to)) {
             throw new IllegalArgumentException("territories are not neighbors");
         }
-        if (numAttackers < MIN_ATTACK_DICE || numAttackers > MAX_ATTACK_DICE) {
-            throw new IllegalArgumentException("numAttackers must be between 1 and 3");
+        if (worldMap.getArmies(from) < 2) {
+            throw new IllegalArgumentException("must have at least 2 armies to attack");
         }
-        if (numAttackers >= worldMap.getArmies(from)) {
-            throw new IllegalArgumentException("must leave at least 1 army behind");
-        }
-        int defenderArmies = worldMap.getArmies(to);
-        int numDefenders = Math.min(MAX_DEFEND_DICE, defenderArmies);
-        int[] attackerRolls = rollDiceDescending(numAttackers);
-        int[] defenderRolls = rollDiceDescending(numDefenders);
-        int comparisons = Math.min(numAttackers, numDefenders);
-        int attackerLosses = 0;
-        int defenderLosses = 0;
-        for (int i = 0; i < comparisons; i++) {
-            if (attackerRolls[i] > defenderRolls[i]) {
-                defenderLosses++;
-            } else {
-                attackerLosses++;
+        pendingCaptureFrom = null;
+        pendingCaptureTo = null;
+        while (worldMap.getArmies(from) > 1 && worldMap.getArmies(to) > 0) {
+            int numAttackers = Math.min(MAX_ATTACK_DICE, worldMap.getArmies(from) - 1);
+            int numDefenders = Math.min(MAX_DEFEND_DICE, worldMap.getArmies(to));
+            int[] attackerRolls = rollDiceDescending(numAttackers);
+            int[] defenderRolls = rollDiceDescending(numDefenders);
+            int comparisons = Math.min(numAttackers, numDefenders);
+            for (int i = 0; i < comparisons; i++) {
+                if (attackerRolls[i] > defenderRolls[i]) {
+                    worldMap.removeArmies(to, 1);
+                } else {
+                    worldMap.removeArmies(from, 1);
+                }
             }
         }
-        if (attackerLosses > 0) {
-            worldMap.removeArmies(from, attackerLosses);
-        }
-        if (defenderLosses > 0) {
-            worldMap.removeArmies(to, defenderLosses);
-        }
-        if (defenderLosses == defenderArmies) {
-            captureTerritory(from, to, numAttackers);
+        if (worldMap.getArmies(to) == 0) {
+            captureTerritory(from, to);
         }
     }
 
-    private void captureTerritory(TerritoryName from, TerritoryName to, int armiesToMove) {
+    private void captureTerritory(TerritoryName from, TerritoryName to) {
         PlayerColor defenderColor = getOwnerOf(to);
         worldMap.assignTerritory(to, getCurrentPlayerColor());
-        worldMap.removeArmies(from, armiesToMove);
-        worldMap.addArmies(to, armiesToMove);
         capturedThisTurn = true;
         pendingCaptureFrom = from;
         pendingCaptureTo = to;
