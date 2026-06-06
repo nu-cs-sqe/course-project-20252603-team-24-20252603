@@ -159,6 +159,21 @@ public class GameplayStepDefinitions {
         });
     }
 
+    @When("{word} completes an attack turn with captures from {word} to {word} and {word}")
+    public void playerCompletesAnAttackTurnWithTwoCaptures(
+            String colorName,
+            String fromName,
+            String firstToName,
+            String secondToName) {
+        game.setCurrentPlayer(playerColor(colorName));
+        runAction(() -> {
+            game.attack(territory(fromName), territory(firstToName));
+            game.attack(territory(fromName), territory(secondToName));
+            game.endAttack();
+            game.endTurn();
+        });
+    }
+
     @Then("{word} has {int} card")
     @Then("{word} has {int} cards")
     public void playerHasCards(String colorName, int count) {
