@@ -734,4 +734,178 @@ further game actions are permitted once `GAME_OVER` is set.
         - each player places their final setup army in turn
     - **Expected output**:
         - phase == ATTACK
+
+## Method: `void fortify(TerritoryName from, TerritoryName to, int armies)` — additional case
+
+- **TC89: Fortify between non-adjacent territories connected through owned chain** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - ALASKA owned by RED (current player), armies = 3
+        - NORTHWEST_TERRITORY owned by RED (current player), armies = 1
+        - ONTARIO owned by RED (current player), armies = 1
+        - ALASKA and ONTARIO are not direct neighbors; path: ALASKA→NORTHWEST_TERRITORY→ONTARIO
+        - armies: 1
+    - **Expected output**:
+        - ALASKA armies = 2
+        - ONTARIO armies = 2
+
+## Method: `boolean canTradeCards(List<Card> cards)`
+
+Returns true if the given list of 3 cards forms a valid tradeable set. Valid sets: three of the same type, one of each type, or any set containing at least one wild card.
+
+- **TC90: null list** ( :white_check_mark: )
+    - **State of the system**: cards == null
+    - **Expected output**: false
+
+- **TC91: list containing null card** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, CAVALRY/ALBERTA, null]
+    - **Expected output**: false
+
+- **TC92: fewer than 3 cards (boundary: 2)** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA]
+    - **Expected output**: false
+
+- **TC93: more than 3 cards (boundary: 4)** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA, INFANTRY/BRAZIL, CAVALRY/CHINA]
+    - **Expected output**: false
+
+- **TC94: three of the same type** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA, INFANTRY/BRAZIL]
+    - **Expected output**: true
+
+- **TC95: one of each type** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, CAVALRY/ALBERTA, ARTILLERY/BRAZIL]
+    - **Expected output**: true
+
+- **TC96: two same type and one different non-wild** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA, CAVALRY/BRAZIL]
+    - **Expected output**: false
+
+- **TC97: one territory card and two wilds** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, WILD, WILD]
+    - **Expected output**: true
+
+- **TC98: two different types and one wild** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, CAVALRY/ALBERTA, WILD]
+    - **Expected output**: true
+
+- **TC99: two same type and one wild** ( :white_check_mark: )
+    - **State of the system**: cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA, WILD]
+    - **Expected output**: true
+
+## Method: `void tradeCards(List<Card> cards)`
+
+Current player trades exactly 3 cards for draft armies. The bonus follows the sequence 4, 6, 8, 10, 12, 15, 20, 25, ... (increases by 5 after the 6th trade). If the draft has not yet been initialized, territory armies are also computed at this point. If a traded card's territory is owned by the current player, 2 bonus armies are placed on that territory.
+
+- **TC100: wrong phase** ( :white_check_mark: )
+    - **State of the system**: phase: FORTIFY; player has valid tradeable cards
+    - **Expected output**: throw IllegalStateException
+
+- **TC101: null list** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; cards == null
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC102: list containing null** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; cards = [INFANTRY/ALASKA, null, INFANTRY/BRAZIL]
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC103: fewer than 3 cards (boundary: 2)** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; cards = 2 valid cards owned by player
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC104: more than 3 cards (boundary: 4)** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; cards = 4 valid cards owned by player
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC105: invalid card set** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; cards = [INFANTRY/ALASKA, INFANTRY/ALBERTA, CAVALRY/BRAZIL] (2+1, no wild)
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC106: cards not owned by player** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; 3 valid card types presented but player has no cards
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC107: trade before draft initialized — total armies = territory armies + card bonus** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftInitialized: false
+        - current player: RED, owns 3 territories (territory armies = max(3, 3/3) = 3)
+        - RED holds 3 INFANTRY cards (valid trade set, 1st trade = +4 bonus)
+    - **Expected output**:
+        - total draft armies = 3 (territory) + 4 (bonus) = 7
+        - after 7 calls to draftArmy(), isDraftComplete() == true
+
+- **TC108: first trade adds 4 draft armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; tradeSetCount = 0 before trade
+        - RED holds a valid set; isDraftInitialized already true (territory armies already set to 3)
+    - **Expected output**: draftArmiesRemaining increases by 4; total = 7; isDraftComplete after 7 draftArmy calls
+
+- **TC109: second trade adds 6 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 1 before trade
+    - **Expected output**: draftArmiesRemaining increases by 6
+
+- **TC110: third trade adds 8 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 2 before trade
+    - **Expected output**: draftArmiesRemaining increases by 8
+
+- **TC111: fourth trade adds 10 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 3 before trade
+    - **Expected output**: draftArmiesRemaining increases by 10
+
+- **TC112: fifth trade adds 12 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 4 before trade
+    - **Expected output**: draftArmiesRemaining increases by 12
+
+- **TC113: sixth trade adds 15 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 5 before trade
+    - **Expected output**: draftArmiesRemaining increases by 15
+
+- **TC114: seventh trade (after sixth) adds 20 draft armies** ( :white_check_mark: )
+    - **State of the system**: tradeSetCount = 6 before trade (post-table: 15 + 5×1 = 20)
+    - **Expected output**: draftArmiesRemaining increases by 20
+
+- **TC115: traded card matches owned territory — 2 bonus armies on that territory** ( :white_check_mark: )
+    - **State of the system**:
+        - RED owns ALASKA; one of the 3 traded cards is for ALASKA
+    - **Expected output**: ALASKA armies increase by 2
+
+- **TC116: traded card matches unowned territory — no territory bonus** ( :white_check_mark: )
+    - **State of the system**:
+        - RED does not own the territory on any traded card
+    - **Expected output**: no territory armies added
+
+- **TC117: traded cards moved to deck discard pile** ( :white_check_mark: )
+    - **State of the system**: RED trades 3 cards; discard pile was empty
+    - **Expected output**:
+        - RED has 0 cards
+        - deck discard pile size == 3
+
+## Method: `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)`
+
+After capturing a territory, the current player may move additional armies (beyond the minimum auto-moved at capture) from the attacking territory into the captured one. Must be called during ATTACK phase and only after a capture was just made from `from` to `to`.
+
+- **TC118: wrong phase** ( :white_check_mark: )
+    - **State of the system**: phase: FORTIFY; no pending capture
+    - **Expected output**: throw IllegalStateException
+
+- **TC119: no prior capture (called without having captured)** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; no capture has occurred this attack
+    - **Expected output**: throw IllegalStateException
+
+- **TC120: 0 armies (boundary: below minimum)** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; prior capture from ALASKA to ALBERTA; armies = 0
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC121: armies >= from.armies (none left behind — boundary)** ( :white_check_mark: )
+    - **State of the system**: phase: ATTACK; prior capture; ALASKA has 2 armies; armies = 2
+    - **Expected output**: throw IllegalArgumentException
+
+- **TC122: valid additional movement beyond minimum** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK; ALASKA (RED, 4 armies) attacked ALBERTA (BLUE, 1 army) with 1 die
+        - attacker won; captureTerritory auto-moved 1 army: ALASKA=3, ALBERTA=1
+        - armies = 2
+    - **Expected output**:
+        - ALASKA armies = 1
+        - ALBERTA armies = 3
         - current player == RED
