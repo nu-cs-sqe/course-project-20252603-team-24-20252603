@@ -1311,3 +1311,11 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALASKA gains 2 armies
         - ALBERTA gains 2 armies
         - RED receives the trade draft armies
+
+- **TC154: Trade cards after draft is complete throws IllegalStateException** ( :x: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - draft is complete (all draft armies have been placed)
+        - RED holds a valid tradeable set of 3 cards
+    - **Expected output**: throw IllegalStateException
