@@ -139,12 +139,16 @@ public final class GameBoardController {
                 + "  p.addEventListener('click', function() {"
                 + "    window.javaBridge.onTerritoryClicked(this.id);"
                 + "  });"
-                + "  p.addEventListener('mousedown', function() { window.riskDragging = true; });"
-                + "  p.addEventListener('mouseup', function() { window.riskDragging = false; });"
-                + "  p.addEventListener('mouseenter', function() {"
+                + "  p.addEventListener('mousedown', function(event) {"
+                + "    window.riskDragging = true;"
+                + "    window.javaBridge.onTerritoryDragged(this.id);"
+                + "    event.preventDefault();"
+                + "  });"
+                + "  p.addEventListener('mouseover', function() {"
                 + "    if (window.riskDragging) { window.javaBridge.onTerritoryDragged(this.id); }"
                 + "  });"
-                + "});";
+                + "});"
+                + "document.addEventListener('mouseup', function() { window.riskDragging = false; });";
         engine.executeScript(js);
     }
 
@@ -674,7 +678,7 @@ public final class GameBoardController {
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
                     + "html, body { width: 100%; height: 100%;"
-                    + " background: #1a2633; overflow: hidden; }"
+                    + " background: #e8f5ff; overflow: hidden; }"
                     + "svg { width: 100%; height: 100%; display: block; }"
                     + "</style></head><body>"
                     + svgContent
