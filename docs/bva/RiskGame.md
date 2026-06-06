@@ -625,6 +625,26 @@ further game actions are permitted once `GAME_OVER` is set.
         - phase: GAME_OVER
     - **Expected output**: throw IllegalStateException
 
+- **`claimTerritory()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **`placeArmy()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **`tradeCards()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **`moveArmiesAfterCapture()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
 - **TC79: Attacker captures already-owned defender territory with real map** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK, isDraftComplete: true
