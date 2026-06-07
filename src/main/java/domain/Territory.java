@@ -7,8 +7,6 @@ class Territory {
 
     Territory(TerritoryName name) {
         this.name = name;
-        this.armies = 0;
-        this.owner = null;
     }
 
     TerritoryName getName() {
@@ -42,7 +40,7 @@ class Territory {
 
     void claim(PlayerColor color) {
         if (owner != null) {
-            throw new IllegalStateException("Territory is already claimed");
+            throw new IllegalStateException("territory is already claimed");
         }
         this.owner = color;
     }
