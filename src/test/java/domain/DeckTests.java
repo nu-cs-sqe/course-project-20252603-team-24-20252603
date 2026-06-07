@@ -34,6 +34,27 @@ public class DeckTests {
     }
 
     @Test
+    public void ConstructDeck_CardTypeDistribution_ReturnsFourteenOfEachType() {
+        Deck deck = new Deck();
+        int infantry = 0;
+        int cavalry = 0;
+        int artillery = 0;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (card.getType() == CardType.INFANTRY) {
+                infantry++;
+            } else if (card.getType() == CardType.CAVALRY) {
+                cavalry++;
+            } else if (card.getType() == CardType.ARTILLERY) {
+                artillery++;
+            }
+        }
+        assertEquals(14, infantry);
+        assertEquals(14, cavalry);
+        assertEquals(14, artillery);
+    }
+
+    @Test
     public void Draw_FirstTenCardsFromShuffledDeck_NotAllInfantry() {
         Deck deck = new Deck(new Random(0L));
         boolean foundNonInfantry = false;
