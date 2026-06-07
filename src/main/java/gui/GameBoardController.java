@@ -532,7 +532,9 @@ public final class GameBoardController {
         PlayerColor winner = game.getWinner();
         String winnerName = game.getPlayerName(winner);
         String winnerColor = PLAYER_COLORS.get(winner);
-        String text = escapeJs(winnerName.toUpperCase() + " WINS!");
+        String text = escapeJs(MessageFormat.format(
+                LocaleManager.getBundle().getString("overlay.winner"),
+                winnerName.toUpperCase()));
         String script = "var overlay = document.getElementById('game-over-overlay');"
                 + "if (!overlay) {"
                 + "  overlay = document.createElement('div');"
