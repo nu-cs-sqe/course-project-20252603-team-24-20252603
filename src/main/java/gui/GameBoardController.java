@@ -255,7 +255,7 @@ public final class GameBoardController {
             if (eliminated != null) {
                 actionStatusMessage += " " + MessageFormat.format(
                         bundle.getString("status.eliminated"),
-                        bundle.getString(colorKey(eliminated)));
+                        bundle.getString(PlayerColors.colorKey(eliminated)));
             }
         } else {
             actionStatusMessage = MessageFormat.format(
@@ -492,7 +492,7 @@ public final class GameBoardController {
         playerLabel.setText(MessageFormat.format(
                 bundle.getString("board.playerNameWithColor"),
                 game.getCurrentPlayerName(),
-                bundle.getString(colorKey(game.getCurrentPlayerColor()))));
+                bundle.getString(PlayerColors.colorKey(game.getCurrentPlayerColor()))));
 
         if (phase == GamePhase.SCRAMBLE) {
             armiesLabel.setText(MessageFormat.format(
@@ -538,7 +538,7 @@ public final class GameBoardController {
                     ? ""
                     : MessageFormat.format(
                             bundle.getString("status.winner"),
-                            bundle.getString(colorKey(winner)));
+                            bundle.getString(PlayerColors.colorKey(winner)));
             statusLabel.setText(MessageFormat.format(
                     bundle.getString("status.gameOver"), winnerText));
         }
@@ -800,25 +800,6 @@ public final class GameBoardController {
         map.put("new_guinea", TerritoryName.NEW_GUINEA);
         map.put("indonesia", TerritoryName.INDONESIA);
         return Collections.unmodifiableMap(map);
-    }
-
-    private static String colorKey(PlayerColor color) {
-        switch (color) {
-            case RED:
-                return "color.red";
-            case BLUE:
-                return "color.blue";
-            case GREEN:
-                return "color.green";
-            case ORANGE:
-                return "color.orange";
-            case PINK:
-                return "color.pink";
-            case CYAN:
-                return "color.cyan";
-            default:
-                throw new IllegalArgumentException(color.toString());
-        }
     }
 
     private static Map<PlayerColor, String> buildColorMap() {

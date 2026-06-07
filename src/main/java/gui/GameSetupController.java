@@ -280,26 +280,7 @@ public final class GameSetupController {
     }
 
     private static String displayName(PlayerColor color) {
-        return LocaleManager.getBundle().getString(colorKey(color));
-    }
-
-    private static String colorKey(PlayerColor color) {
-        switch (color) {
-            case RED:
-                return "color.red";
-            case BLUE:
-                return "color.blue";
-            case GREEN:
-                return "color.green";
-            case ORANGE:
-                return "color.orange";
-            case PINK:
-                return "color.pink";
-            case CYAN:
-                return "color.cyan";
-            default:
-                throw new IllegalArgumentException(color.toString());
-        }
+        return LocaleManager.getBundle().getString(PlayerColors.colorKey(color));
     }
 
     private static String toCssHex(Color color) {
