@@ -151,9 +151,10 @@ public final class GameSetupController {
 
     @FXML
     private void handleStartGame() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         int count = playerCountSpinner.getValue();
         if (nameFields.size() != count) {
-            showError("Setup is out of sync with the player count. Try adjusting the number of players.");
+            showError(bundle.getString("setup.error.outOfSync"));
             return;
         }
 
@@ -167,12 +168,15 @@ public final class GameSetupController {
             String raw = field.getText();
             String name = raw == null ? "" : raw.trim();
             if (name.isEmpty()) {
-                showError("Enter a name for " + displayName(color) + " (player " + (i + 1) + ").");
+                showError(MessageFormat.format(
+                        bundle.getString("setup.error.emptyName"),
+                        displayName(color), i + 1));
                 return;
             }
             String dedupeKey = name.toLowerCase(Locale.ROOT);
             if (!seenLower.add(dedupeKey)) {
-                showError("Each player must have a different name (duplicate: \"" + name + "\").");
+                showError(MessageFormat.format(
+                        bundle.getString("setup.error.duplicateName"), name));
                 return;
             }
             map.put(color, name);
@@ -197,9 +201,11 @@ public final class GameSetupController {
     }
 
     private void switchToGameBoard(RiskGame game) {
+        ResourceBundle bundle = LocaleManager.getBundle();
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/game-board-view.fxml"));
+                    getClass().getResource("/game-board-view.fxml"),
+                    bundle);
             Parent root = loader.load();
 
             GameBoardController controller = loader.getController();
@@ -208,11 +214,12 @@ public final class GameSetupController {
             Stage stage = (Stage) headingLabel.getScene().getWindow();
             Scene scene = new Scene(root, 1100, 750);
             stage.setScene(scene);
-            stage.setTitle("Risk");
+            stage.setTitle(bundle.getString("window.title.game"));
             stage.setMinWidth(900);
             stage.setMinHeight(600);
         } catch (Exception e) {
-            showError("Failed to load game board: " + e.getMessage());
+            showError(MessageFormat.format(
+                    bundle.getString("setup.error.loadBoard"), e.getMessage()));
         }
     }
 
@@ -306,7 +313,7 @@ public final class GameSetupController {
 
     private static void showError(String message) {
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Cannot start game");
+        alert.setTitle(LocaleManager.getBundle().getString("setup.errorTitle"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
