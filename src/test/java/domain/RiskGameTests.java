@@ -1869,6 +1869,16 @@ public class RiskGameTests {
     }
 
     @Test
+    public void CanTradeCards_ThreeArtillery_ReturnsTrue() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        List<Card> cards = List.of(
+                new Card(CardType.ARTILLERY, TerritoryName.ALASKA),
+                new Card(CardType.ARTILLERY, TerritoryName.ALBERTA),
+                new Card(CardType.ARTILLERY, TerritoryName.BRAZIL));
+        assertTrue(game.canTradeCards(cards));
+    }
+
+    @Test
     public void CanTradeCards_OneOfEachType_ReturnsTrue() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         List<Card> cards = List.of(
