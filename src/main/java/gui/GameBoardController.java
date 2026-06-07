@@ -534,7 +534,7 @@ public final class GameBoardController {
                     game.getMaximumCaptureMove(),
                     game.getMaximumCaptureMove()));
         }
-        endAttackButton.setDisable(!attackPhase || capturePending);
+        endAttackButton.setDisable(gameOver || !attackPhase || capturePending);
 
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
         fortifyArmiesSpinner.setDisable(!fortifyPhase);
