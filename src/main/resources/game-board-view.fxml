@@ -30,11 +30,11 @@
                 <Insets top="14" bottom="14" left="14" right="14" />
             </padding>
 
-            <Label text="CARDS"
+            <Label text="%board.cards"
                    style="-fx-text-fill: #376b8d; -fx-font-size: 10px; -fx-font-weight: bold;" />
             <ListView fx:id="cardListView" VBox.vgrow="ALWAYS"
                       style="-fx-background-color: #fbfdff; -fx-control-inner-background: #fbfdff; -fx-text-fill: #24313d;" />
-            <Button fx:id="tradeCardsButton" text="Trade Cards" onAction="#handleTradeCards"
+            <Button fx:id="tradeCardsButton" text="%board.tradeCards" onAction="#handleTradeCards"
                     maxWidth="Infinity"
                     style="-fx-background-color: #d6a84f; -fx-text-fill: #17202a; -fx-font-weight: bold;" />
         </VBox>
@@ -50,15 +50,15 @@
 
             <HBox spacing="24.0" alignment="CENTER_LEFT">
                 <VBox spacing="2.0">
-                    <Label text="PHASE" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
-                    <Label fx:id="phaseLabel" text="SCRAMBLE"
+                    <Label text="%board.phase" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label fx:id="phaseLabel" text=""
                            style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
 
                 <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="36.0" />
 
                 <VBox spacing="2.0">
-                    <Label text="CURRENT PLAYER" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label text="%board.currentPlayer" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
                     <Label fx:id="playerLabel" text="—"
                            style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
@@ -66,33 +66,33 @@
                 <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="36.0" />
 
                 <VBox spacing="2.0">
-                    <Label text="ARMIES TO PLACE" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
+                    <Label text="%board.armiesToPlace" style="-fx-text-fill: #b9d8ec; -fx-font-size: 9px; -fx-font-weight: bold;" />
                     <Label fx:id="armiesLabel" text="—"
                            style="-fx-text-fill: #f5fbff; -fx-font-size: 13px; -fx-font-weight: bold;" />
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Label fx:id="statusLabel" text="Click a territory to begin."
+                <Label fx:id="statusLabel" text="%status.clickToBegin"
                        style="-fx-text-fill: #d7edf8; -fx-font-size: 12px; -fx-font-style: italic;" />
             </HBox>
 
             <HBox spacing="10.0" alignment="CENTER_LEFT">
-                <Label text="Capture armies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
+                <Label text="%board.captureArmies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
                 <Spinner fx:id="captureArmiesSpinner" prefWidth="72.0" />
-                <Button fx:id="moveAfterCaptureButton" text="Move" onAction="#handleMoveAfterCapture" />
-                <Button fx:id="endAttackButton" text="End Attack" onAction="#handleEndAttack" />
+                <Button fx:id="moveAfterCaptureButton" text="%board.move" onAction="#handleMoveAfterCapture" />
+                <Button fx:id="endAttackButton" text="%board.endAttack" onAction="#handleEndAttack" />
 
                 <Region prefWidth="1.0" style="-fx-background-color: #4b8eb8;" prefHeight="30.0" />
 
-                <Label text="Fortify armies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
+                <Label text="%board.fortifyArmies" style="-fx-text-fill: #d7edf8; -fx-font-size: 12px;" />
                 <Spinner fx:id="fortifyArmiesSpinner" prefWidth="72.0" />
-                <Button fx:id="fortifyButton" text="Fortify" onAction="#handleFortify" />
-                <Button fx:id="endTurnButton" text="End Turn" onAction="#handleEndTurn" />
+                <Button fx:id="fortifyButton" text="%board.fortify" onAction="#handleFortify" />
+                <Button fx:id="endTurnButton" text="%board.endTurn" onAction="#handleEndTurn" />
 
                 <Region HBox.hgrow="ALWAYS" />
 
-                <Button fx:id="newGameButton" text="New Game" onAction="#handleNewGame"
+                <Button fx:id="newGameButton" text="%board.newGame" onAction="#handleNewGame"
                         disable="true"
                         style="-fx-background-color: #2e9b5f; -fx-text-fill: white; -fx-font-weight: bold;" />
             </HBox>

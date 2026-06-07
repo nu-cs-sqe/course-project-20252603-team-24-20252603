@@ -3,6 +3,7 @@ package gui;
 import domain.GameConstants;
 import domain.PlayerColor;
 import domain.RiskGame;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -10,8 +11,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
@@ -19,7 +22,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -31,6 +36,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 /**
  * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
@@ -52,12 +58,18 @@ public final class GameSetupController {
     @FXML
     private VBox nameFieldsContainer;
 
+    @FXML
+    private ComboBox<Locale> localeComboBox;
+
     private final List<TextField> nameFields = new ArrayList<>();
 
     @FXML
     private void initialize() {
-        headingLabel.setText("New game");
+        ResourceBundle bundle = LocaleManager.getBundle();
+        headingLabel.setText(bundle.getString("setup.heading"));
         headingLabel.setFont(Font.font(null, FontWeight.BOLD, 18));
+
+        initializeLocalePicker();
 
         SpinnerValueFactory.IntegerSpinnerValueFactory factory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(
@@ -72,6 +84,63 @@ public final class GameSetupController {
         rebuildNameFields(factory.getValue());
     }
 
+    private void initializeLocalePicker() {
+        localeComboBox.setItems(
+                FXCollections.observableArrayList(LocaleManager.SUPPORTED_LOCALES));
+        localeComboBox.setConverter(new StringConverter<Locale>() {
+            @Override
+            public String toString(Locale loc) {
+                if (loc == null) {
+                    return "";
+                }
+                return displayNameFor(loc);
+            }
+
+            @Override
+            public Locale fromString(String s) {
+                return null;
+            }
+        });
+        localeComboBox.setCellFactory(list -> new ListCell<Locale>() {
+            @Override
+            protected void updateItem(Locale loc, boolean empty) {
+                super.updateItem(loc, empty);
+                setText(loc == null || empty ? null : displayNameFor(loc));
+            }
+        });
+        localeComboBox.setValue(LocaleManager.getCurrentLocale());
+        localeComboBox.valueProperty().addListener((obs, oldLoc, newLoc) -> {
+            if (newLoc != null && !newLoc.equals(oldLoc)) {
+                LocaleManager.setCurrentLocale(newLoc);
+                reloadSetupScene();
+            }
+        });
+    }
+
+    /**
+     * Returns the native display name for {@code loc} (e.g., "English",
+     * "Español", "Français") by reading {@code locale.displayName} from the
+     * locale's own bundle. No central mapping is required, so adding a new
+     * locale needs no Java changes.
+     */
+    private static String displayNameFor(Locale loc) {
+        return LocaleManager.getBundle(loc).getString("locale.displayName");
+    }
+
+    private void reloadSetupScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/game-setup-view.fxml"),
+                    LocaleManager.getBundle());
+            Parent root = loader.load();
+            Stage stage = (Stage) headingLabel.getScene().getWindow();
+            stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            showError(LocaleManager.getBundle().getString("setup.error.reload"));
+        }
+    }
+
     /**
      * Returns the player map from the last successful {@link #handleStartGame()}, or {@code null}.
      */
@@ -81,10 +150,10 @@ public final class GameSetupController {
 
     @FXML
     private void handleStartGame() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         int count = playerCountSpinner.getValue();
         if (nameFields.size() != count) {
-            showError("Setup is out of sync with the player count. "
-                    + "Try adjusting the number of players.");
+            showError(bundle.getString("setup.error.outOfSync"));
             return;
         }
 
@@ -98,12 +167,15 @@ public final class GameSetupController {
             String raw = field.getText();
             String name = raw == null ? "" : raw.trim();
             if (name.isEmpty()) {
-                showError("Enter a name for " + displayName(color) + " (player " + (i + 1) + ").");
+                showError(MessageFormat.format(
+                        bundle.getString("setup.error.emptyName"),
+                        displayName(color), i + 1));
                 return;
             }
             String dedupeKey = name.toLowerCase(Locale.ROOT);
             if (!seenLower.add(dedupeKey)) {
-                showError("Each player must have a different name (duplicate: \"" + name + "\").");
+                showError(MessageFormat.format(
+                        bundle.getString("setup.error.duplicateName"), name));
                 return;
             }
             map.put(color, name);
@@ -115,7 +187,7 @@ public final class GameSetupController {
         try {
             game = new RiskGame(validatedPlayerInfo);
         } catch (IllegalArgumentException e) {
-            showError(e.getMessage());
+            showError(bundle.getString("setup.error.createGame"));
             return;
         }
 
@@ -128,9 +200,11 @@ public final class GameSetupController {
     }
 
     private void switchToGameBoard(RiskGame game) {
+        ResourceBundle bundle = LocaleManager.getBundle();
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/game-board-view.fxml"));
+                    getClass().getResource("/game-board-view.fxml"),
+                    bundle);
             Parent root = loader.load();
 
             GameBoardController controller = loader.getController();
@@ -139,17 +213,21 @@ public final class GameSetupController {
             Stage stage = (Stage) headingLabel.getScene().getWindow();
             Scene scene = new Scene(root, 1100, 750);
             stage.setScene(scene);
-            stage.setTitle("Risk");
+            stage.setTitle(bundle.getString("window.title.game"));
             stage.setMinWidth(900);
             stage.setMinHeight(600);
         } catch (Exception e) {
-            showError("Failed to load game board: " + e.getMessage());
+            showError(bundle.getString("setup.error.loadBoard"));
         }
     }
 
     private void rebuildNameFields(int count) {
         nameFieldsContainer.getChildren().clear();
         nameFields.clear();
+
+        ResourceBundle bundle = LocaleManager.getBundle();
+        String slotPattern = bundle.getString("setup.playerSlot");
+        String defaultNamePattern = bundle.getString("setup.defaultName");
 
         PlayerColor[] colors = PlayerColor.values();
 
@@ -168,10 +246,10 @@ public final class GameSetupController {
             Label colorLabel = new Label(displayName(color));
             colorLabel.setPrefWidth(64);
 
-            Label slotLabel = new Label("Player " + i);
+            Label slotLabel = new Label(MessageFormat.format(slotPattern, i));
             slotLabel.setPrefWidth(64);
 
-            TextField field = new TextField("Player " + i);
+            TextField field = new TextField(MessageFormat.format(defaultNamePattern, i));
             HBox.setHgrow(field, Priority.ALWAYS);
             nameFields.add(field);
 
@@ -202,19 +280,23 @@ public final class GameSetupController {
     }
 
     private static String displayName(PlayerColor color) {
+        return LocaleManager.getBundle().getString(colorKey(color));
+    }
+
+    private static String colorKey(PlayerColor color) {
         switch (color) {
             case RED:
-                return "Red";
+                return "color.red";
             case BLUE:
-                return "Blue";
+                return "color.blue";
             case GREEN:
-                return "Green";
+                return "color.green";
             case ORANGE:
-                return "Orange";
+                return "color.orange";
             case PINK:
-                return "Pink";
+                return "color.pink";
             case CYAN:
-                return "Cyan";
+                return "color.cyan";
             default:
                 throw new IllegalArgumentException(color.toString());
         }
@@ -229,7 +311,7 @@ public final class GameSetupController {
 
     private static void showError(String message) {
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Cannot start game");
+        alert.setTitle(LocaleManager.getBundle().getString("setup.errorTitle"));
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
