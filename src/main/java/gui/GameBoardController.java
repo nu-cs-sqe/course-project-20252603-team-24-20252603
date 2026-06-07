@@ -417,7 +417,8 @@ public final class GameBoardController {
                     + "    el.style.strokeWidth = '" + strokeWidth + "';"
                     + "    el.dataset.owner = '" + ownerData + "';"
                     + "    el.dataset.armies = '" + armies + "';"
-                    + "    el.title = '" + formatName(territory.name()) + " (" + armies + ")';"
+                    + "    el.title = '" + escapeJs(formatName(territory.name()))
+                    + " (" + armies + ")';"
                     + "    var labelId = 'army-label-" + svgId + "';"
                     + "    var label = document.getElementById(labelId);"
                     + "    if (!label) {"
@@ -641,7 +642,22 @@ public final class GameBoardController {
                 formatName(card.getTerritory().name()));
     }
 
+    /**
+     * Returns the localized display name for a {@link TerritoryName} enum
+     * value, given its {@code .name()} string (e.g., {@code "NORTH_AFRICA"}).
+     * Falls back to a title-cased version of the enum name if the bundle
+     * does not define a translation, so adding a territory to the enum
+     * before its bundle key is added does not crash the UI.
+     */
     private String formatName(String name) {
+        try {
+            return LocaleManager.getBundle().getString("territory." + name);
+        } catch (java.util.MissingResourceException missing) {
+            return titleCase(name);
+        }
+    }
+
+    private String titleCase(String name) {
         StringBuilder formatted = new StringBuilder();
         for (String part : name.split("_")) {
             if (formatted.length() > 0) {
