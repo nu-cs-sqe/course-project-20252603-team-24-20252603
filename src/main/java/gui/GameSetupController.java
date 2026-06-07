@@ -1,5 +1,6 @@
 package gui;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -219,6 +220,10 @@ public final class GameSetupController {
         nameFieldsContainer.getChildren().clear();
         nameFields.clear();
 
+        ResourceBundle bundle = LocaleManager.getBundle();
+        String slotPattern = bundle.getString("setup.playerSlot");
+        String defaultNamePattern = bundle.getString("setup.defaultName");
+
         PlayerColor[] colors = PlayerColor.values();
 
         for (int i = 1; i <= count; i++) {
@@ -236,10 +241,10 @@ public final class GameSetupController {
             Label colorLabel = new Label(displayName(color));
             colorLabel.setPrefWidth(64);
 
-            Label slotLabel = new Label("Player " + i);
+            Label slotLabel = new Label(MessageFormat.format(slotPattern, i));
             slotLabel.setPrefWidth(64);
 
-            TextField field = new TextField("Player " + i);
+            TextField field = new TextField(MessageFormat.format(defaultNamePattern, i));
             HBox.setHgrow(field, Priority.ALWAYS);
             nameFields.add(field);
 
