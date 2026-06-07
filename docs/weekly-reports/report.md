@@ -65,8 +65,8 @@
 **Planning and Progress Tracking**:
 1. [done] David: BVA for multiple turns phase
 2. [in progress] Jonathan: TDD for multple turns phase
-3. [in progress] Prashant: GUI for one turn + multiple turns phase
+3. [done] Prashant, Jonathan: GUI for one turn + multiple turns phase
 4. [in progress] Justin: Design doc for multiple turn phase + win condition
 6. [not started] Jonathan: BVA for win condition
 7. [not started] David: TDD for win condition
-8. [not started] Prashant: GUI for win condition
+8. [done] Prashant: GUI for win condition
