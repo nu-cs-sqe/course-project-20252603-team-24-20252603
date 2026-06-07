@@ -144,6 +144,14 @@ public class RiskGameTests {
     }
 
     @Test
+    public void SetCurrentPlayer_ColorNotInGame_LeavesCurrentPlayerUnchanged() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setCurrentPlayer(PlayerColor.ORANGE);
+        assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
+    }
+
+    @Test
     public void GetCurrentPlayerColor_AfterTurnEnds_ReturnsDifferentPlayer() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
