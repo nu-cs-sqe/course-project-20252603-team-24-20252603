@@ -2029,6 +2029,46 @@ public class RiskGameTests {
     }
 
     @Test
+    public void TradeCards_SecondTradeSameTurn_SkipsDraftReinitialization() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(3);
+        EasyMock.expect(mockMap.getTerritoriesOwnedBy(PlayerColor.RED))
+                .andStubReturn(territories());
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.eq(PlayerColor.RED)))
+                .andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall().anyTimes();
+        EasyMock.replay(mockMap);
+        Card c1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card c2 = new Card(CardType.INFANTRY, TerritoryName.ALBERTA);
+        Card c3 = new Card(CardType.INFANTRY, TerritoryName.BRAZIL);
+        Card c4 = new Card(CardType.CAVALRY, TerritoryName.CHINA);
+        Card c5 = new Card(CardType.CAVALRY, TerritoryName.INDIA);
+        Card c6 = new Card(CardType.CAVALRY, TerritoryName.JAPAN);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(c1);
+        red.addCard(c2);
+        red.addCard(c3);
+        red.addCard(c4);
+        red.addCard(c5);
+        red.addCard(c6);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.tradeCards(List.of(c1, c2, c3));
+        game.tradeCards(List.of(c4, c5, c6));
+        for (int i = 0; i < 13; i++) {
+            game.draftArmy(TerritoryName.ALASKA);
+        }
+        assertTrue(game.isDraftComplete());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void TradeCards_ThirdTrade_AddsEightDraftArmies() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
