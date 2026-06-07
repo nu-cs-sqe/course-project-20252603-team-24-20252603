@@ -7,8 +7,15 @@ import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
 import java.lang.ref.WeakReference;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -724,14 +731,14 @@ public final class GameBoardController {
 
     private String buildMapHtml() {
         try {
-            java.net.URL svgUrl = getClass().getResource("/Risk_board.svg");
+            URL svgUrl = getClass().getResource("/Risk_board.svg");
             if (svgUrl == null) {
                 return "<html><body>"
                         + LocaleManager.getBundle().getString("map.error.missing")
                         + "</body></html>";
             }
-            java.nio.file.Path svgPath = java.nio.file.Paths.get(svgUrl.toURI());
-            String svgContent = java.nio.file.Files.readString(svgPath);
+            Path svgPath = Paths.get(svgUrl.toURI());
+            String svgContent = Files.readString(svgPath);
             svgContent = svgContent.replaceFirst("<\\?xml[^?]*\\?>", "");
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
@@ -749,7 +756,7 @@ public final class GameBoardController {
     }
 
     private static Map<String, TerritoryName> buildIdMap() {
-        Map<String, TerritoryName> map = new java.util.HashMap<>();
+        Map<String, TerritoryName> map = new HashMap<>();
         map.put("alaska", TerritoryName.ALASKA);
         map.put("northwest_territory", TerritoryName.NORTHWEST_TERRITORY);
         map.put("greenland", TerritoryName.GREENLAND);
@@ -792,7 +799,7 @@ public final class GameBoardController {
         map.put("western_australia", TerritoryName.WESTERN_AUSTRALIA);
         map.put("new_guinea", TerritoryName.NEW_GUINEA);
         map.put("indonesia", TerritoryName.INDONESIA);
-        return java.util.Collections.unmodifiableMap(map);
+        return Collections.unmodifiableMap(map);
     }
 
     private static String colorKey(PlayerColor color) {
@@ -815,7 +822,7 @@ public final class GameBoardController {
     }
 
     private static Map<PlayerColor, String> buildColorMap() {
-        Map<PlayerColor, String> map = new java.util.EnumMap<>(PlayerColor.class);
+        Map<PlayerColor, String> map = new EnumMap<>(PlayerColor.class);
         map.put(PlayerColor.RED, "#e05555");
         map.put(PlayerColor.BLUE, "#5588dd");
         map.put(PlayerColor.GREEN, "#44aa66");
