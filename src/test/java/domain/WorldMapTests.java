@@ -59,6 +59,16 @@ public class WorldMapTests {
     }
 
     @Test
+    public void AreNeighbors_TerritoryMissingFromNeighborMap_ReturnsFalse() {
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        neighbors.remove(TerritoryName.ALASKA);
+        WorldMap map = new WorldMap(territories, neighbors);
+
+        assertFalse(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA));
+    }
+
+    @Test
     public void AreNeighbors_AlaskaAndAlaska_ReturnsFalse() {
         final Map<TerritoryName, Territory> territories = createTerritories();
         final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
