@@ -303,4 +303,13 @@ public class DeckTests {
         assertThrows(IllegalArgumentException.class,
                 () -> deck.discard(Collections.singletonList(null)));
     }
+
+    @Test
+    public void ContainsTerritoryCard_TerritoryNotInDrawPile_ReturnsFalse() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        assertFalse(deck.containsTerritoryCard(TerritoryName.ALASKA));
+    }
 }
