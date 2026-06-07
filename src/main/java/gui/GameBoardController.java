@@ -166,6 +166,9 @@ public final class GameBoardController {
         }
 
         GamePhase phase = game.getPhase();
+        if (phase == GamePhase.GAME_OVER) {
+            return;
+        }
         try {
             actionStatusMessage = null;
             if (phase == GamePhase.SCRAMBLE) {
