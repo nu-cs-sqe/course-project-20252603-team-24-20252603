@@ -180,7 +180,9 @@ public final class RiskGame {
 
     public boolean isSetupComplete() {
         for (Player p : players) {
-            if (p.hasArmiesToPlace()) return false;
+            if (p.hasArmiesToPlace()) {
+                return false;
+            }
         }
         return true;
     }
@@ -273,7 +275,7 @@ public final class RiskGame {
     }
 
     private void captureTerritory(TerritoryName from, TerritoryName to) {
-        PlayerColor defenderColor = getOwnerOf(to);
+        final PlayerColor defenderColor = getOwnerOf(to);
         worldMap.assignTerritory(to, getCurrentPlayerColor());
         capturedThisTurn = true;
         pendingCaptureFrom = from;
@@ -382,9 +384,12 @@ public final class RiskGame {
 
     public void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies) {
         if (phase != GamePhase.ATTACK) {
-            throw new IllegalStateException("can only move armies after capture during ATTACK phase");
+            throw new IllegalStateException(
+                    "can only move armies after capture during ATTACK phase");
         }
-        if (pendingCaptureFrom == null || !pendingCaptureFrom.equals(from) || !pendingCaptureTo.equals(to)) {
+        if (pendingCaptureFrom == null
+                || !pendingCaptureFrom.equals(from)
+                || !pendingCaptureTo.equals(to)) {
             throw new IllegalStateException("no pending capture from the specified territories");
         }
         int minMove = Math.min(3, worldMap.getArmies(from) - 1);
@@ -552,7 +557,8 @@ public final class RiskGame {
         }
         draftArmiesRemaining += bonus;
         for (Card card : cards) {
-            if (!card.isWild() && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
+            if (!card.isWild()
+                    && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
                 worldMap.addArmies(card.getTerritory(), 2);
             }
         }
@@ -570,9 +576,11 @@ public final class RiskGame {
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
         return worldMap.isOwnedBy(territory, color);
     }
+
     public boolean isUnclaimed(TerritoryName territory) {
         return worldMap.isUnclaimed(territory);
     }
+
     public int getArmies(TerritoryName territory) {
         return worldMap.getArmies(territory);
     }
@@ -597,12 +605,30 @@ public final class RiskGame {
         worldMap.addArmies(territory, armies);
     }
 
-    void setCapturedThisTurn(boolean value) { this.capturedThisTurn = value; }
-    int getDeckDiscardPileSize() { return deck.getDiscardPileSize(); }
-    void setTradeSetCount(int count) { this.tradeSetCount = count; }
-    void provideWorldMap(WorldMap map) { this.worldMap = map; }
-    void providePlayers(List<Player> players) { this.players = players; }
-    void setPhase(GamePhase phase) { this.phase = phase; }
+    void setCapturedThisTurn(boolean value) {
+        this.capturedThisTurn = value;
+    }
+
+    int getDeckDiscardPileSize() {
+        return deck.getDiscardPileSize();
+    }
+
+    void setTradeSetCount(int count) {
+        this.tradeSetCount = count;
+    }
+
+    void provideWorldMap(WorldMap map) {
+        this.worldMap = map;
+    }
+
+    void providePlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    void setPhase(GamePhase phase) {
+        this.phase = phase;
+    }
+
     void setCurrentPlayer(PlayerColor color) {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getColor() == color) {
@@ -611,6 +637,7 @@ public final class RiskGame {
             }
         }
     }
+
     void setDraftComplete() {
         this.isDraftInitialized = true;
         this.draftArmiesRemaining = 0;

@@ -1,5 +1,8 @@
 package gui;
 
+import domain.GameConstants;
+import domain.PlayerColor;
+import domain.RiskGame;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,12 +13,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
-import javafx.geometry.Pos;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -35,10 +37,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-
-import domain.GameConstants;
-import domain.PlayerColor;
-import domain.RiskGame;
 
 /**
  * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
