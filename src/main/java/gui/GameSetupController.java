@@ -275,19 +275,23 @@ public final class GameSetupController {
     }
 
     private static String displayName(PlayerColor color) {
+        return LocaleManager.getBundle().getString(colorKey(color));
+    }
+
+    private static String colorKey(PlayerColor color) {
         switch (color) {
             case RED:
-                return "Red";
+                return "color.red";
             case BLUE:
-                return "Blue";
+                return "color.blue";
             case GREEN:
-                return "Green";
+                return "color.green";
             case ORANGE:
-                return "Orange";
+                return "color.orange";
             case PINK:
-                return "Pink";
+                return "color.pink";
             case CYAN:
-                return "Cyan";
+                return "color.cyan";
             default:
                 throw new IllegalArgumentException(color.toString());
         }
