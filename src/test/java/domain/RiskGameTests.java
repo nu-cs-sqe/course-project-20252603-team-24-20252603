@@ -1241,6 +1241,26 @@ public class RiskGameTests {
     }
 
     @Test
+    public void Attack_CapturesTerritory_ExposesPendingCaptureDetails() {
+        final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertEquals("Jonathan", game.getPlayerName(PlayerColor.RED));
+        assertTrue(game.isCaptureMovementPending());
+        assertEquals(TerritoryName.ALASKA, game.getPendingCaptureFrom());
+        assertEquals(TerritoryName.ALBERTA, game.getPendingCaptureTo());
+        assertEquals(3, game.getMinimumCaptureMove());
+        assertEquals(3, game.getMaximumCaptureMove());
+        assertEquals(2, game.getTerritoryCount(PlayerColor.RED));
+        assertFalse(game.isOwnedBy(TerritoryName.CENTRAL_AMERICA, PlayerColor.RED));
+        assertTrue(game.isUnclaimed(TerritoryName.CENTRAL_AMERICA));
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
         final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
