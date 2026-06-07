@@ -192,9 +192,8 @@ public final class GameBoardController {
             updateStatusBar();
             updateGameOverOverlay();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText(MessageFormat.format(
-                    LocaleManager.getBundle().getString("status.invalid"),
-                    e.getMessage()));
+            statusLabel.setText(
+                    LocaleManager.getBundle().getString("status.invalid.action"));
         }
     }
 
@@ -290,8 +289,7 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
-            statusLabel.setText(MessageFormat.format(
-                    bundle.getString("status.invalid"), e.getMessage()));
+            statusLabel.setText(bundle.getString("status.invalid.endAttack"));
         }
     }
 
@@ -314,8 +312,7 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText(MessageFormat.format(
-                    bundle.getString("status.invalid"), e.getMessage()));
+            statusLabel.setText(bundle.getString("status.invalid.capture"));
         }
     }
 
@@ -339,8 +336,7 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText(MessageFormat.format(
-                    bundle.getString("status.invalid"), e.getMessage()));
+            statusLabel.setText(bundle.getString("status.invalid.fortify"));
         }
     }
 
@@ -371,8 +367,7 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText(MessageFormat.format(
-                    bundle.getString("status.invalid"), e.getMessage()));
+            statusLabel.setText(bundle.getString("status.invalid.trade"));
         }
     }
 
@@ -386,9 +381,8 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
-            statusLabel.setText(MessageFormat.format(
-                    LocaleManager.getBundle().getString("status.invalid"),
-                    e.getMessage()));
+            statusLabel.setText(
+                    LocaleManager.getBundle().getString("status.invalid.endTurn"));
         }
     }
 
