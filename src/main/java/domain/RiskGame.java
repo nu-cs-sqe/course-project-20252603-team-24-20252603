@@ -123,6 +123,11 @@ public final class RiskGame {
         if (playerInfo == null) {
             throw new IllegalArgumentException("playerInfo cannot be null");
         }
+        // The `> MAX_PLAYERS` branch is structurally unreachable because
+        // PlayerColor only defines 6 values, so a Map<PlayerColor, String>
+        // can never have more than 6 entries. Kept as a defensive guard in
+        // case PlayerColor ever grows. JaCoCo flags it as a missed branch;
+        // see README "Coverage exceptions" for the equivalent-mutant note.
         if (playerInfo.size() < MIN_PLAYERS || playerInfo.size() > MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
         }
@@ -518,6 +523,11 @@ public final class RiskGame {
         if (infantry == 3 || cavalry == 3 || artillery == 3) {
             return true;
         }
+        // At this point cards.size() == 3 (checked above) and wildcards == 0,
+        // so infantry + cavalry + artillery == 3. If infantry == 1 and
+        // cavalry == 1, then artillery == 1 necessarily; the false-branch of
+        // the third condition is structurally unreachable. JaCoCo flags this
+        // as a missed branch; see README "Coverage exceptions".
         return infantry == 1 && cavalry == 1 && artillery == 1;
     }
 
@@ -595,6 +605,13 @@ public final class RiskGame {
             phase = GamePhase.ATTACK;
             return;
         }
+        // The loop always returns from inside before the natural exit
+        // condition `i > players.size()` becomes true: isSetupComplete() was
+        // false just above, so at least one player still has armies and the
+        // `if` inside will fire within one full rotation. The implicit
+        // fallthrough on the closing brace is structurally unreachable.
+        // JaCoCo flags it as a missed branch and missed line; see README
+        // "Coverage exceptions".
         for (int i = 1; i <= players.size(); i++) {
             int candidateIndex = (currentPlayerIndex + i) % players.size();
             if (players.get(candidateIndex).hasArmiesToPlace()) {
