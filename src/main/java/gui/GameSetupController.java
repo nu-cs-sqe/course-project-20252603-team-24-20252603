@@ -95,7 +95,7 @@ public final class GameSetupController {
                 if (loc == null) {
                     return "";
                 }
-                return LocaleManager.getBundle().getString(localeKey(loc));
+                return displayNameFor(loc);
             }
 
             @Override
@@ -107,9 +107,7 @@ public final class GameSetupController {
             @Override
             protected void updateItem(Locale loc, boolean empty) {
                 super.updateItem(loc, empty);
-                setText(loc == null || empty
-                        ? null
-                        : LocaleManager.getBundle().getString(localeKey(loc)));
+                setText(loc == null || empty ? null : displayNameFor(loc));
             }
         });
         localeComboBox.setValue(LocaleManager.getCurrentLocale());
@@ -121,11 +119,14 @@ public final class GameSetupController {
         });
     }
 
-    private static String localeKey(Locale loc) {
-        if ("es".equals(loc.getLanguage())) {
-            return "locale.spanish";
-        }
-        return "locale.english";
+    /**
+     * Returns the native display name for {@code loc} (e.g., "English",
+     * "Español", "Français") by reading {@code locale.displayName} from the
+     * locale's own bundle. No central mapping is required, so adding a new
+     * locale needs no Java changes.
+     */
+    private static String displayNameFor(Locale loc) {
+        return LocaleManager.getBundle(loc).getString("locale.displayName");
     }
 
     private void reloadSetupScene() {
