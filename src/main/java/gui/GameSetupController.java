@@ -7,9 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.geometry.Pos;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +19,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
@@ -29,6 +33,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import domain.GameConstants;
 import domain.PlayerColor;
@@ -54,12 +59,18 @@ public final class GameSetupController {
     @FXML
     private VBox nameFieldsContainer;
 
+    @FXML
+    private ComboBox<Locale> localeComboBox;
+
     private final List<TextField> nameFields = new ArrayList<>();
 
     @FXML
     private void initialize() {
-        headingLabel.setText("New game");
+        ResourceBundle bundle = LocaleManager.getBundle();
+        headingLabel.setText(bundle.getString("setup.heading"));
         headingLabel.setFont(Font.font(null, FontWeight.BOLD, 18));
+
+        initializeLocalePicker();
 
         SpinnerValueFactory.IntegerSpinnerValueFactory factory =
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(
@@ -72,6 +83,62 @@ public final class GameSetupController {
                 rebuildNameFields(next.intValue()));
 
         rebuildNameFields(factory.getValue());
+    }
+
+    private void initializeLocalePicker() {
+        localeComboBox.setItems(
+                FXCollections.observableArrayList(LocaleManager.SUPPORTED_LOCALES));
+        localeComboBox.setConverter(new StringConverter<Locale>() {
+            @Override
+            public String toString(Locale loc) {
+                if (loc == null) {
+                    return "";
+                }
+                return LocaleManager.getBundle().getString(localeKey(loc));
+            }
+
+            @Override
+            public Locale fromString(String s) {
+                return null;
+            }
+        });
+        localeComboBox.setCellFactory(list -> new ListCell<Locale>() {
+            @Override
+            protected void updateItem(Locale loc, boolean empty) {
+                super.updateItem(loc, empty);
+                setText(loc == null || empty
+                        ? null
+                        : LocaleManager.getBundle().getString(localeKey(loc)));
+            }
+        });
+        localeComboBox.setValue(LocaleManager.getCurrentLocale());
+        localeComboBox.valueProperty().addListener((obs, oldLoc, newLoc) -> {
+            if (newLoc != null && !newLoc.equals(oldLoc)) {
+                LocaleManager.setCurrentLocale(newLoc);
+                reloadSetupScene();
+            }
+        });
+    }
+
+    private static String localeKey(Locale loc) {
+        if ("es".equals(loc.getLanguage())) {
+            return "locale.spanish";
+        }
+        return "locale.english";
+    }
+
+    private void reloadSetupScene() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/game-setup-view.fxml"),
+                    LocaleManager.getBundle());
+            Parent root = loader.load();
+            Stage stage = (Stage) headingLabel.getScene().getWindow();
+            stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
+            stage.getScene().setRoot(root);
+        } catch (Exception e) {
+            showError("Failed to reload setup screen: " + e.getMessage());
+        }
     }
 
     /**
