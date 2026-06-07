@@ -174,7 +174,7 @@ public final class RiskGame {
         }
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
-        advanceToNextPlayer();
+        advanceSetupTurn();
     }
 
     public boolean isSetupComplete() {
@@ -599,7 +599,7 @@ public final class RiskGame {
         return worldMap.countTerritoriesOwnedBy(color);
     }
 
-    private void advanceToNextPlayer() {
+    private void advanceSetupTurn() {
         if (isSetupComplete()) {
             currentPlayerIndex = firstSetupPlayerIndex;
             phase = GamePhase.ATTACK;
