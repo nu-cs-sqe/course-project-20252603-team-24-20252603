@@ -609,7 +609,6 @@ public final class GameBoardController {
 
         boolean tradeReady = game != null
                 && phase == GamePhase.ATTACK
-                && !game.isDraftComplete()
                 && game.canTradeCards(getSelectedCards());
         tradeCardsButton.setDisable(gameOver || !tradeReady);
         cardListView.setDisable(gameOver);
