@@ -56,12 +56,22 @@ class WorldMap {
     private void initializeTerritories() {
         for (TerritoryName name : TerritoryName.values()) {
             territories.put(name, new Territory(name));
-            neighbors.put(name, new HashSet<>());
         }
     }
 
     private void initializeNeighbors() {
-        //North America
+        for (TerritoryName name : TerritoryName.values()) {
+            neighbors.put(name, new HashSet<>());
+        }
+        initializeNorthAmericaNeighbors();
+        initializeSouthAmericaNeighbors();
+        initializeEuropeNeighbors();
+        initializeAfricaNeighbors();
+        initializeAsiaNeighbors();
+        initializeAustraliaNeighbors();
+    }
+
+    private void initializeNorthAmericaNeighbors() {
         addNeighbors(TerritoryName.ALASKA, TerritoryName.NORTHWEST_TERRITORY);
         addNeighbors(TerritoryName.ALASKA, TerritoryName.ALBERTA);
         addNeighbors(TerritoryName.ALASKA, TerritoryName.KAMCHATKA);
@@ -81,16 +91,18 @@ class WorldMap {
         addNeighbors(TerritoryName.WESTERN_UNITED_STATES, TerritoryName.CENTRAL_AMERICA);
         addNeighbors(TerritoryName.EASTERN_UNITED_STATES, TerritoryName.CENTRAL_AMERICA);
         addNeighbors(TerritoryName.CENTRAL_AMERICA, TerritoryName.VENEZUELA);
+    }
 
-        //South America
+    private void initializeSouthAmericaNeighbors() {
         addNeighbors(TerritoryName.VENEZUELA, TerritoryName.PERU);
         addNeighbors(TerritoryName.VENEZUELA, TerritoryName.BRAZIL);
         addNeighbors(TerritoryName.PERU, TerritoryName.BRAZIL);
         addNeighbors(TerritoryName.PERU, TerritoryName.ARGENTINA);
         addNeighbors(TerritoryName.BRAZIL, TerritoryName.ARGENTINA);
         addNeighbors(TerritoryName.BRAZIL, TerritoryName.NORTH_AFRICA);
+    }
 
-        //Europe
+    private void initializeEuropeNeighbors() {
         addNeighbors(TerritoryName.ICELAND, TerritoryName.GREAT_BRITAIN);
         addNeighbors(TerritoryName.ICELAND, TerritoryName.SCANDINAVIA);
         addNeighbors(TerritoryName.GREAT_BRITAIN, TerritoryName.SCANDINAVIA);
@@ -110,8 +122,9 @@ class WorldMap {
         addNeighbors(TerritoryName.UKRAINE, TerritoryName.MIDDLE_EAST);
         addNeighbors(TerritoryName.UKRAINE, TerritoryName.AFGHANISTAN);
         addNeighbors(TerritoryName.UKRAINE, TerritoryName.URAL);
+    }
 
-        //Africa
+    private void initializeAfricaNeighbors() {
         addNeighbors(TerritoryName.NORTH_AFRICA, TerritoryName.EGYPT);
         addNeighbors(TerritoryName.NORTH_AFRICA, TerritoryName.EAST_AFRICA);
         addNeighbors(TerritoryName.NORTH_AFRICA, TerritoryName.CONGO);
@@ -123,8 +136,9 @@ class WorldMap {
         addNeighbors(TerritoryName.EAST_AFRICA, TerritoryName.MIDDLE_EAST);
         addNeighbors(TerritoryName.CONGO, TerritoryName.SOUTH_AFRICA);
         addNeighbors(TerritoryName.SOUTH_AFRICA, TerritoryName.MADAGASCAR);
+    }
 
-        //Asia
+    private void initializeAsiaNeighbors() {
         addNeighbors(TerritoryName.MIDDLE_EAST, TerritoryName.AFGHANISTAN);
         addNeighbors(TerritoryName.MIDDLE_EAST, TerritoryName.INDIA);
         addNeighbors(TerritoryName.AFGHANISTAN, TerritoryName.URAL);
@@ -148,8 +162,9 @@ class WorldMap {
         addNeighbors(TerritoryName.CHINA, TerritoryName.SIAM);
         addNeighbors(TerritoryName.INDIA, TerritoryName.SIAM);
         addNeighbors(TerritoryName.SIAM, TerritoryName.INDONESIA);
+    }
 
-        //Australia
+    private void initializeAustraliaNeighbors() {
         addNeighbors(TerritoryName.INDONESIA, TerritoryName.NEW_GUINEA);
         addNeighbors(TerritoryName.INDONESIA, TerritoryName.WESTERN_AUSTRALIA);
         addNeighbors(TerritoryName.NEW_GUINEA, TerritoryName.WESTERN_AUSTRALIA);
