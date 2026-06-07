@@ -175,9 +175,11 @@ public final class GameBoardController {
             } else if (phase == GamePhase.SETUP) {
                 game.placeArmy(territory);
             } else if (phase == GamePhase.ATTACK && game.isCaptureMovementPending()) {
-                actionStatusMessage = "Move armies into the captured territory.";
+                actionStatusMessage = LocaleManager.getBundle()
+                        .getString("status.captureMoveArmies");
             } else if (phase == GamePhase.ATTACK && mustTradeBeforeDraft()) {
-                actionStatusMessage = "Select a valid card set to trade before drafting.";
+                actionStatusMessage = LocaleManager.getBundle()
+                        .getString("status.tradeCardsRequired");
             } else if (phase == GamePhase.ATTACK && !game.isDraftComplete()) {
                 game.draftArmy(territory);
             } else if (phase == GamePhase.ATTACK) {
@@ -190,20 +192,24 @@ public final class GameBoardController {
             updateStatusBar();
             updateGameOverOverlay();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    LocaleManager.getBundle().getString("status.invalid"),
+                    e.getMessage()));
         }
     }
 
     private void handleAttackClick(TerritoryName territory) {
+        ResourceBundle bundle = LocaleManager.getBundle();
         PlayerColor current = game.getCurrentPlayerColor();
         if (game.isOwnedBy(territory, current)) {
             selectedAttackFrom = territory;
-            statusLabel.setText("Selected " + formatName(territory.name())
-                    + " to attack from.");
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.selectedToAttackFrom"),
+                    formatName(territory.name())));
             return;
         }
         if (selectedAttackFrom == null) {
-            statusLabel.setText("Select one of your territories before choosing a target.");
+            statusLabel.setText(bundle.getString("status.selectOwnedFirst"));
             return;
         }
         TerritoryName from = selectedAttackFrom;
@@ -224,18 +230,22 @@ public final class GameBoardController {
         }
         selectedAttackFrom = null;
         if (captured) {
-            actionStatusMessage = "Captured " + formatName(territory.name())
-                    + " from " + formatName(from.name()) + ". Move "
-                    + game.getMinimumCaptureMove() + "-"
-                    + game.getMaximumCaptureMove() + " armies.";
+            actionStatusMessage = MessageFormat.format(
+                    bundle.getString("status.capturedFrom"),
+                    formatName(territory.name()),
+                    formatName(from.name()),
+                    game.getMinimumCaptureMove(),
+                    game.getMaximumCaptureMove());
             if (eliminated != null) {
-                actionStatusMessage += " " + eliminated.name() + " was eliminated.";
+                actionStatusMessage += " " + MessageFormat.format(
+                        bundle.getString("status.eliminated"),
+                        bundle.getString(colorKey(eliminated)));
             }
         } else {
-            actionStatusMessage = "Attack resolved: " + formatName(from.name())
-                    + " " + fromBefore + "->" + fromAfter
-                    + ", " + formatName(territory.name()) + " "
-                    + toBefore + "->" + toAfter + ".";
+            actionStatusMessage = MessageFormat.format(
+                    bundle.getString("status.attackResolved"),
+                    formatName(from.name()), fromBefore, fromAfter,
+                    formatName(territory.name()), toBefore, toAfter);
         }
     }
 
