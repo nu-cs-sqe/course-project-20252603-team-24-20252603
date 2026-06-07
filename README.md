@@ -47,6 +47,25 @@ new translation automatically. The JavaFX `FXMLLoader` resolves `%key`
 references via `ResourceBundle.getBundle("i18n.labels", locale)`, and
 Java's `MessageFormat` handles parameterized strings.
 
+### Translation coverage
+
+A bundle defines keys for every user-visible string:
+
+- **Static UI text** — FXML labels, buttons, headings (via `%key`
+  references in the FXML files).
+- **Dynamic messages** — status bar updates, attack/fortify/capture
+  outcomes, card-trade announcements, game-over overlay (via
+  `MessageFormat.format(...)` for parameterized strings).
+- **Player colors** — `color.red`, `color.blue`, etc.
+- **Card types** — `card.INFANTRY`, `card.CAVALRY`, `card.ARTILLERY`,
+  `card.WILD`.
+- **Territory names** — `territory.ALASKA`, `territory.NORTH_AFRICA`, etc.
+  (all 42 keys, matching the `TerritoryName` enum). Used in messages,
+  card descriptions, and on-map hover tooltips.
+- **Localized error messages** — when a player attempts an invalid action
+  (`status.invalid.attack`, `status.invalid.fortify`, etc.). The GUI never
+  surfaces raw domain exception messages to the user.
+
 ### Architecture
 
 - `i18n/locales.properties` is the single source of truth for which
@@ -55,6 +74,13 @@ Java's `MessageFormat` handles parameterized strings.
   own `locale.displayName` so the picker can show every language in its
   native form without a central lookup table.
 - The first entry in the manifest is the default locale at app launch.
+- The domain layer (`RiskGame`, `WorldMap`, etc.) is UI-agnostic and
+  contains no translation logic; all i18n lives in the `gui` package and
+  resource bundles.
+- `GameBoardController.formatName(...)` looks up `territory.<NAME>` and
+  falls back to a title-cased version of the enum name if the key is
+  missing, so adding a new `TerritoryName` value before its bundle entry
+  exists will not crash the UI.
 
 ## Acknowledgements
 REFERENCES, SOURCE OF HELP ETC
