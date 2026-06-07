@@ -32,6 +32,12 @@ public class WorldMapTests {
         return neighbors;
     }
 
+    private void assertBidirectionalNeighbors(
+            WorldMap map, TerritoryName first, TerritoryName second) {
+        assertTrue(map.areNeighbors(first, second));
+        assertTrue(map.areNeighbors(second, first));
+    }
+
     @Test
     public void AreNeighbors_AlaskaAndAlberta_ReturnsTrue() {
         final Map<TerritoryName, Territory> territories = createTerritories();
@@ -579,6 +585,122 @@ public class WorldMapTests {
     public void AreNeighbors_DefaultMap_AlbertaAndAlaskaAreNeighbors() {
         WorldMap map = new WorldMap();
         assertTrue(map.areNeighbors(TerritoryName.ALBERTA, TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void AreNeighbors_DefaultMap_AllRiskBordersAreBidirectional() {
+        WorldMap map = new WorldMap();
+        assertBidirectionalNeighbors(map, TerritoryName.ALASKA, TerritoryName.NORTHWEST_TERRITORY);
+        assertBidirectionalNeighbors(map, TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertBidirectionalNeighbors(map, TerritoryName.ALASKA, TerritoryName.KAMCHATKA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHWEST_TERRITORY, TerritoryName.ALBERTA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHWEST_TERRITORY, TerritoryName.ONTARIO);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHWEST_TERRITORY, TerritoryName.GREENLAND);
+        assertBidirectionalNeighbors(map, TerritoryName.GREENLAND, TerritoryName.ONTARIO);
+        assertBidirectionalNeighbors(map, TerritoryName.GREENLAND, TerritoryName.QUEBEC);
+        assertBidirectionalNeighbors(map, TerritoryName.GREENLAND, TerritoryName.ICELAND);
+        assertBidirectionalNeighbors(map, TerritoryName.ALBERTA, TerritoryName.ONTARIO);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.ALBERTA, TerritoryName.WESTERN_UNITED_STATES);
+        assertBidirectionalNeighbors(map, TerritoryName.ONTARIO, TerritoryName.QUEBEC);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.ONTARIO, TerritoryName.WESTERN_UNITED_STATES);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.ONTARIO, TerritoryName.EASTERN_UNITED_STATES);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.QUEBEC, TerritoryName.EASTERN_UNITED_STATES);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.WESTERN_UNITED_STATES, TerritoryName.EASTERN_UNITED_STATES);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.WESTERN_UNITED_STATES, TerritoryName.CENTRAL_AMERICA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.EASTERN_UNITED_STATES, TerritoryName.CENTRAL_AMERICA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.CENTRAL_AMERICA, TerritoryName.VENEZUELA);
+        assertBidirectionalNeighbors(map, TerritoryName.VENEZUELA, TerritoryName.PERU);
+        assertBidirectionalNeighbors(map, TerritoryName.VENEZUELA, TerritoryName.BRAZIL);
+        assertBidirectionalNeighbors(map, TerritoryName.PERU, TerritoryName.BRAZIL);
+        assertBidirectionalNeighbors(map, TerritoryName.PERU, TerritoryName.ARGENTINA);
+        assertBidirectionalNeighbors(map, TerritoryName.BRAZIL, TerritoryName.ARGENTINA);
+        assertBidirectionalNeighbors(map, TerritoryName.BRAZIL, TerritoryName.NORTH_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.ICELAND, TerritoryName.GREAT_BRITAIN);
+        assertBidirectionalNeighbors(map, TerritoryName.ICELAND, TerritoryName.SCANDINAVIA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.GREAT_BRITAIN, TerritoryName.SCANDINAVIA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.GREAT_BRITAIN, TerritoryName.NORTHERN_EUROPE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.GREAT_BRITAIN, TerritoryName.WESTERN_EUROPE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.SCANDINAVIA, TerritoryName.NORTHERN_EUROPE);
+        assertBidirectionalNeighbors(map, TerritoryName.SCANDINAVIA, TerritoryName.UKRAINE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHERN_EUROPE, TerritoryName.UKRAINE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHERN_EUROPE, TerritoryName.SOUTHERN_EUROPE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTHERN_EUROPE, TerritoryName.WESTERN_EUROPE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.WESTERN_EUROPE, TerritoryName.SOUTHERN_EUROPE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.WESTERN_EUROPE, TerritoryName.NORTH_AFRICA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.SOUTHERN_EUROPE, TerritoryName.UKRAINE);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.SOUTHERN_EUROPE, TerritoryName.NORTH_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.SOUTHERN_EUROPE, TerritoryName.EGYPT);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.SOUTHERN_EUROPE, TerritoryName.MIDDLE_EAST);
+        assertBidirectionalNeighbors(map, TerritoryName.UKRAINE, TerritoryName.MIDDLE_EAST);
+        assertBidirectionalNeighbors(map, TerritoryName.UKRAINE, TerritoryName.AFGHANISTAN);
+        assertBidirectionalNeighbors(map, TerritoryName.UKRAINE, TerritoryName.URAL);
+        assertBidirectionalNeighbors(map, TerritoryName.NORTH_AFRICA, TerritoryName.EGYPT);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NORTH_AFRICA, TerritoryName.EAST_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.NORTH_AFRICA, TerritoryName.CONGO);
+        assertBidirectionalNeighbors(map, TerritoryName.EGYPT, TerritoryName.MIDDLE_EAST);
+        assertBidirectionalNeighbors(map, TerritoryName.EGYPT, TerritoryName.EAST_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.EAST_AFRICA, TerritoryName.CONGO);
+        assertBidirectionalNeighbors(map, TerritoryName.EAST_AFRICA, TerritoryName.SOUTH_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.EAST_AFRICA, TerritoryName.MADAGASCAR);
+        assertBidirectionalNeighbors(map, TerritoryName.EAST_AFRICA, TerritoryName.MIDDLE_EAST);
+        assertBidirectionalNeighbors(map, TerritoryName.CONGO, TerritoryName.SOUTH_AFRICA);
+        assertBidirectionalNeighbors(map, TerritoryName.SOUTH_AFRICA, TerritoryName.MADAGASCAR);
+        assertBidirectionalNeighbors(map, TerritoryName.MIDDLE_EAST, TerritoryName.AFGHANISTAN);
+        assertBidirectionalNeighbors(map, TerritoryName.MIDDLE_EAST, TerritoryName.INDIA);
+        assertBidirectionalNeighbors(map, TerritoryName.AFGHANISTAN, TerritoryName.URAL);
+        assertBidirectionalNeighbors(map, TerritoryName.AFGHANISTAN, TerritoryName.CHINA);
+        assertBidirectionalNeighbors(map, TerritoryName.AFGHANISTAN, TerritoryName.INDIA);
+        assertBidirectionalNeighbors(map, TerritoryName.URAL, TerritoryName.CHINA);
+        assertBidirectionalNeighbors(map, TerritoryName.URAL, TerritoryName.SIBERIA);
+        assertBidirectionalNeighbors(map, TerritoryName.SIBERIA, TerritoryName.CHINA);
+        assertBidirectionalNeighbors(map, TerritoryName.SIBERIA, TerritoryName.MONGOLIA);
+        assertBidirectionalNeighbors(map, TerritoryName.SIBERIA, TerritoryName.IRKUTSK);
+        assertBidirectionalNeighbors(map, TerritoryName.SIBERIA, TerritoryName.YAKUTSK);
+        assertBidirectionalNeighbors(map, TerritoryName.YAKUTSK, TerritoryName.IRKUTSK);
+        assertBidirectionalNeighbors(map, TerritoryName.YAKUTSK, TerritoryName.KAMCHATKA);
+        assertBidirectionalNeighbors(map, TerritoryName.KAMCHATKA, TerritoryName.IRKUTSK);
+        assertBidirectionalNeighbors(map, TerritoryName.KAMCHATKA, TerritoryName.MONGOLIA);
+        assertBidirectionalNeighbors(map, TerritoryName.KAMCHATKA, TerritoryName.JAPAN);
+        assertBidirectionalNeighbors(map, TerritoryName.IRKUTSK, TerritoryName.MONGOLIA);
+        assertBidirectionalNeighbors(map, TerritoryName.MONGOLIA, TerritoryName.CHINA);
+        assertBidirectionalNeighbors(map, TerritoryName.MONGOLIA, TerritoryName.JAPAN);
+        assertBidirectionalNeighbors(map, TerritoryName.CHINA, TerritoryName.INDIA);
+        assertBidirectionalNeighbors(map, TerritoryName.CHINA, TerritoryName.SIAM);
+        assertBidirectionalNeighbors(map, TerritoryName.INDIA, TerritoryName.SIAM);
+        assertBidirectionalNeighbors(map, TerritoryName.SIAM, TerritoryName.INDONESIA);
+        assertBidirectionalNeighbors(map, TerritoryName.INDONESIA, TerritoryName.NEW_GUINEA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.INDONESIA, TerritoryName.WESTERN_AUSTRALIA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NEW_GUINEA, TerritoryName.WESTERN_AUSTRALIA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.NEW_GUINEA, TerritoryName.EASTERN_AUSTRALIA);
+        assertBidirectionalNeighbors(
+                map, TerritoryName.WESTERN_AUSTRALIA, TerritoryName.EASTERN_AUSTRALIA);
     }
 
     @Test
