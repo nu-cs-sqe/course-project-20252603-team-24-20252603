@@ -525,9 +525,6 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only trade cards during ATTACK phase");
         }
-        if (isDraftComplete()) {
-            throw new IllegalStateException("cannot trade cards after draft is complete");
-        }
         if (cards == null) {
             throw new IllegalArgumentException("cards cannot be null");
         }
