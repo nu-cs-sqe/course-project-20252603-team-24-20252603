@@ -636,11 +636,15 @@ public final class GameBoardController {
     }
 
     private String formatCard(Card card) {
+        ResourceBundle bundle = LocaleManager.getBundle();
+        String typeName = bundle.getString("card." + card.getType().name());
         if (card.getType() == CardType.WILD) {
-            return "Wild";
+            return typeName;
         }
-        return formatName(card.getType().name())
-                + " - " + formatName(card.getTerritory().name());
+        return MessageFormat.format(
+                bundle.getString("card.format"),
+                typeName,
+                formatName(card.getTerritory().name()));
     }
 
     private String formatName(String name) {
