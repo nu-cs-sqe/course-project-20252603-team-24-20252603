@@ -521,12 +521,13 @@ public final class GameBoardController {
     }
 
     private void updateActionControls(GamePhase phase) {
+        boolean gameOver = phase == GamePhase.GAME_OVER;
         boolean capturePending = game != null && game.isCaptureMovementPending();
         final boolean attackPhase = phase == GamePhase.ATTACK
                 && game != null
                 && game.isDraftComplete();
-        captureArmiesSpinner.setDisable(!capturePending);
-        moveAfterCaptureButton.setDisable(!capturePending);
+        captureArmiesSpinner.setDisable(gameOver || !capturePending);
+        moveAfterCaptureButton.setDisable(gameOver || !capturePending);
         if (capturePending) {
             captureArmiesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                     game.getMinimumCaptureMove(),
