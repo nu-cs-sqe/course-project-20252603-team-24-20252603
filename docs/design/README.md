@@ -1,6 +1,16 @@
 # System Design
 
-## enum
+## Package layout
+
+- `domain` — pure game logic, no UI or framework dependencies. The GUI calls
+  this package; the package never calls back into the GUI.
+- `gui` — JavaFX controllers, the locale manager, and the JavaFX application
+  entry point. Reads and writes the domain through `RiskGame` only.
+- `i18n` (resource bundles, not a Java package) — message catalogs and the
+  supported-locales manifest. See the project root `README.md`'s
+  "Localization" section for the public contract.
+
+## Enums
 
 ### `TerritoryName` (public)
 **Purpose:** Represents all 42 territories on the Risk board as constants.
@@ -22,88 +32,109 @@ RED, BLUE, GREEN, ORANGE, PINK, CYAN
 **Purpose:** Tracks the current phase of the game.
 SCRAMBLE, SETUP, ATTACK, FORTIFY, GAME_OVER
 
-- SCRAMBLE: players claim unclaimed territories one at a time
-- SETUP: players place remaining armies on owned territories
-- ATTACK: current player drafts reinforcements, optionally attacks adjacent enemy territories
-- FORTIFY: current player may move armies between two adjacent owned territories once
-- GAME_OVER: one player owns all 42 territories, no further actions permitted
+- **SCRAMBLE:** players claim unclaimed territories one at a time, placing 1
+  army on each as they claim it.
+- **SETUP:** players take turns placing their remaining starting armies on
+  territories they already own.
+- **ATTACK:** the active player drafts reinforcement armies (continent
+  bonuses and card-trade bonuses included), may trade in card sets, may
+  attack adjacent enemy territories any number of times, and may move armies
+  into newly captured territories.
+- **FORTIFY:** the active player may make at most one fortify move between
+  two territories connected through an unbroken chain of territories they
+  own.
+- **GAME_OVER:** one player owns all 42 territories. No further actions are
+  permitted.
 
 ### `CardType` (public)
-**Purpose:** Represents the three troop types on Risk cards plus the wild card.
+**Purpose:** Represents the three troop types on Risk cards plus the wild
+card.
 INFANTRY, CAVALRY, ARTILLERY, WILD
 
-## Classes
+## Domain classes
 
 ### `Territory` (package-private)
-**Purpose:** Represents one territory on the board. Tracks army count and ownership.
+**Purpose:** Represents one territory on the board. Tracks army count and
+ownership.
 
 | Method | Description |
 |--------|-------------|
-| `TerritoryName getName()` | Returns the territory name |
-| `int getArmies()` | Returns current army count |
-| `boolean isOwnedBy(PlayerColor color)` | Returns true if owned by given player |
-| `boolean isUnclaimed()` | Returns true if no player owns this territory |
-| `void claim(PlayerColor color)` | Assigns owner, throws IllegalStateException if already claimed |
-| `void assignTerritory(PlayerColor color)` | Forcibly reassigns ownership without checking prior ownership. Used only during territory capture. |
-| `void addArmies(int count)` | Adds armies, throws IllegalArgumentException if count < 1 |
-| `void removeArmies(int count)` | Removes armies, throws IllegalArgumentException if count < 1 or count would reduce armies below 0 |
+| `TerritoryName getName()` | Returns the territory name. |
+| `int getArmies()` | Returns current army count. |
+| `boolean isOwnedBy(PlayerColor color)` | Returns true if owned by the given player. |
+| `boolean isUnclaimed()` | Returns true if no player owns this territory. |
+| `void claim(PlayerColor color)` | Assigns the initial owner. Throws `IllegalStateException` if the territory is already claimed. |
+| `void assignTerritory(PlayerColor color)` | Forcibly reassigns ownership without checking prior ownership. Used by `WorldMap.assignTerritory` during territory capture. |
+| `void addArmies(int count)` | Adds armies. Throws `IllegalArgumentException` if `count < 1`. |
+| `void removeArmies(int count)` | Removes armies. Throws `IllegalArgumentException` if `count < 1` or removing would drop armies below 0. |
 
 ### `WorldMap` (package-private)
-**Purpose:** Holds all 42 territories and their neighbors. Adjacency is initialized from the standard Risk board on construction.
+**Purpose:** Holds all 42 territories and the standard Risk adjacency graph.
+Adjacency is initialized from the canonical board on construction.
 
 | Method | Description |
 |--------|-------------|
-| `boolean areNeighbors(TerritoryName first, TerritoryName second)` | Returns true if two territories border each other |
-| `boolean isOwnedBy(TerritoryName territory, PlayerColor color)` | Returns true if territory is owned by player |
-| `boolean isUnclaimed(TerritoryName territory)` | Returns true if territory has no owner |
-| `int getArmies(TerritoryName territory)` | Returns army count for territory |
-| `void claim(TerritoryName territory, PlayerColor color)` | Claims territory for player, throws IllegalStateException if already claimed |
-| `void assignTerritory(TerritoryName territory, PlayerColor color)` | Forcibly reassigns ownership of a territory. Used only during capture. |
-| `void addArmies(TerritoryName territory, int count)` | Adds armies to territory |
-| `void removeArmies(TerritoryName territory, int count)` | Removes armies from territory, throws IllegalArgumentException if count < 1 or would reduce armies below 0 |
-| `int countTerritoriesOwnedBy(PlayerColor color)` | Returns number of territories owned by player |
-| `Set<TerritoryName> getTerritoriesOwnedBy(PlayerColor color)` | Returns a copy of territories owned by player |
+| `boolean areNeighbors(TerritoryName first, TerritoryName second)` | Returns true if the two territories border each other on the standard Risk map. |
+| `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)` | Returns true if there is an unbroken chain of `owner`-owned territories from `from` to `to`. Used by `fortify` to permit moves across any owned path, not just direct neighbors. Returns false if either endpoint is not owned by `owner`. |
+| `boolean isOwnedBy(TerritoryName territory, PlayerColor color)` | Returns true if `territory` is owned by `color`. |
+| `boolean isUnclaimed(TerritoryName territory)` | Returns true if the territory has no owner. |
+| `int getArmies(TerritoryName territory)` | Returns army count for the given territory. |
+| `void claim(TerritoryName territory, PlayerColor color)` | Claims an unclaimed territory. Throws `IllegalStateException` if already claimed. |
+| `void assignTerritory(TerritoryName territory, PlayerColor color)` | Forcibly reassigns ownership. Used only during capture. |
+| `void addArmies(TerritoryName territory, int count)` | Adds armies to the territory. |
+| `void removeArmies(TerritoryName territory, int count)` | Removes armies. Throws `IllegalArgumentException` if `count < 1` or would drop armies below 0. |
+| `int countTerritoriesOwnedBy(PlayerColor color)` | Returns the number of territories owned by `color`. |
+| `Set<TerritoryName> getTerritoriesOwnedBy(PlayerColor color)` | Returns a copy of the set of territories owned by `color`. |
 
 ### `Card` (public)
-**Purpose:** Represents one Risk card. Each card has a territory and a troop type, or is a wild card with no territory.
+**Purpose:** Represents one Risk card. Each card has a territory and a troop
+type, or is a wild card with no territory.
 
 | Method | Description |
 |--------|-------------|
-| `Card(CardType type, TerritoryName territory)` | Constructs a card. territory must be null if and only if type is WILD. Throws IllegalArgumentException if type is null, if a non-wild card has a null territory, or if a wild card has a non-null territory. |
-| `TerritoryName getTerritory()` | Returns the territory on this card, or null if wild |
-| `CardType getType()` | Returns the troop type on this card |
-| `boolean isWild()` | Returns true if this is a wild card |
-| `boolean matchesTerritory(TerritoryName territory)` | Returns true if this card's territory equals the given territory. Returns false for wild cards or if territory is null. |
+| `Card(CardType type, TerritoryName territory)` | Constructs a card. `territory` must be null if and only if `type` is `WILD`. Throws `IllegalArgumentException` if `type` is null, if a non-wild card has a null territory, or if a wild card has a non-null territory. |
+| `CardType getType()` | Returns the troop type on this card. |
+| `TerritoryName getTerritory()` | Returns the territory on this card, or null for wild cards. |
+| `boolean isWild()` | Returns true if this is a wild card. |
+| `boolean matchesTerritory(TerritoryName territory)` | Returns true if this card's territory equals the given territory. Returns false for wild cards or if `territory` is null. |
 
 ### `Deck` (package-private)
-**Purpose:** Holds and manages the draw and discard piles of Risk cards. One card per territory plus two wild cards.
+**Purpose:** Manages the draw and discard piles of Risk cards. The initial
+deck contains 42 territory cards (one per territory, 14 infantry, 14
+cavalry, 14 artillery) plus 2 wild cards = 44 cards total.
 
 | Method | Description |
 |--------|-------------|
-| `Card draw()` | Draws and returns the top card. If the draw pile is empty, reshuffles the discard pile into it first. Throws IllegalStateException if both piles are empty. |
-| `int getDrawPileSize()` | Returns the number of cards remaining in the draw pile |
-| `int getDiscardPileSize()` | Returns the number of cards in the discard pile |
-| `void discard(List<Card> cards)` | Adds the given cards to the discard pile. Throws IllegalArgumentException if list is null, empty, or contains null. |
+| `Deck()` | Constructs a deck with a fresh `Random`. |
+| `Deck(Random random)` | Package-private constructor used by tests to inject deterministic shuffling. |
+| `Card draw()` | Draws and returns the top card. If the draw pile is empty, the discard pile is reshuffled into the draw pile first. Throws `IllegalStateException` if both piles are empty. |
+| `void discard(List<Card> cards)` | Adds the given cards to the discard pile. Throws `IllegalArgumentException` if `cards` is null, empty, or contains null. |
+| `int getDrawPileSize()` | Returns the number of cards remaining in the draw pile. |
+| `int getDiscardPileSize()` | Returns the number of cards in the discard pile. |
+| `boolean containsTerritoryCard(TerritoryName territory)` | Returns true if a card matching the given territory is currently in the draw pile. |
+| `int countWildCards()` | Returns the number of wild cards currently in the draw pile. |
 
 ### `Player` (package-private)
-**Purpose:** Represents one player in the game. Tracks identity, armies to place, and card hand.
+**Purpose:** Represents one player. Tracks identity, the count of starting
+armies still to place, and the player's card hand.
 
 | Method | Description |
 |--------|-------------|
-| `PlayerColor getColor()` | Returns player color |
-| `String getName()` | Returns player name |
-| `int getArmiesToPlace()` | Returns remaining armies to place |
-| `boolean hasArmiesToPlace()` | Returns true if armiesToPlace > 0 |
-| `void decreaseArmiesToPlace(int count)` | Decreases army count, throws IllegalArgumentException if count < 1 or count > armiesToPlace |
-| `void increaseArmiesToPlace(int count)` | Increases army count, throws IllegalArgumentException if count < 1 |
-| `int getCardCount()` | Returns the number of cards in the player's hand |
-| `List<Card> getCards()` | Returns a copy of the player's current card hand |
-| `void addCard(Card card)` | Adds a card to the player's hand, throws IllegalArgumentException if card is null |
-| `boolean hasCards(List<Card> cards)` | Returns true if the player owns all cards in the list (accounting for duplicates). Returns true for an empty list. Throws IllegalArgumentException if list is null. |
-| `void removeCards(List<Card> cards)` | Removes the given cards from the player's hand. No-op for an empty list. Throws IllegalArgumentException if player does not own all cards or list is null. |
+| `PlayerColor getColor()` | Returns the player's color. |
+| `String getName()` | Returns the player's display name. |
+| `int getArmiesToPlace()` | Returns the number of starting armies the player still has to place. |
+| `boolean hasArmiesToPlace()` | Returns true if `armiesToPlace > 0`. |
+| `void decreaseArmiesToPlace(int count)` | Decreases the army count. Throws `IllegalArgumentException` if `count < 1` or exceeds the remaining armies. |
+| `int getCardCount()` | Returns the size of the player's card hand. |
+| `List<Card> getCards()` | Returns an unmodifiable view of the player's current card hand. |
+| `boolean hasCards(List<Card> requested)` | Returns true if the player owns all cards in the list, accounting for duplicates. Returns true for an empty list. Throws `IllegalArgumentException` if the list is null. |
+| `void addCard(Card card)` | Adds a card to the player's hand. Throws `IllegalArgumentException` if `card` is null. |
+| `void removeCards(List<Card> toRemove)` | Removes the given cards from the player's hand. No-op for an empty list. Throws `IllegalArgumentException` if the player does not own all listed cards or if the list is null. |
 
 ### `GameConstants` (public)
-**Purpose:** Exposes public constants for use by GUI and other non-domain code.
+**Purpose:** Exposes the numeric constants the GUI needs to render labels,
+spinners, and validation hints. Mirrors the corresponding private constants
+in `RiskGame`.
 
 | Constant | Value |
 |----------|-------|
@@ -116,63 +147,127 @@ INFANTRY, CAVALRY, ARTILLERY, WILD
 | `ARMIES_SIX_PLAYERS` | 20 |
 
 ### `RiskGame` (public)
-**Purpose:** Coordinates all game logic. The only class GUI controllers interact with.
+**Purpose:** Coordinates all game logic. This is the only domain class the
+GUI controllers interact with.
 
-#### Constants
-- `MIN_PLAYERS = 3`, `MAX_PLAYERS = 6`
-- `ARMIES_THREE_PLAYERS = 35`, `ARMIES_FOUR_PLAYERS = 30`, `ARMIES_FIVE_PLAYERS = 25`, `ARMIES_SIX_PLAYERS = 20`
-- `TOTAL_TERRITORIES = 42`
-- `MIN_DRAFT_ARMIES = 3`
-- `MIN_ATTACK_DICE = 1`, `MAX_ATTACK_DICE = 3`, `MAX_DEFEND_DICE = 2`, `DIE_SIDES = 6`
+#### Private constants
+- Player count: `MIN_PLAYERS = 3`, `MAX_PLAYERS = 6`
+- Starting army count: `ARMIES_THREE_PLAYERS = 35`, `ARMIES_FOUR_PLAYERS = 30`,
+  `ARMIES_FIVE_PLAYERS = 25`, `ARMIES_SIX_PLAYERS = 20`
+- Board: `TOTAL_TERRITORIES = 42`
+- Draft / dice: `MIN_DRAFT_ARMIES = 3`, `MIN_ATTACK_DICE = 1`,
+  `MAX_ATTACK_DICE = 3`, `MAX_DEFEND_DICE = 2`, `DIE_SIDES = 6`
+- Continent bonuses: `NORTH_AMERICA_BONUS = 5`, `SOUTH_AMERICA_BONUS = 2`,
+  `EUROPE_BONUS = 5`, `AFRICA_BONUS = 3`, `ASIA_BONUS = 7`,
+  `AUSTRALIA_BONUS = 2`
+- Continent membership lists: `NORTH_AMERICA`, `SOUTH_AMERICA`, `EUROPE`,
+  `AFRICA`, `ASIA`, `AUSTRALIA` (the canonical Risk territory groupings
+  used to award continent bonuses).
 
-#### Methods
+#### Construction and setup
 
 | Method | Description |
 |--------|-------------|
-| `RiskGame(Map<PlayerColor, String> playerInfo)` | Validates 3-6 players, assigns starting armies by player count, randomly selects starting player, sets phase to SCRAMBLE. Throws IllegalArgumentException if playerInfo is null or player count out of range. |
-| `RiskGame(Map<PlayerColor, String> playerInfo, Random random)` | Package-private constructor for tests. Accepts injected Random for controlled randomness. |
-| `void claimTerritory(TerritoryName territory)` | Current player claims one unclaimed territory during SCRAMBLE. Places 1 army automatically and decreases armiesToPlace by 1. Advances to next player. Transitions to SETUP when all 42 territories are claimed. Throws IllegalStateException if wrong phase or territory already claimed. |
-| `void placeArmy(TerritoryName territory)` | Current player places 1 army on an owned territory during SETUP. Decreases armiesToPlace by 1. Advances to next player, skipping players with 0 armies remaining. Transitions to ATTACK when all players have 0 armies left. Throws IllegalStateException if wrong phase. Throws IllegalArgumentException if territory not owned by current player or no armies left. |
-| `int getDraftArmies()` | Returns draft armies remaining this turn. At turn start equals max(3, floor(ownedTerritories / 3)) plus any continent bonuses. Decrements as draftArmy() is called. Returns 0 once all draft armies are placed. |
-| `void draftArmy(TerritoryName territory)` | Places 1 draft army on an owned territory during ATTACK. Initializes draft on first call. Throws IllegalStateException if phase is not ATTACK or player has 5 or more cards and has not traded. Throws IllegalArgumentException if territory not owned by current player or no draft armies remaining. |
-| `boolean isDraftComplete()` | Returns true when draft has been initialized and all draft armies placed. Returns false if draft not yet initialized. |
-| `void attack(TerritoryName from, TerritoryName to, int numAttackers)` | Current player attacks an adjacent enemy territory. Draft must be complete. Rolls dice internally. Removes armies from both sides. If defender reaches 0 armies, captures territory via assignTerritory() and moves numAttackers armies into it. Marks player for one card award this turn if not already marked. Transfers defeated player's cards to attacker if that player is eliminated. Transitions to GAME_OVER if one player now owns all 42 territories. Throws IllegalStateException if phase is not ATTACK or draft not complete. Throws IllegalArgumentException if from not owned by current player, to owned by current player, not neighbors, numAttackers < 1, numAttackers > 3, or numAttackers >= from.armies. |
-| `void endAttack()` | Ends attack step and transitions to FORTIFY. Draft must be complete. Throws IllegalStateException if phase is not ATTACK or draft not complete. |
-| `void fortify(TerritoryName from, TerritoryName to, int armies)` | Moves armies from one owned territory to an adjacent owned territory. Only one fortify per turn. from retains at least 1 army. Throws IllegalStateException if phase is not FORTIFY or player already fortified this turn. Throws IllegalArgumentException if territories not neighbors, either not owned by current player, armies < 1, or armies >= from.armies. |
-| `void endTurn()` | Ends current player's turn. Awards one card from deck if player captured at least one territory this turn. Advances to next active player, skipping eliminated players with 0 territories. Resets draft state and fortify state. Transitions phase to ATTACK. Throws IllegalStateException if phase is not FORTIFY. |
-| `List<Card> getCards(PlayerColor color)` | Returns a copy of the given player's card hand. Throws IllegalArgumentException if color is not in the game. |
-| `boolean canTradeCards(List<Card> cards)` | Returns true if the 3 cards form a valid trade set: three of the same type, one of each type, or any two plus a wild. Returns false if list is null, contains null, is not exactly 3 cards, or is not a valid set. |
-| `void tradeCards(List<Card> cards)` | Trades a valid set of 3 cards for draft armies. Army count increases by trade sequence: 4, 6, 8, 10, 12, 15, then +5 each trade after. If any traded card matches a territory owned by current player, that territory gains 2 armies. Removes cards from player's hand and returns them to deck. Throws IllegalStateException if phase is not ATTACK. Throws IllegalArgumentException if cards are null, contain null, are not exactly 3, are not a valid set, or are not all owned by current player. |
-| `PlayerColor getCurrentPlayerColor()` | Returns current player's color |
-| `String getCurrentPlayerName()` | Returns current player's name |
-| `GamePhase getPhase()` | Returns current game phase |
-| `int getArmiesToPlace()` | Returns current player's remaining armies to place during SETUP |
-| `boolean isSetupComplete()` | Returns true when all players have placed all armies |
-| `boolean isOwnedBy(TerritoryName territory, PlayerColor color)` | Returns true if territory is owned by given player |
-| `boolean isUnclaimed(TerritoryName territory)` | Returns true if territory has no owner |
-| `int getArmies(TerritoryName territory)` | Returns army count for territory |
-| `PlayerColor getWinner()` | Returns the PlayerColor of the player who owns all 42 territories, or null if no winner yet |
+| `RiskGame(Map<PlayerColor, String> playerInfo)` | Public constructor. Validates that there are 3–6 players, assigns starting armies by player count, randomly selects the starting player, and sets the phase to `SCRAMBLE`. Throws `IllegalArgumentException` if `playerInfo` is null or its size is outside `[MIN_PLAYERS, MAX_PLAYERS]`. |
+| `RiskGame(Map<PlayerColor, String> playerInfo, Random random)` | Package-private constructor used by tests. Accepts an injected `Random` for deterministic player ordering and dice rolls. |
+| `void claimTerritory(TerritoryName territory)` | Active player claims one unclaimed territory during `SCRAMBLE`. Places 1 army on it and decrements the player's `armiesToPlace`. Advances to the next player. When the 42nd territory is claimed, transitions to `SETUP` and records the next player as the first `SETUP` placer. Throws `IllegalStateException` if the phase is not `SCRAMBLE` or the territory is already claimed. |
+| `void placeArmy(TerritoryName territory)` | Active player places 1 army on a territory they own during `SETUP`. Decrements the player's `armiesToPlace`. Advances to the next player that still has armies to place. Transitions to `ATTACK` (returning to the first `SETUP` placer) once every player has placed all starting armies. Throws `IllegalStateException` if the phase is not `SETUP`. Throws `IllegalArgumentException` if the territory is not owned by the current player or the current player has no armies left. |
+
+#### Turn flow: ATTACK phase
+
+| Method | Description |
+|--------|-------------|
+| `int getDraftArmies()` | Returns the draft armies the current player has available this turn. Before the draft is initialized, returns `max(MIN_DRAFT_ARMIES, ownedTerritories / 3) + continentBonus` as a *preview*. Once `draftArmy` or `tradeCards` initializes the draft, returns the actual remaining count, which decreases as armies are placed. |
+| `void draftArmy(TerritoryName territory)` | Places 1 draft army on a territory the current player owns. On first call of the turn, initializes the draft using the formula above. Throws `IllegalStateException` if the phase is not `ATTACK` or if the player holds 5 or more cards and has not yet traded (Risk rules require trading once a player reaches the 5-card limit). Throws `IllegalArgumentException` if the territory is not owned by the current player or there are no draft armies remaining. |
+| `boolean isDraftComplete()` | Returns true only when the draft has been initialized this turn and `draftArmiesRemaining == 0`. Returns false before the first `draftArmy` or `tradeCards` call of the turn. |
+| `boolean canTradeCards(List<Card> cards)` | Returns true if the given list is a valid trade set: exactly 3 cards, no nulls, and either all the same troop type, one of each troop type, or any combination that includes at least one wild card. Returns false for null lists, lists containing null, lists not of size 3, or any invalid combination. |
+| `void tradeCards(List<Card> cards)` | Trades a valid set of 3 cards for bonus draft armies. Bonus by trade-set count: 4, 6, 8, 10, 12, 15, then `15 + 5 * (n - 6)` thereafter. If any traded card matches a territory the current player owns, that territory gains 2 armies. The cards are removed from the player's hand and discarded to the deck. If the draft was not yet initialized, this initializes it (using the same formula as `draftArmy`) and then adds the trade bonus. If the draft was already complete, the bonus armies reopen drafting until they are placed. Throws `IllegalStateException` if the phase is not `ATTACK`. Throws `IllegalArgumentException` if `cards` is null, contains null, is not a valid set, or contains cards the current player does not own. |
+| `void attack(TerritoryName from, TerritoryName to)` | Active player attacks an adjacent enemy territory. The draft must be complete. The method auto-rolls dice in a loop: each iteration the attacker rolls `min(MAX_ATTACK_DICE, fromArmies - 1)` dice and the defender rolls `min(MAX_DEFEND_DICE, toArmies)` dice; dice are compared highest-to-highest, ties go to the defender, and the loser of each comparison loses 1 army. The loop continues until the defender reaches 0 armies (capture) or the attacker cannot attack any more (fewer than 2 armies on `from`). On capture, ownership is transferred via `WorldMap.assignTerritory`, the capture is recorded as `pendingCaptureFrom` / `pendingCaptureTo`, the current player is marked to receive a card at end of turn, and if the defeated player has zero territories left, all of their cards are transferred to the attacker. If the current player now owns all 42 territories the phase transitions to `GAME_OVER`. Throws `IllegalStateException` if the phase is not `ATTACK` or the draft is not complete. Throws `IllegalArgumentException` if `from` is not owned by the current player, `to` is owned by the current player, the territories are not neighbors, or `from` has fewer than 2 armies. |
+| `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)` | After a successful capture, moves armies from the attacking territory into the captured territory. `armies` must be at least `min(3, fromArmies - 1)` and at most `fromArmies - 1` (the attacker must always leave 1 army on the source). Clears the pending capture. Throws `IllegalStateException` if the phase is not `ATTACK` or `(from, to)` does not match the pending capture. Throws `IllegalArgumentException` if the army count is out of range. |
+| `boolean isCaptureMovementPending()` | Returns true if a capture just happened and the active player still needs to move armies into the captured territory. |
+| `TerritoryName getPendingCaptureFrom()` | Returns the source of the pending capture, or null if no capture is pending. |
+| `TerritoryName getPendingCaptureTo()` | Returns the destination of the pending capture, or null if no capture is pending. |
+| `int getMinimumCaptureMove()` | Returns the minimum number of armies the active player must move into the captured territory: `min(3, fromArmies - 1)`. Throws `IllegalStateException` if no capture is pending. |
+| `int getMaximumCaptureMove()` | Returns the maximum number of armies the active player may move into the captured territory: `fromArmies - 1` (must leave 1 army behind). Throws `IllegalStateException` if no capture is pending. |
+| `void endAttack()` | Ends the attack step and transitions to `FORTIFY`. The draft must be complete. Clears any pending capture state. Throws `IllegalStateException` if the phase is not `ATTACK` or the draft is not complete. |
+
+#### Turn flow: FORTIFY and end-of-turn
+
+| Method | Description |
+|--------|-------------|
+| `void fortify(TerritoryName from, TerritoryName to, int armies)` | Moves armies between two territories the active player owns, provided they are connected through an unbroken chain of owned territories (`WorldMap.areConnectedThrough`). Only one fortify per turn; the source must retain at least 1 army. Throws `IllegalStateException` if the phase is not `FORTIFY` or the player already fortified this turn. Throws `IllegalArgumentException` if either territory is not owned by the current player, the territories are not connected through owned territory, `armies < 1`, or `armies >= fromArmies`. |
+| `void endTurn()` | Ends the current player's turn. If the player captured at least one territory this turn, awards them one card from the deck. Advances to the next player who still owns at least one territory, resets draft and fortify state, and transitions phase to `ATTACK`. Throws `IllegalStateException` if the phase is not `FORTIFY`. |
+
+#### Read-only state accessors
+
+| Method | Description |
+|--------|-------------|
+| `GamePhase getPhase()` | Returns the current game phase. |
+| `PlayerColor getCurrentPlayerColor()` | Returns the current player's color. |
+| `String getCurrentPlayerName()` | Returns the current player's display name. |
+| `String getPlayerName(PlayerColor color)` | Returns the display name of any player in the game. Throws `IllegalArgumentException` if `color` is not in the game. |
+| `int getArmiesToPlace()` | Returns the current player's `armiesToPlace` (relevant during `SCRAMBLE` and `SETUP`). |
+| `boolean isSetupComplete()` | Returns true when every player has placed all starting armies. |
+| `boolean isOwnedBy(TerritoryName territory, PlayerColor color)` | Pass-through to `WorldMap.isOwnedBy`. |
+| `boolean isUnclaimed(TerritoryName territory)` | Pass-through to `WorldMap.isUnclaimed`. |
+| `int getArmies(TerritoryName territory)` | Pass-through to `WorldMap.getArmies`. |
+| `int getTerritoryCount(PlayerColor color)` | Pass-through to `WorldMap.countTerritoriesOwnedBy`. |
+| `List<Card> getCards(PlayerColor color)` | Returns a copy of the given player's card hand. Throws `IllegalArgumentException` if `color` is not in the game. |
+| `PlayerColor getWinner()` | Returns the color of the player who owns all 42 territories, or null if no winner yet. |
 
 ## GUI
 
-The GUI calls the domain API and displays state. It does not contain game logic.
+The GUI calls the domain through `RiskGame` only and reads state through
+`RiskGame`'s getters. It does not contain game logic.
 
 ### `RiskApplication`
-**Purpose:** JavaFX entry point. Launches the game setup window.
+**Purpose:** JavaFX entry point. Loads the FXML for the game-setup screen
+using the bundle returned by `LocaleManager.getBundle()` and shows the
+window.
+
+### `LocaleManager`
+**Purpose:** Process-wide holder for the user-selected display locale.
+Reads the list of supported locales at class-init time from
+`src/main/resources/i18n/locales.properties` (the locale manifest) so new
+languages can be added without changing any Java code. Exposes
+`SUPPORTED_LOCALES`, `getCurrentLocale()`, `setCurrentLocale(Locale)`,
+`getBundle()` and `getBundle(Locale)`. See the project root `README.md`'s
+"Localization" section for the public contract.
 
 ### `GameSetupController`
-**Purpose:** Controls the setup screen. Collects player count and names, validates input, constructs a `RiskGame`, and switches to the game board scene.
+**Purpose:** Controls the setup screen. Collects player count and names,
+exposes a `ComboBox<Locale>` populated from `LocaleManager.SUPPORTED_LOCALES`,
+hot-reloads the setup scene when the locale changes, validates input,
+constructs the `RiskGame`, and switches to the game-board scene.
 
 ### `GameBoardController`
-**Purpose:** Controls the game board screen. Renders the SVG map via WebView, handles territory clicks, and updates the status bar. Calls `claimTerritory()` and `placeArmy()` during SCRAMBLE and SETUP. Will call `draftArmy()`, `attack()`, `endAttack()`, `fortify()`, and `endTurn()` during ATTACK and FORTIFY phases once those controls are wired up.
+**Purpose:** Controls the in-game screen. Renders the SVG world map via a
+JavaFX `WebView`, handles territory clicks and drag-drafting, displays the
+current player's card hand, and updates the status bar. Drives the full
+domain API for every phase: `claimTerritory` and `placeArmy` for
+`SCRAMBLE`/`SETUP`; `draftArmy`, `tradeCards`, `attack`,
+`moveArmiesAfterCapture`, and `endAttack` for `ATTACK`; `fortify` and
+`endTurn` for `FORTIFY`. All user-visible strings are looked up in the
+locale bundle (`LocaleManager.getBundle()`); the controller does not embed
+English text.
 
 ## Relationships
-- `RiskGame` owns one `WorldMap`, one `Deck`, and a list of `Player` objects
-- `RiskGame` uses `GamePhase` to enforce valid state transitions
-- `WorldMap` owns 42 `Territory` objects and their neighbor relationships
-- `Territory` uses `TerritoryName` and `PlayerColor`
-- `Player` uses `PlayerColor` and holds a list of `Card` objects
-- `Card` uses `TerritoryName` and `CardType`
-- `Deck` holds a shuffled list of `Card` objects
-- `GameConstants` is a standalone utility class with no dependencies
-- GUI controllers call `RiskGame` methods only and read state through `RiskGame` getters
+
+- `RiskGame` owns one `WorldMap`, one `Deck`, a list of `Player` objects,
+  and a `Random` source used for player ordering, dice, and deck shuffling.
+- `RiskGame` uses `GamePhase` to enforce valid state transitions and the
+  continent membership lists to compute draft bonuses.
+- `WorldMap` owns 42 `Territory` objects and the adjacency graph from the
+  standard Risk board.
+- `Territory` uses `TerritoryName` and `PlayerColor`.
+- `Player` uses `PlayerColor` and holds an ordered list of `Card` objects.
+- `Card` uses `TerritoryName` and `CardType`.
+- `Deck` holds shuffled `Card` objects in two piles (draw + discard) and
+  owns its own `Random`.
+- `GameConstants` is a standalone utility class with no dependencies; it
+  exposes the same numeric values as the corresponding private constants in
+  `RiskGame` so the GUI can use them without depending on `RiskGame`'s
+  internals.
+- `LocaleManager` and the GUI controllers belong to the `gui` package and
+  depend on `RiskGame`. The domain has no dependency on the GUI or the
+  locale bundles.
