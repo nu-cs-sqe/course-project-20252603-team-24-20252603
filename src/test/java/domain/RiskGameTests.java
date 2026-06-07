@@ -1330,6 +1330,13 @@ public class RiskGameTests {
     }
 
     @Test
+    public void IsUnclaimed_OwnedTerritory_ReturnsFalse() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 1);
+        assertFalse(game.isUnclaimed(TerritoryName.ALASKA));
+    }
+
+    @Test
     public void Attack_CapturesFromTwoArmyTerritory_MinimumCaptureMoveIsOne() {
         final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 2);
