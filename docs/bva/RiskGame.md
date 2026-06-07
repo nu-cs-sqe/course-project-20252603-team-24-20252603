@@ -1477,3 +1477,49 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - RED has 5 draft armies to place
         - after drafting 5 armies, draft is complete
+
+## Method: `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)`
+
+- **TC172: Move armies after capture with mismatched source territory throws** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA to ALBERTA
+        - from: ALBERTA (does not match the pending capture's source territory)
+    - **Expected output**: throw IllegalStateException
+
+## Method: `boolean canTradeCards(List<Card> cards)`
+
+- **TC173: Trade three artillery cards is valid** ( :white_check_mark: )
+    - **State of the system**:
+        - cards contains 3 artillery cards
+    - **Expected output**: true
+
+- **TC174: Trade one infantry and two artillery is invalid** ( :white_check_mark: )
+    - **State of the system**:
+        - cards contains 1 infantry card and 2 artillery cards
+    - **Expected output**: false
+
+## Method: `void tradeCards(List<Card> cards)`
+
+- **TC175: Second trade in the same turn skips draft reinitialization** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 6 cards passed in across two trades made in the same turn
+        - draft was already initialized by the first trade
+    - **Expected output**:
+        - the second trade does not recompute the territory-based draft total
+        - RED's draft total reaches exactly 13 after both trades' bonuses are added
+        - draft is complete after drafting 13 armies
+
+- **TC176: Trading a set containing a wild card skips the territory bonus for the wild card** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in: INFANTRY/ALASKA, CAVALRY/ALBERTA, WILD
+        - ALASKA owned by RED
+        - ALBERTA not owned by RED
+    - **Expected output**:
+        - ALASKA receives 2 bonus armies
+        - the WILD card contributes no territory bonus
