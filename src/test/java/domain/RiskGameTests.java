@@ -1261,6 +1261,19 @@ public class RiskGameTests {
     }
 
     @Test
+    public void Attack_CapturesFromTwoArmyTerritory_MinimumCaptureMoveIsOne() {
+        final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 0));
+        game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 2);
+        game.setupTerritory(TerritoryName.ALBERTA, PlayerColor.BLUE, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        assertEquals(1, game.getMinimumCaptureMove());
+        assertEquals(1, game.getMaximumCaptureMove());
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
         final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
