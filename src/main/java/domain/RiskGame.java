@@ -365,6 +365,10 @@ public final class RiskGame {
     private int[] rollDiceDescending(int count) {
         Integer[] rolls = new Integer[count];
         for (int i = 0; i < count; i++) {
+            // Pitest flags the `+ 1` as a surviving mutant (replaced with
+            // `- 1`). Dice values are only compared to one another, so a
+            // constant offset is unobservable; equivalent mutant. See
+            // README "Coverage exceptions".
             rolls[i] = random.nextInt(DIE_SIDES) + 1;
         }
         Arrays.sort(rolls, Collections.reverseOrder());
@@ -512,6 +516,11 @@ public final class RiskGame {
             } else if (card.getType() == CardType.INFANTRY) {
                 infantry++;
             } else if (card.getType() == CardType.CAVALRY) {
+                // Pitest flags negating this conditional as a surviving
+                // mutant. The downstream checks are symmetric in cavalry
+                // and artillery, so swapping their counts produces the
+                // same return value; equivalent mutant. See README
+                // "Coverage exceptions".
                 cavalry++;
             } else {
                 artillery++;
@@ -557,6 +566,11 @@ public final class RiskGame {
         deck.discard(cards);
         tradeSetCount++;
         int[] bonusTable = {4, 6, 8, 10, 12, 15};
+        // Pitest flags the boundary mutation `<= 6` -> `< 6` as a
+        // surviving mutant. `bonusTable[5] == 15` matches the formula
+        // evaluated at the boundary (`15 + 5 * (6 - 6) == 15`), so the
+        // two branches produce identical output at every tradeSetCount;
+        // equivalent mutant. See README "Coverage exceptions".
         int bonus = tradeSetCount <= 6
                 ? bonusTable[tradeSetCount - 1]
                 : 15 + 5 * (tradeSetCount - 6);
