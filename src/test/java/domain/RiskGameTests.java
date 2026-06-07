@@ -1834,6 +1834,40 @@ public class RiskGameTests {
     }
 
     @Test
+    public void TradeCards_PlayerOwnsContinentBonus_AddsBonusToInitialDraftTotal() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(4);
+        EasyMock.expect(mockMap.getTerritoriesOwnedBy(PlayerColor.RED))
+                .andStubReturn(territories(TerritoryName.VENEZUELA, TerritoryName.PERU,
+                        TerritoryName.BRAZIL, TerritoryName.ARGENTINA));
+        EasyMock.expect(mockMap.isOwnedBy(EasyMock.anyObject(), EasyMock.eq(PlayerColor.RED)))
+                .andStubReturn(true);
+        mockMap.addArmies(EasyMock.anyObject(), EasyMock.anyInt());
+        EasyMock.expectLastCall().anyTimes();
+        EasyMock.replay(mockMap);
+        Card c1 = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card c2 = new Card(CardType.INFANTRY, TerritoryName.ALBERTA);
+        Card c3 = new Card(CardType.INFANTRY, TerritoryName.AFGHANISTAN);
+        Player red = new Player(PlayerColor.RED, "Jonathan", 35);
+        red.addCard(c1);
+        red.addCard(c2);
+        red.addCard(c3);
+        game.providePlayers(List.of(red,
+                new Player(PlayerColor.BLUE, "Justin", 35),
+                new Player(PlayerColor.GREEN, "Prashant", 35)));
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.tradeCards(List.of(c1, c2, c3));
+        for (int i = 0; i < 9; i++) {
+            game.draftArmy(TerritoryName.VENEZUELA);
+        }
+        assertTrue(game.isDraftComplete());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void TradeCards_FirstTrade_AddsFourDraftArmies() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
