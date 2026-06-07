@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 public class DeckTests {
@@ -234,6 +233,7 @@ public class DeckTests {
     @Test
     public void DiscardListContainingNullCard_ThrowsIllegalArgumentException() {
         Deck deck = new Deck();
-        assertThrows(IllegalArgumentException.class, () -> deck.discard(Collections.singletonList(null)));
+        assertThrows(IllegalArgumentException.class,
+                () -> deck.discard(Collections.singletonList(null)));
     }
 }

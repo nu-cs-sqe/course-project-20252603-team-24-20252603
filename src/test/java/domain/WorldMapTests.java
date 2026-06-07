@@ -1,12 +1,16 @@
 package domain;
 
-import org.junit.jupiter.api.Test;
-import org.easymock.EasyMock;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static org.junit.jupiter.api.Assertions.*;
+import org.easymock.EasyMock;
+import org.junit.jupiter.api.Test;
 
 public class WorldMapTests {
 
@@ -30,8 +34,8 @@ public class WorldMapTests {
 
     @Test
     public void AreNeighbors_AlaskaAndAlberta_ReturnsTrue() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         neighbors.get(TerritoryName.ALASKA).add(TerritoryName.ALBERTA);
         neighbors.get(TerritoryName.ALBERTA).add(TerritoryName.ALASKA);
         WorldMap map = new WorldMap(territories, neighbors);
@@ -41,8 +45,8 @@ public class WorldMapTests {
 
     @Test
     public void AreNeighbors_AlaskaAndBrazil_ReturnsFalse() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertFalse(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.BRAZIL));
@@ -50,8 +54,8 @@ public class WorldMapTests {
 
     @Test
     public void AreNeighbors_AlaskaAndAlaska_ReturnsFalse() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertFalse(map.areNeighbors(TerritoryName.ALASKA, TerritoryName.ALASKA));
@@ -59,8 +63,8 @@ public class WorldMapTests {
 
     @Test
     public void IsOwnedBy_UnclaimedTerritory_ReturnsFalse() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.isOwnedBy(PlayerColor.RED)).andStubReturn(false);
         EasyMock.replay(mockAlaska);
@@ -72,8 +76,8 @@ public class WorldMapTests {
 
     @Test
     public void IsOwnedBy_TerritoryClaimedByRed_WithRed_ReturnsTrue() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.isOwnedBy(PlayerColor.RED)).andStubReturn(true);
         EasyMock.replay(mockAlaska);
@@ -85,8 +89,8 @@ public class WorldMapTests {
 
     @Test
     public void IsOwnedBy_TerritoryClaimedByRed_WithBlue_ReturnsFalse() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.isOwnedBy(PlayerColor.BLUE)).andStubReturn(false);
         EasyMock.replay(mockAlaska);
@@ -98,8 +102,8 @@ public class WorldMapTests {
 
     @Test
     public void IsUnclaimed_UnclaimedTerritory_ReturnsTrue() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.isUnclaimed()).andStubReturn(true);
         EasyMock.replay(mockAlaska);
@@ -111,8 +115,8 @@ public class WorldMapTests {
 
     @Test
     public void IsUnclaimed_ClaimedTerritory_ReturnsFalse() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.isUnclaimed()).andStubReturn(false);
         EasyMock.replay(mockAlaska);
@@ -124,8 +128,8 @@ public class WorldMapTests {
 
     @Test
     public void GetArmies_TerritoryWithZeroArmies_ReturnsZero() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.getArmies()).andStubReturn(0);
         EasyMock.replay(mockAlaska);
@@ -137,8 +141,8 @@ public class WorldMapTests {
 
     @Test
     public void GetArmies_TerritoryWithOneArmy_ReturnsOne() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.getArmies()).andStubReturn(1);
         EasyMock.replay(mockAlaska);
@@ -150,8 +154,8 @@ public class WorldMapTests {
 
     @Test
     public void GetArmies_TerritoryWithFiveArmies_ReturnsFive() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         EasyMock.expect(mockAlaska.getArmies()).andStubReturn(5);
         EasyMock.replay(mockAlaska);
@@ -163,8 +167,8 @@ public class WorldMapTests {
 
     @Test
     public void Claim_UnclaimedTerritory_ClaimIsCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.claim(PlayerColor.RED);
         EasyMock.expectLastCall();
@@ -178,36 +182,38 @@ public class WorldMapTests {
 
     @Test
     public void Claim_AlreadyClaimedBySamePlayer_ThrowsIllegalStateException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.claim(PlayerColor.RED);
         EasyMock.expectLastCall().andThrow(new IllegalStateException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalStateException.class, () -> map.claim(TerritoryName.ALASKA, PlayerColor.RED));
+        assertThrows(IllegalStateException.class,
+                () -> map.claim(TerritoryName.ALASKA, PlayerColor.RED));
         EasyMock.verify(mockAlaska);
     }
 
     @Test
     public void Claim_AlreadyClaimedByDifferentPlayer_ThrowsIllegalStateException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.claim(PlayerColor.BLUE);
         EasyMock.expectLastCall().andThrow(new IllegalStateException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalStateException.class, () -> map.claim(TerritoryName.ALASKA, PlayerColor.BLUE));
+        assertThrows(IllegalStateException.class,
+                () -> map.claim(TerritoryName.ALASKA, PlayerColor.BLUE));
         EasyMock.verify(mockAlaska);
     }
 
     @Test
     public void AddArmies_TerritoryWithZeroArmies_AddOne_AddArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(1);
         EasyMock.expectLastCall();
@@ -221,8 +227,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_TerritoryWithZeroArmies_AddFive_AddArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(5);
         EasyMock.expectLastCall();
@@ -236,8 +242,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_TerritoryWithOneArmy_AddOne_AddArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(1);
         EasyMock.expectLastCall();
@@ -251,8 +257,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_TerritoryWithThreeArmies_AddOne_AddArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(1);
         EasyMock.expectLastCall();
@@ -266,8 +272,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_TerritoryWithThreeArmies_AddFive_AddArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(5);
         EasyMock.expectLastCall();
@@ -281,8 +287,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_CountOfZero_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(0);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
@@ -295,8 +301,8 @@ public class WorldMapTests {
 
     @Test
     public void AddArmies_NegativeCount_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.addArmies(-1);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
@@ -316,7 +322,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertEquals(0, map.countTerritoriesOwnedBy(PlayerColor.RED));
@@ -335,7 +341,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
         assertEquals(1, map.countTerritoriesOwnedBy(PlayerColor.RED));
     }
@@ -352,7 +358,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertEquals(3, map.countTerritoriesOwnedBy(PlayerColor.RED));
@@ -367,7 +373,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertEquals(42, map.countTerritoriesOwnedBy(PlayerColor.RED));
@@ -382,7 +388,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
 
         assertTrue(map.getTerritoriesOwnedBy(PlayerColor.RED).isEmpty());
@@ -398,7 +404,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
         Set<TerritoryName> result = map.getTerritoriesOwnedBy(PlayerColor.RED);
 
@@ -418,7 +424,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
         Set<TerritoryName> result = map.getTerritoriesOwnedBy(PlayerColor.RED);
 
@@ -435,7 +441,7 @@ public class WorldMapTests {
             EasyMock.replay(mock);
             territories.put(name, mock);
         }
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         WorldMap map = new WorldMap(territories, neighbors);
         Set<TerritoryName> result = map.getTerritoriesOwnedBy(PlayerColor.RED);
 
@@ -445,8 +451,8 @@ public class WorldMapTests {
 
     @Test
     public void RemoveArmies_OneFromTerritoryWithOneArmy_RemoveArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(1);
         EasyMock.expectLastCall();
@@ -460,8 +466,8 @@ public class WorldMapTests {
 
     @Test
     public void RemoveArmies_OneFromTerritoryWithMoreThanOneArmy_RemoveArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(1);
         EasyMock.expectLastCall();
@@ -474,9 +480,9 @@ public class WorldMapTests {
     }
 
     @Test
-    public void RemoveArmies_MoreThanOneFromTerritoryWithMoreArmies_RemoveArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+    public void RemoveArmies_MoreThanOneTerritoryWithMoreArmies_RemoveArmiesCalledOnTerritory() {
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(3);
         EasyMock.expectLastCall();
@@ -490,8 +496,8 @@ public class WorldMapTests {
 
     @Test
     public void RemoveArmies_ExactAmountTerritoryHas_RemoveArmiesCalledOnTerritory() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(3);
         EasyMock.expectLastCall();
@@ -505,57 +511,61 @@ public class WorldMapTests {
 
     @Test
     public void RemoveArmies_MoreThanTerritoryHas_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(3);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 3));
+        assertThrows(IllegalArgumentException.class,
+                () -> map.removeArmies(TerritoryName.ALASKA, 3));
         EasyMock.verify(mockAlaska);
     }
 
     @Test
     public void RemoveArmies_CountOfZero_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(0);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> map.removeArmies(TerritoryName.ALASKA, 0));
         EasyMock.verify(mockAlaska);
     }
 
     @Test
     public void RemoveArmies_NegativeCount_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(-1);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, -1));
+        assertThrows(IllegalArgumentException.class,
+                () -> map.removeArmies(TerritoryName.ALASKA, -1));
         EasyMock.verify(mockAlaska);
     }
 
     @Test
     public void RemoveArmies_OneFromTerritoryWithZeroArmies_ThrowsIllegalArgumentException() {
-        Map<TerritoryName, Territory> territories = createTerritories();
-        Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
+        final Map<TerritoryName, Territory> territories = createTerritories();
+        final Map<TerritoryName, Set<TerritoryName>> neighbors = createNeighbors();
         Territory mockAlaska = EasyMock.createMock(Territory.class);
         mockAlaska.removeArmies(1);
         EasyMock.expectLastCall().andThrow(new IllegalArgumentException());
         EasyMock.replay(mockAlaska);
         territories.put(TerritoryName.ALASKA, mockAlaska);
         WorldMap map = new WorldMap(territories, neighbors);
-        assertThrows(IllegalArgumentException.class, () -> map.removeArmies(TerritoryName.ALASKA, 1));
+        assertThrows(IllegalArgumentException.class,
+                () -> map.removeArmies(TerritoryName.ALASKA, 1));
         EasyMock.verify(mockAlaska);
     }
 
@@ -576,7 +586,8 @@ public class WorldMapTests {
         WorldMap map = new WorldMap();
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.ALBERTA, PlayerColor.RED);
-        assertTrue(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ALBERTA, PlayerColor.RED));
+        assertTrue(map.areConnectedThrough(
+                TerritoryName.ALASKA, TerritoryName.ALBERTA, PlayerColor.RED));
     }
 
     @Test
@@ -585,7 +596,8 @@ public class WorldMapTests {
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
         map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
-        assertTrue(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+        assertTrue(map.areConnectedThrough(
+                TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
     }
 
     @Test
@@ -593,7 +605,8 @@ public class WorldMapTests {
         WorldMap map = new WorldMap();
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
-        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+        assertFalse(map.areConnectedThrough(
+                TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
     }
 
     @Test
@@ -602,7 +615,8 @@ public class WorldMapTests {
         map.claim(TerritoryName.ALASKA, PlayerColor.RED);
         map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
         map.claim(TerritoryName.ONTARIO, PlayerColor.BLUE);
-        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+        assertFalse(map.areConnectedThrough(
+                TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
     }
 
     @Test
@@ -611,6 +625,7 @@ public class WorldMapTests {
         map.claim(TerritoryName.ALASKA, PlayerColor.BLUE);
         map.claim(TerritoryName.NORTHWEST_TERRITORY, PlayerColor.RED);
         map.claim(TerritoryName.ONTARIO, PlayerColor.RED);
-        assertFalse(map.areConnectedThrough(TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
+        assertFalse(map.areConnectedThrough(
+                TerritoryName.ALASKA, TerritoryName.ONTARIO, PlayerColor.RED));
     }
 }
