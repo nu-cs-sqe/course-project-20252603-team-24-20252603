@@ -829,6 +829,6 @@ public final class GameBoardController {
         map.put(PlayerColor.ORANGE, "#ee8833");
         map.put(PlayerColor.PINK, "#dd66aa");
         map.put(PlayerColor.CYAN, "#44bbcc");
-        return java.util.Collections.unmodifiableMap(map);
+        return Collections.unmodifiableMap(map);
     }
 }
