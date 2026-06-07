@@ -1128,6 +1128,23 @@ public class RiskGameTests {
     }
 
     @Test
+    public void EndTurn_OnlyCurrentPlayerOwnsTerritories_RemainsActivePlayer() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(1);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(0);
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.FORTIFY);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.endTurn();
+        assertEquals(GamePhase.ATTACK, game.getPhase());
+        assertEquals(PlayerColor.RED, game.getCurrentPlayerColor());
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void GetWinner_TerritoriesDistributedAmongMultiplePlayers_ReturnsNull() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         WorldMap mockMap = EasyMock.createMock(WorldMap.class);
