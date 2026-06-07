@@ -162,3 +162,9 @@
         - discard pile becomes empty
         - one card is returned
         - remaining discarded cards are available in draw pile
+
+- **TC28: Territory card not present in draw pile is reported as not contained** ( :white_check_mark: )
+    - **State of the system**:
+        - new deck constructed
+        - all 44 cards drawn from the deck (draw pile is empty)
+    - **Expected output**: containsTerritoryCard(ALASKA) == false
