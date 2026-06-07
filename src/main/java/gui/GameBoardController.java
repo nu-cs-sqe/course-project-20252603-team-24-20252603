@@ -71,6 +71,9 @@ public final class GameBoardController {
     @FXML
     private Button tradeCardsButton;
 
+    @FXML
+    private Button newGameButton;
+
     private RiskGame game;
     private WebEngine engine;
     private JavaBridge javaBridge;
@@ -365,6 +368,10 @@ public final class GameBoardController {
         }
     }
 
+    @FXML
+    private void handleNewGame() {
+    }
+
     private void updateMapColors() {
         for (Map.Entry<String, TerritoryName> entry : SVG_ID_TO_TERRITORY.entrySet()) {
             String svgId = entry.getKey();
@@ -549,6 +556,7 @@ public final class GameBoardController {
                 && game.canTradeCards(getSelectedCards());
         tradeCardsButton.setDisable(gameOver || !tradeReady);
         cardListView.setDisable(gameOver);
+        newGameButton.setDisable(!gameOver);
     }
 
     private void updateFortifySpinner() {
