@@ -10,7 +10,6 @@ import java.util.Set;
 
 public final class RiskGame {
     private static final int MIN_DRAFT_ARMIES = 3;
-    private static final int MIN_ATTACK_DICE = 1;
     private static final int MAX_ATTACK_DICE = 3;
     private static final int MAX_DEFEND_DICE = 2;
     private static final int DIE_SIDES = 6;
@@ -105,7 +104,6 @@ public final class RiskGame {
         this.currentPlayerIndex = random.nextInt(players.size());
         this.firstSetupPlayerIndex = currentPlayerIndex;
         this.phase = GamePhase.SCRAMBLE;
-        this.territoriesClaimed = 0;
     }
 
     public GamePhase getPhase() {
