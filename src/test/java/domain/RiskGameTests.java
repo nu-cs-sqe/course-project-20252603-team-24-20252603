@@ -654,6 +654,21 @@ public class RiskGameTests {
     }
 
     @Test
+    public void DraftArmy_WithSouthAmericaBonus_DraftsFiveArmiesBeforeComplete() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        game.setupTerritory(TerritoryName.VENEZUELA, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.PERU, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.BRAZIL, PlayerColor.RED, 1);
+        game.setupTerritory(TerritoryName.ARGENTINA, PlayerColor.RED, 1);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        for (int i = 0; i < 5; i++) {
+            game.draftArmy(TerritoryName.VENEZUELA);
+        }
+        assertTrue(game.isDraftComplete());
+    }
+
+    @Test
     public void DraftArmy_WrongPhase_ThrowsIllegalStateException() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);
