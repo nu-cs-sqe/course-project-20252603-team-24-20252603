@@ -537,11 +537,11 @@ public final class GameBoardController {
         endAttackButton.setDisable(gameOver || !attackPhase || capturePending);
 
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
-        fortifyArmiesSpinner.setDisable(!fortifyPhase);
-        fortifyButton.setDisable(!fortifyPhase
+        fortifyArmiesSpinner.setDisable(gameOver || !fortifyPhase);
+        fortifyButton.setDisable(gameOver || !fortifyPhase
                 || selectedFortifyFrom == null
                 || selectedFortifyTo == null);
-        endTurnButton.setDisable(!fortifyPhase);
+        endTurnButton.setDisable(gameOver || !fortifyPhase);
 
         boolean tradeReady = game != null
                 && phase == GamePhase.ATTACK
