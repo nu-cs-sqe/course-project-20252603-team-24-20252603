@@ -1040,6 +1040,37 @@ public class RiskGameTests {
     }
 
     @Test
+    public void Attack_AttackerDiceRolledOutOfOrder_SortsDescendingBeforeComparing() {
+        final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 0, 5, 2, 3));
+        WorldMap mockMap = EasyMock.createMock(WorldMap.class);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALASKA, PlayerColor.RED))
+                .andStubReturn(true);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.RED))
+                .andStubReturn(false);
+        EasyMock.expect(mockMap.isOwnedBy(TerritoryName.ALBERTA, PlayerColor.BLUE))
+                .andStubReturn(true);
+        EasyMock.expect(mockMap.areNeighbors(
+                TerritoryName.ALASKA, TerritoryName.ALBERTA)).andStubReturn(true);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALASKA)).andStubReturn(4);
+        EasyMock.expect(mockMap.getArmies(TerritoryName.ALBERTA))
+                .andReturn(1).andReturn(1).andReturn(0).andReturn(0);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.RED)).andStubReturn(2);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.BLUE)).andStubReturn(20);
+        EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(20);
+        mockMap.removeArmies(TerritoryName.ALBERTA, 1);
+        EasyMock.expectLastCall();
+        mockMap.assignTerritory(TerritoryName.ALBERTA, PlayerColor.RED);
+        EasyMock.expectLastCall();
+        EasyMock.replay(mockMap);
+        game.provideWorldMap(mockMap);
+        game.setPhase(GamePhase.ATTACK);
+        game.setCurrentPlayer(PlayerColor.RED);
+        game.setDraftComplete();
+        game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
+        EasyMock.verify(mockMap);
+    }
+
+    @Test
     public void EndTurn_DuringFortifyPhase_TransitionsToAttackAndAdvancesPlayer() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
         game.setPhase(GamePhase.FORTIFY);
