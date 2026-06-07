@@ -82,5 +82,25 @@ A bundle defines keys for every user-visible string:
   missing, so adding a new `TerritoryName` value before its bundle entry
   exists will not crash the UI.
 
+## Coverage exceptions
+
+This project targets 100% mutation coverage and 100% cyclomatic coverage for
+all non-GUI, non-enum code (per the team's letter-grade A goals). A small
+number of branches in `domain/RiskGame.java` are flagged as uncovered by
+JaCoCo but are **structurally unreachable** under the current type contracts.
+They are kept in the source as defensive guards and documented inline with
+explanatory comments referencing this section. They are the coverage
+equivalent of equivalent mutants and are exempted from the 100% goal.
+
+| Location | Branch | Why it is unreachable |
+|---|---|---|
+| `validatePlayerCount` | `playerInfo.size() > MAX_PLAYERS` | `Map<PlayerColor, String>` is keyed by an enum with exactly 6 values, so its size can never exceed 6 (= `MAX_PLAYERS`). The guard exists in case `PlayerColor` grows in the future. |
+| `canTradeCards` | `artillery == 1` false branch in `infantry == 1 && cavalry == 1 && artillery == 1` | By the time this expression is evaluated, earlier checks guarantee `cards.size() == 3` and `wildcards == 0`, so `infantry + cavalry + artillery == 3`. If both `infantry == 1` and `cavalry == 1`, then `artillery == 1` necessarily; the false branch cannot fire. |
+| `advanceToNextPlayer` | Implicit loop fallthrough at the closing brace | `isSetupComplete()` was checked false immediately before the loop, so at least one player still has armies to place. The loop iterates a full rotation and is guaranteed to return from inside before the natural exit condition becomes true. |
+
+These exceptions cover three branches and one line. Every other domain
+branch and line is exercised by tests, and Pitest reports all mutants killed
+except those generated against these same equivalent branches.
+
 ## Acknowledgements
 REFERENCES, SOURCE OF HELP ETC
