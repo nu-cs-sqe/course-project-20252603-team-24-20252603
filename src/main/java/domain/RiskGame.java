@@ -586,12 +586,7 @@ public final class RiskGame {
     }
 
     public List<Card> getCards(PlayerColor color) {
-        for (Player p : players) {
-            if (p.getColor() == color) {
-                return p.getCards();
-            }
-        }
-        throw new IllegalArgumentException("player color not in game");
+        return getPlayer(color).getCards();
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
