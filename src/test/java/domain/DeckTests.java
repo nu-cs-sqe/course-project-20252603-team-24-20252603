@@ -57,6 +57,27 @@ public class DeckTests {
     }
 
     @Test
+    public void ConstructDeck_TerritoryCardTypeBoundaries_AssignTypesByIndexRange() {
+        Deck deck = new Deck(new Random(0L));
+        CardType greatBritainType = null;
+        CardType afghanistanType = null;
+        CardType uralType = null;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (card.getTerritory() == TerritoryName.GREAT_BRITAIN) {
+                greatBritainType = card.getType();
+            } else if (card.getTerritory() == TerritoryName.AFGHANISTAN) {
+                afghanistanType = card.getType();
+            } else if (card.getTerritory() == TerritoryName.URAL) {
+                uralType = card.getType();
+            }
+        }
+        assertEquals(CardType.CAVALRY, greatBritainType);
+        assertEquals(CardType.CAVALRY, afghanistanType);
+        assertEquals(CardType.ARTILLERY, uralType);
+    }
+
+    @Test
     public void ContainsTerritoryCard_AfterTerritoryCardDrawn_ReturnsFalse() {
         Deck deck = new Deck(new Random(0L));
         TerritoryName drawnTerritory = null;

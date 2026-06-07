@@ -89,6 +89,12 @@
                 <Spinner fx:id="fortifyArmiesSpinner" prefWidth="72.0" />
                 <Button fx:id="fortifyButton" text="%board.fortify" onAction="#handleFortify" />
                 <Button fx:id="endTurnButton" text="%board.endTurn" onAction="#handleEndTurn" />
+
+                <Region HBox.hgrow="ALWAYS" />
+
+                <Button fx:id="newGameButton" text="%board.newGame" onAction="#handleNewGame"
+                        disable="true"
+                        style="-fx-background-color: #2e9b5f; -fx-text-fill: white; -fx-font-weight: bold;" />
             </HBox>
         </VBox>
     </bottom>

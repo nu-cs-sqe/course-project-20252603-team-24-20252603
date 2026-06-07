@@ -595,9 +595,13 @@ public final class RiskGame {
             phase = GamePhase.ATTACK;
             return;
         }
-        do {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        } while (!players.get(currentPlayerIndex).hasArmiesToPlace());
+        for (int i = 1; i <= players.size(); i++) {
+            int candidateIndex = (currentPlayerIndex + i) % players.size();
+            if (players.get(candidateIndex).hasArmiesToPlace()) {
+                currentPlayerIndex = candidateIndex;
+                return;
+            }
+        }
     }
 
     void setupTerritory(TerritoryName territory, PlayerColor owner, int armies) {

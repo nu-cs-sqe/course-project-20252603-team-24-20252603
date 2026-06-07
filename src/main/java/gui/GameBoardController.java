@@ -16,6 +16,9 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -24,6 +27,7 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 /**
@@ -72,6 +76,9 @@ public final class GameBoardController {
 
     @FXML
     private Button tradeCardsButton;
+
+    @FXML
+    private Button newGameButton;
 
     private RiskGame game;
     private WebEngine engine;
@@ -168,6 +175,9 @@ public final class GameBoardController {
         }
 
         GamePhase phase = game.getPhase();
+        if (phase == GamePhase.GAME_OVER) {
+            return;
+        }
         try {
             actionStatusMessage = null;
             if (phase == GamePhase.SCRAMBLE) {
@@ -386,6 +396,26 @@ public final class GameBoardController {
         }
     }
 
+    @FXML
+    private void handleNewGame() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/game-setup-view.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = (Stage) phaseLabel.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
+            stage.setWidth(520);
+            stage.setHeight(420);
+            stage.setMinWidth(480);
+            stage.setMinHeight(360);
+        } catch (Exception e) {
+            statusLabel.setText(LocaleManager.getBundle().getString("setup.error.reload"));
+        }
+    }
+
     private void updateMapColors() {
         for (Map.Entry<String, TerritoryName> entry : SVG_ID_TO_TERRITORY.entrySet()) {
             String svgId = entry.getKey();
@@ -555,35 +585,35 @@ public final class GameBoardController {
     }
 
     private void updateActionControls(GamePhase phase) {
+        boolean gameOver = phase == GamePhase.GAME_OVER;
         boolean capturePending = game != null && game.isCaptureMovementPending();
         final boolean attackPhase = phase == GamePhase.ATTACK
                 && game != null
                 && game.isDraftComplete();
-        captureArmiesSpinner.setDisable(!capturePending);
-        moveAfterCaptureButton.setDisable(!capturePending);
+        captureArmiesSpinner.setDisable(gameOver || !capturePending);
+        moveAfterCaptureButton.setDisable(gameOver || !capturePending);
         if (capturePending) {
             captureArmiesSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                     game.getMinimumCaptureMove(),
                     game.getMaximumCaptureMove(),
                     game.getMaximumCaptureMove()));
         }
-        endAttackButton.setDisable(!attackPhase || capturePending);
+        endAttackButton.setDisable(gameOver || !attackPhase || capturePending);
 
         boolean fortifyPhase = phase == GamePhase.FORTIFY;
-        fortifyArmiesSpinner.setDisable(!fortifyPhase);
-        fortifyButton.setDisable(!fortifyPhase
+        fortifyArmiesSpinner.setDisable(gameOver || !fortifyPhase);
+        fortifyButton.setDisable(gameOver || !fortifyPhase
                 || selectedFortifyFrom == null
                 || selectedFortifyTo == null);
-        endTurnButton.setDisable(!fortifyPhase);
+        endTurnButton.setDisable(gameOver || !fortifyPhase);
 
         boolean tradeReady = game != null
                 && phase == GamePhase.ATTACK
                 && !game.isDraftComplete()
                 && game.canTradeCards(getSelectedCards());
-        tradeCardsButton.setDisable(!tradeReady);
-
-        boolean gameOver = phase == GamePhase.GAME_OVER;
+        tradeCardsButton.setDisable(gameOver || !tradeReady);
         cardListView.setDisable(gameOver);
+        newGameButton.setDisable(!gameOver);
     }
 
     private void updateFortifySpinner() {
