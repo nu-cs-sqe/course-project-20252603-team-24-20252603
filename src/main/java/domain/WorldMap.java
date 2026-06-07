@@ -207,6 +207,6 @@ class WorldMap {
     }
 
     void assignTerritory(TerritoryName territory, PlayerColor color) {
-        territories.get(territory).assignTerritory(color);
+        territories.get(territory).transferOwner(color);
     }
 }

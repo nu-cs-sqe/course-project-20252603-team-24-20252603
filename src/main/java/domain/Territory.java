@@ -44,12 +44,12 @@ class Territory {
         }
         this.owner = color;
     }
-    
+
     boolean isOwnedBy(PlayerColor color) {
         return color == owner;
     }
 
-    void assignTerritory(PlayerColor color) {
+    void transferOwner(PlayerColor color) {
         this.owner = color;
     }
 }
