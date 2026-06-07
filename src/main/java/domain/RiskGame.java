@@ -450,7 +450,6 @@ public final class RiskGame {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only fortify during FORTIFY phase");
         }
-
         if (hasFortifiedThisTurn) {
             throw new IllegalStateException("can only fortify once per turn");
         }
