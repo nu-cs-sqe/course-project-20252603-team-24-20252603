@@ -9,13 +9,6 @@ import java.util.Random;
 import java.util.Set;
 
 public final class RiskGame {
-    private static final int MIN_PLAYERS = 3;
-    private static final int MAX_PLAYERS = 6;
-    private static final int ARMIES_THREE_PLAYERS = 35;
-    private static final int ARMIES_FOUR_PLAYERS = 30;
-    private static final int ARMIES_FIVE_PLAYERS = 25;
-    private static final int ARMIES_SIX_PLAYERS = 20;
-    private static final int TOTAL_TERRITORIES = 42;
     private static final int MIN_DRAFT_ARMIES = 3;
     private static final int MIN_ATTACK_DICE = 1;
     private static final int MAX_ATTACK_DICE = 3;
@@ -128,7 +121,8 @@ public final class RiskGame {
         // can never have more than 6 entries. Kept as a defensive guard in
         // case PlayerColor ever grows. JaCoCo flags it as a missed branch;
         // see README "Coverage exceptions" for the equivalent-mutant note.
-        if (playerInfo.size() < MIN_PLAYERS || playerInfo.size() > MAX_PLAYERS) {
+        if (playerInfo.size() < GameConstants.MIN_PLAYERS
+                || playerInfo.size() > GameConstants.MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
         }
     }
@@ -142,10 +136,10 @@ public final class RiskGame {
 
     private int getStartingArmies(int playerCount) {
         switch (playerCount) {
-            case 3: return ARMIES_THREE_PLAYERS;
-            case 4: return ARMIES_FOUR_PLAYERS;
-            case 5: return ARMIES_FIVE_PLAYERS;
-            default: return ARMIES_SIX_PLAYERS;
+            case 3: return GameConstants.ARMIES_THREE_PLAYERS;
+            case 4: return GameConstants.ARMIES_FOUR_PLAYERS;
+            case 5: return GameConstants.ARMIES_FIVE_PLAYERS;
+            default: return GameConstants.ARMIES_SIX_PLAYERS;
         }
     }
 
@@ -158,7 +152,7 @@ public final class RiskGame {
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        if (territoriesClaimed == TOTAL_TERRITORIES) {
+        if (territoriesClaimed == GameConstants.TOTAL_TERRITORIES) {
             phase = GamePhase.SETUP;
             firstSetupPlayerIndex = currentPlayerIndex;
         }
@@ -442,7 +436,7 @@ public final class RiskGame {
 
     public PlayerColor getWinner() {
         for (Player p : players) {
-            if (worldMap.countTerritoriesOwnedBy(p.getColor()) == TOTAL_TERRITORIES) {
+            if (worldMap.countTerritoriesOwnedBy(p.getColor()) == GameConstants.TOTAL_TERRITORIES) {
                 return p.getColor();
             }
         }
