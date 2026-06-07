@@ -19,6 +19,8 @@ public final class RiskGame {
     private static final int AFRICA_BONUS = 3;
     private static final int ASIA_BONUS = 7;
     private static final int AUSTRALIA_BONUS = 2;
+    private static final int[] TRADE_BONUS_TABLE = {4, 6, 8, 10, 12, 15};
+    private static final int TRADE_BONUS_INCREMENT = 5;
     private static final List<TerritoryName> NORTH_AMERICA = List.of(
             TerritoryName.ALASKA,
             TerritoryName.NORTHWEST_TERRITORY,
@@ -554,15 +556,15 @@ public final class RiskGame {
         current.removeCards(cards);
         deck.discard(cards);
         tradeSetCount++;
-        int[] bonusTable = {4, 6, 8, 10, 12, 15};
-        // Pitest flags the boundary mutation `<= 6` -> `< 6` as a
-        // surviving mutant. `bonusTable[5] == 15` matches the formula
-        // evaluated at the boundary (`15 + 5 * (6 - 6) == 15`), so the
-        // two branches produce identical output at every tradeSetCount;
-        // equivalent mutant. See README "Coverage exceptions".
-        int bonus = tradeSetCount <= 6
-                ? bonusTable[tradeSetCount - 1]
-                : 15 + 5 * (tradeSetCount - 6);
+        // Pitest flags the boundary mutation `<= TRADE_BONUS_TABLE.length`
+        // -> `< TRADE_BONUS_TABLE.length` as a surviving mutant.
+        // At the boundary, TRADE_BONUS_TABLE[length - 1] equals the formula
+        // result (increment * 0 == 0), so both branches produce identical
+        // output; equivalent mutant. See README "Coverage exceptions".
+        int bonus = tradeSetCount <= TRADE_BONUS_TABLE.length
+                ? TRADE_BONUS_TABLE[tradeSetCount - 1]
+                : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
+                        + TRADE_BONUS_INCREMENT * (tradeSetCount - TRADE_BONUS_TABLE.length);
         if (!isDraftInitialized) {
             int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
             draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
