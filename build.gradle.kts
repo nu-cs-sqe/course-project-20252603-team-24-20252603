@@ -92,6 +92,13 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("gui/**")
+            }
+        })
+    )
     reports {
         xml.required = false
         csv.required = false

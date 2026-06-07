@@ -1,5 +1,8 @@
 package gui;
 
+import domain.GameConstants;
+import domain.PlayerColor;
+import domain.RiskGame;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,11 +11,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
 import javafx.application.Platform;
-import javafx.geometry.Pos;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -29,10 +31,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-
-import domain.GameConstants;
-import domain.PlayerColor;
-import domain.RiskGame;
 
 /**
  * FXML controller for the game setup UI. Builds the {@code Map<PlayerColor, String>}
@@ -85,7 +83,8 @@ public final class GameSetupController {
     private void handleStartGame() {
         int count = playerCountSpinner.getValue();
         if (nameFields.size() != count) {
-            showError("Setup is out of sync with the player count. Try adjusting the number of players.");
+            showError("Setup is out of sync with the player count. "
+                    + "Try adjusting the number of players.");
             return;
         }
 
