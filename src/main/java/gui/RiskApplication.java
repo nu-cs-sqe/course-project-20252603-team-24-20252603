@@ -11,6 +11,11 @@ import javafx.stage.Stage;
  */
 public final class RiskApplication extends Application {
 
+    static final int SETUP_WIDTH = 520;
+    static final int SETUP_HEIGHT = 420;
+    static final int SETUP_MIN_WIDTH = 480;
+    static final int SETUP_MIN_HEIGHT = 360;
+
     @Override
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(
@@ -20,10 +25,10 @@ public final class RiskApplication extends Application {
         Parent root = loader.load();
         Scene scene = new Scene(root);
         stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
-        stage.setWidth(520);
-        stage.setHeight(420);
-        stage.setMinWidth(480);
-        stage.setMinHeight(360);
+        stage.setWidth(SETUP_WIDTH);
+        stage.setHeight(SETUP_HEIGHT);
+        stage.setMinWidth(SETUP_MIN_WIDTH);
+        stage.setMinHeight(SETUP_MIN_HEIGHT);
         stage.setScene(scene);
         stage.show();
     }

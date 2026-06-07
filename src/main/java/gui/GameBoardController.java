@@ -414,10 +414,10 @@ public final class GameBoardController {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
-            stage.setWidth(520);
-            stage.setHeight(420);
-            stage.setMinWidth(480);
-            stage.setMinHeight(360);
+            stage.setWidth(RiskApplication.SETUP_WIDTH);
+            stage.setHeight(RiskApplication.SETUP_HEIGHT);
+            stage.setMinWidth(RiskApplication.SETUP_MIN_WIDTH);
+            stage.setMinHeight(RiskApplication.SETUP_MIN_HEIGHT);
         } catch (Exception e) {
             statusLabel.setText(LocaleManager.getBundle().getString("setup.error.reload"));
         }
