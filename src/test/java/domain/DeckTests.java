@@ -2,6 +2,7 @@ package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -63,6 +64,19 @@ public class DeckTests {
             drawnTerritory = deck.draw().getTerritory();
         }
         assertFalse(deck.containsTerritoryCard(drawnTerritory));
+    }
+
+    @Test
+    public void DrawFromEmptyDrawPile_ShufflesDiscardPileBeforeDrawing() {
+        Deck deck = new Deck(new Random(1L));
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        Card first = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card second = new Card(CardType.CAVALRY, TerritoryName.BRAZIL);
+        Card third = new Card(CardType.ARTILLERY, TerritoryName.CHINA);
+        deck.discard(List.of(first, second, third));
+        assertNotEquals(first, deck.draw());
     }
 
     @Test
