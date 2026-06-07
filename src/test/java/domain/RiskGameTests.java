@@ -1304,6 +1304,12 @@ public class RiskGameTests {
     }
 
     @Test
+    public void IsCaptureMovementPending_NoPendingCapture_ReturnsFalse() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertFalse(game.isCaptureMovementPending());
+    }
+
+    @Test
     public void Attack_CapturesTerritory_ExposesPendingCaptureDetails() {
         final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
