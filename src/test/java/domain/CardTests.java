@@ -1,0 +1,121 @@
+package domain;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
+
+public class CardTests {
+
+    @Test
+    public void ConstructInfantryCardWithFirstTerritory_ReturnsInfantryAndAlaska() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(CardType.INFANTRY, card.getType());
+        assertEquals(TerritoryName.ALASKA, card.getTerritory());
+    }
+
+    @Test
+    public void ConstructCavalryCardWithTerritory_ReturnsCavalryAndBrazil() {
+        Card card = new Card(CardType.CAVALRY, TerritoryName.BRAZIL);
+        assertEquals(CardType.CAVALRY, card.getType());
+        assertEquals(TerritoryName.BRAZIL, card.getTerritory());
+    }
+
+    @Test
+    public void ConstructArtilleryCardWithLastTerritory_ReturnsArtilleryAndIndonesia() {
+        Card card = new Card(CardType.ARTILLERY, TerritoryName.INDONESIA);
+        assertEquals(CardType.ARTILLERY, card.getType());
+        assertEquals(TerritoryName.INDONESIA, card.getTerritory());
+    }
+
+    @Test
+    public void ConstructWildCardWithNoTerritory_ReturnsWildAndNullTerritory() {
+        Card card = new Card(CardType.WILD, null);
+        assertEquals(CardType.WILD, card.getType());
+        assertEquals(null, card.getTerritory());
+    }
+
+    @Test
+    public void ConstructCardWithNullType_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Card(null, TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void ConstructNonWildCardWithNoTerritory_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new Card(CardType.INFANTRY, null));
+    }
+
+    @Test
+    public void ConstructWildCardWithTerritory_ThrowsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new Card(CardType.WILD, TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void GetType_InfantryCard_ReturnsInfantry() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(CardType.INFANTRY, card.getType());
+    }
+
+    @Test
+    public void GetType_WildCard_ReturnsWild() {
+        Card card = new Card(CardType.WILD, null);
+        assertEquals(CardType.WILD, card.getType());
+    }
+
+    @Test
+    public void GetTerritory_FirstTerritoryCard_ReturnsAlaska() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertEquals(TerritoryName.ALASKA, card.getTerritory());
+    }
+
+    @Test
+    public void GetTerritory_LastTerritoryCard_ReturnsIndonesia() {
+        Card card = new Card(CardType.ARTILLERY, TerritoryName.INDONESIA);
+        assertEquals(TerritoryName.INDONESIA, card.getTerritory());
+    }
+
+    @Test
+    public void GetTerritory_WildCard_ReturnsNull() {
+        Card card = new Card(CardType.WILD, null);
+        assertEquals(null, card.getTerritory());
+    }
+
+    @Test
+    public void IsWild_NonWildCard_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.isWild());
+    }
+
+    @Test
+    public void IsWild_WildCard_ReturnsTrue() {
+        Card card = new Card(CardType.WILD, null);
+        assertTrue(card.isWild());
+    }
+
+    @Test
+    public void MatchesTerritory_SameTerritory_ReturnsTrue() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertTrue(card.matchesTerritory(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void MatchesTerritory_DifferentTerritory_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.matchesTerritory(TerritoryName.ALBERTA));
+    }
+
+    @Test
+    public void MatchesTerritory_WildCard_ReturnsFalse() {
+        Card card = new Card(CardType.WILD, null);
+        assertFalse(card.matchesTerritory(TerritoryName.ALASKA));
+    }
+
+    @Test
+    public void MatchesTerritory_NullTerritory_ReturnsFalse() {
+        Card card = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        assertFalse(card.matchesTerritory(null));
+    }
+}

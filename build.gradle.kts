@@ -21,6 +21,9 @@ repositories {
 dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation("org.junit.platform:junit-platform-suite")
+    testImplementation("io.cucumber:cucumber-java:7.18.1")
+    testImplementation("io.cucumber:cucumber-junit-platform-engine:7.18.1")
     // Source: https://mvnrepository.com/artifact/org.easymock/easymock
     testImplementation("org.easymock:easymock:5.4.0")
 }
@@ -71,6 +74,7 @@ spotbugs {
     reportsDir = file("spotbugs")
     maxHeapSize = "1g"
     extraArgs = listOf("-nested:false")
+    excludeFilter = file("config/spotbugs/exclude.xml")
 }
 
 tasks.spotbugsMain {
@@ -88,6 +92,13 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude("gui/**")
+            }
+        })
+    )
     reports {
         xml.required = false
         csv.required = false
