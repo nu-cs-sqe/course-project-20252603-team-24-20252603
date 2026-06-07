@@ -1358,6 +1358,12 @@ public class RiskGameTests {
     }
 
     @Test
+    public void GetMinimumCaptureMove_NoPendingCapture_ThrowsIllegalStateException() {
+        final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
+        assertThrows(IllegalStateException.class, game::getMinimumCaptureMove);
+    }
+
+    @Test
     public void MoveArmiesAfterCapture_MovesAdditionalArmiesBeyondMinimum_Succeeds() {
         final RiskGame game = new RiskGame(threePlayerMap(), scriptedDice(0, 5, 4, 3, 0));
         game.setupTerritory(TerritoryName.ALASKA, PlayerColor.RED, 4);
