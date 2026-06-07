@@ -1,6 +1,8 @@
 package domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
 import org.junit.jupiter.api.Test;
 
 public class DeckTests {
@@ -32,6 +33,71 @@ public class DeckTests {
     public void ConstructDeckWithTwoWildCards_ReturnsTwoWildCards() {
         Deck deck = new Deck();
         assertEquals(2, deck.countWildCards());
+    }
+
+    @Test
+    public void ConstructDeck_CardTypeDistribution_ReturnsFourteenOfEachType() {
+        Deck deck = new Deck();
+        int infantry = 0;
+        int cavalry = 0;
+        int artillery = 0;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (card.getType() == CardType.INFANTRY) {
+                infantry++;
+            } else if (card.getType() == CardType.CAVALRY) {
+                cavalry++;
+            } else if (card.getType() == CardType.ARTILLERY) {
+                artillery++;
+            }
+        }
+        assertEquals(14, infantry);
+        assertEquals(14, cavalry);
+        assertEquals(14, artillery);
+    }
+
+    @Test
+    public void ConstructDeck_TerritoryCardTypeBoundaries_AssignTypesByIndexRange() {
+        Deck deck = new Deck(new Random(0L));
+        CardType greatBritainType = null;
+        CardType afghanistanType = null;
+        CardType uralType = null;
+        for (int i = 0; i < 44; i++) {
+            Card card = deck.draw();
+            if (card.getTerritory() == TerritoryName.GREAT_BRITAIN) {
+                greatBritainType = card.getType();
+            } else if (card.getTerritory() == TerritoryName.AFGHANISTAN) {
+                afghanistanType = card.getType();
+            } else if (card.getTerritory() == TerritoryName.URAL) {
+                uralType = card.getType();
+            }
+        }
+        assertEquals(CardType.CAVALRY, greatBritainType);
+        assertEquals(CardType.CAVALRY, afghanistanType);
+        assertEquals(CardType.ARTILLERY, uralType);
+    }
+
+    @Test
+    public void ContainsTerritoryCard_AfterTerritoryCardDrawn_ReturnsFalse() {
+        Deck deck = new Deck(new Random(0L));
+        TerritoryName drawnTerritory = null;
+        while (drawnTerritory == null) {
+            drawnTerritory = deck.draw().getTerritory();
+        }
+        assertFalse(deck.containsTerritoryCard(drawnTerritory));
+    }
+
+    @Test
+    public void DrawFromEmptyDrawPile_ShufflesDiscardPileBeforeDrawing() {
+        Deck deck = new Deck(new Random(1L));
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        Card first = new Card(CardType.INFANTRY, TerritoryName.ALASKA);
+        Card second = new Card(CardType.CAVALRY, TerritoryName.BRAZIL);
+        Card third = new Card(CardType.ARTILLERY, TerritoryName.CHINA);
+        deck.discard(List.of(first, second, third));
+        assertNotEquals(first, deck.draw());
     }
 
     @Test
@@ -234,6 +300,16 @@ public class DeckTests {
     @Test
     public void DiscardListContainingNullCard_ThrowsIllegalArgumentException() {
         Deck deck = new Deck();
-        assertThrows(IllegalArgumentException.class, () -> deck.discard(Collections.singletonList(null)));
+        assertThrows(IllegalArgumentException.class,
+                () -> deck.discard(Collections.singletonList(null)));
+    }
+
+    @Test
+    public void ContainsTerritoryCard_TerritoryNotInDrawPile_ReturnsFalse() {
+        Deck deck = new Deck();
+        for (int i = 0; i < 44; i++) {
+            deck.draw();
+        }
+        assertFalse(deck.containsTerritoryCard(TerritoryName.ALASKA));
     }
 }

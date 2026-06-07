@@ -247,6 +247,19 @@
         - second: ALASKA
     - **Expected output**: true
 
+- **TC45: Default map all configured borders are bidirectional** ( :white_check_mark: )
+    - **State of the system**:
+        - WorldMap constructed with default constructor (real map)
+        - every configured Risk border pair is checked in both directions
+    - **Expected output**: true for every forward and reverse adjacency check
+
+- **TC46: Territory missing from neighbor map is not adjacent** ( :white_check_mark: )
+    - **State of the system**:
+        - WorldMap constructed with a custom neighbor map missing ALASKA
+        - first: ALASKA
+        - second: ALBERTA
+    - **Expected output**: false
+
 ## Method: `boolean areConnectedThrough(TerritoryName from, TerritoryName to, PlayerColor owner)`
 
 - **TC40: Adjacent territories owned by same player are connected** ( :white_check_mark: )

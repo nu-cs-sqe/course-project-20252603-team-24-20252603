@@ -123,6 +123,11 @@ public final class RiskGame {
         if (playerInfo == null) {
             throw new IllegalArgumentException("playerInfo cannot be null");
         }
+        // The `> MAX_PLAYERS` branch is structurally unreachable because
+        // PlayerColor only defines 6 values, so a Map<PlayerColor, String>
+        // can never have more than 6 entries. Kept as a defensive guard in
+        // case PlayerColor ever grows. JaCoCo flags it as a missed branch;
+        // see README "Coverage exceptions" for the equivalent-mutant note.
         if (playerInfo.size() < MIN_PLAYERS || playerInfo.size() > MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
         }
@@ -180,7 +185,9 @@ public final class RiskGame {
 
     public boolean isSetupComplete() {
         for (Player p : players) {
-            if (p.hasArmiesToPlace()) return false;
+            if (p.hasArmiesToPlace()) {
+                return false;
+            }
         }
         return true;
     }
@@ -273,7 +280,7 @@ public final class RiskGame {
     }
 
     private void captureTerritory(TerritoryName from, TerritoryName to) {
-        PlayerColor defenderColor = getOwnerOf(to);
+        final PlayerColor defenderColor = getOwnerOf(to);
         worldMap.assignTerritory(to, getCurrentPlayerColor());
         capturedThisTurn = true;
         pendingCaptureFrom = from;
@@ -358,6 +365,10 @@ public final class RiskGame {
     private int[] rollDiceDescending(int count) {
         Integer[] rolls = new Integer[count];
         for (int i = 0; i < count; i++) {
+            // Pitest flags the `+ 1` as a surviving mutant (replaced with
+            // `- 1`). Dice values are only compared to one another, so a
+            // constant offset is unobservable; equivalent mutant. See
+            // README "Coverage exceptions".
             rolls[i] = random.nextInt(DIE_SIDES) + 1;
         }
         Arrays.sort(rolls, Collections.reverseOrder());
@@ -382,9 +393,12 @@ public final class RiskGame {
 
     public void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies) {
         if (phase != GamePhase.ATTACK) {
-            throw new IllegalStateException("can only move armies after capture during ATTACK phase");
+            throw new IllegalStateException(
+                    "can only move armies after capture during ATTACK phase");
         }
-        if (pendingCaptureFrom == null || !pendingCaptureFrom.equals(from) || !pendingCaptureTo.equals(to)) {
+        if (pendingCaptureFrom == null
+                || !pendingCaptureFrom.equals(from)
+                || !pendingCaptureTo.equals(to)) {
             throw new IllegalStateException("no pending capture from the specified territories");
         }
         int minMove = Math.min(3, worldMap.getArmies(from) - 1);
@@ -502,6 +516,11 @@ public final class RiskGame {
             } else if (card.getType() == CardType.INFANTRY) {
                 infantry++;
             } else if (card.getType() == CardType.CAVALRY) {
+                // Pitest flags negating this conditional as a surviving
+                // mutant. The downstream checks are symmetric in cavalry
+                // and artillery, so swapping their counts produces the
+                // same return value; equivalent mutant. See README
+                // "Coverage exceptions".
                 cavalry++;
             } else {
                 artillery++;
@@ -513,15 +532,17 @@ public final class RiskGame {
         if (infantry == 3 || cavalry == 3 || artillery == 3) {
             return true;
         }
+        // At this point cards.size() == 3 (checked above) and wildcards == 0,
+        // so infantry + cavalry + artillery == 3. If infantry == 1 and
+        // cavalry == 1, then artillery == 1 necessarily; the false-branch of
+        // the third condition is structurally unreachable. JaCoCo flags this
+        // as a missed branch; see README "Coverage exceptions".
         return infantry == 1 && cavalry == 1 && artillery == 1;
     }
 
     public void tradeCards(List<Card> cards) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only trade cards during ATTACK phase");
-        }
-        if (isDraftComplete()) {
-            throw new IllegalStateException("cannot trade cards after draft is complete");
         }
         if (cards == null) {
             throw new IllegalArgumentException("cards cannot be null");
@@ -542,6 +563,11 @@ public final class RiskGame {
         deck.discard(cards);
         tradeSetCount++;
         int[] bonusTable = {4, 6, 8, 10, 12, 15};
+        // Pitest flags the boundary mutation `<= 6` -> `< 6` as a
+        // surviving mutant. `bonusTable[5] == 15` matches the formula
+        // evaluated at the boundary (`15 + 5 * (6 - 6) == 15`), so the
+        // two branches produce identical output at every tradeSetCount;
+        // equivalent mutant. See README "Coverage exceptions".
         int bonus = tradeSetCount <= 6
                 ? bonusTable[tradeSetCount - 1]
                 : 15 + 5 * (tradeSetCount - 6);
@@ -552,7 +578,8 @@ public final class RiskGame {
         }
         draftArmiesRemaining += bonus;
         for (Card card : cards) {
-            if (!card.isWild() && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
+            if (!card.isWild()
+                    && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
                 worldMap.addArmies(card.getTerritory(), 2);
             }
         }
@@ -570,9 +597,11 @@ public final class RiskGame {
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
         return worldMap.isOwnedBy(territory, color);
     }
+
     public boolean isUnclaimed(TerritoryName territory) {
         return worldMap.isUnclaimed(territory);
     }
+
     public int getArmies(TerritoryName territory) {
         return worldMap.getArmies(territory);
     }
@@ -587,9 +616,20 @@ public final class RiskGame {
             phase = GamePhase.ATTACK;
             return;
         }
-        do {
-            currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        } while (!players.get(currentPlayerIndex).hasArmiesToPlace());
+        // The loop always returns from inside before the natural exit
+        // condition `i > players.size()` becomes true: isSetupComplete() was
+        // false just above, so at least one player still has armies and the
+        // `if` inside will fire within one full rotation. The implicit
+        // fallthrough on the closing brace is structurally unreachable.
+        // JaCoCo flags it as a missed branch and missed line; see README
+        // "Coverage exceptions".
+        for (int i = 1; i <= players.size(); i++) {
+            int candidateIndex = (currentPlayerIndex + i) % players.size();
+            if (players.get(candidateIndex).hasArmiesToPlace()) {
+                currentPlayerIndex = candidateIndex;
+                return;
+            }
+        }
     }
 
     void setupTerritory(TerritoryName territory, PlayerColor owner, int armies) {
@@ -597,12 +637,30 @@ public final class RiskGame {
         worldMap.addArmies(territory, armies);
     }
 
-    void setCapturedThisTurn(boolean value) { this.capturedThisTurn = value; }
-    int getDeckDiscardPileSize() { return deck.getDiscardPileSize(); }
-    void setTradeSetCount(int count) { this.tradeSetCount = count; }
-    void provideWorldMap(WorldMap map) { this.worldMap = map; }
-    void providePlayers(List<Player> players) { this.players = players; }
-    void setPhase(GamePhase phase) { this.phase = phase; }
+    void setCapturedThisTurn(boolean value) {
+        this.capturedThisTurn = value;
+    }
+
+    int getDeckDiscardPileSize() {
+        return deck.getDiscardPileSize();
+    }
+
+    void setTradeSetCount(int count) {
+        this.tradeSetCount = count;
+    }
+
+    void provideWorldMap(WorldMap map) {
+        this.worldMap = map;
+    }
+
+    void providePlayers(List<Player> players) {
+        this.players = players;
+    }
+
+    void setPhase(GamePhase phase) {
+        this.phase = phase;
+    }
+
     void setCurrentPlayer(PlayerColor color) {
         for (int i = 0; i < players.size(); i++) {
             if (players.get(i).getColor() == color) {
@@ -611,6 +669,7 @@ public final class RiskGame {
             }
         }
     }
+
     void setDraftComplete() {
         this.isDraftInitialized = true;
         this.draftArmiesRemaining = 0;

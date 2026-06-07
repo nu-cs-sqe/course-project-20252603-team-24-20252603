@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import domain.Card;
 import domain.CardType;
 import domain.TerritoryName;
-
 import org.junit.jupiter.api.Test;
 
 public class CardPublicApiTests {

@@ -1312,10 +1312,321 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA gains 2 armies
         - RED receives the trade draft armies
 
-- **TC154: Trade cards after draft is complete throws IllegalStateException** ( :white_check_mark: )
+- **TC154: Trade cards after draft is complete reopens the draft with bonus armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - draft is complete (all draft armies have been placed)
         - RED holds a valid tradeable set of 3 cards
+    - **Expected output**:
+        - the trade succeeds and RED receives the trade bonus armies
+        - isDraftComplete() == false (the new bonus armies must be placed)
+
+## Actions additionally blocked in GAME_OVER phase
+
+- **TC155: `claimTerritory()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC156: `placeArmy()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC157: `tradeCards()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+- **TC158: `moveArmiesAfterCapture()` called in GAME_OVER phase throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: GAME_OVER
+    - **Expected output**: throw IllegalStateException
+
+## Method: `void setCurrentPlayer(PlayerColor color)`
+
+- **TC159: Set current player to color not in game leaves current player unchanged** ( :white_check_mark: )
+    - **State of the system**:
+        - game constructed with RED, BLUE, and GREEN players
+        - current player: RED
+        - color: ORANGE
+    - **Expected output**: current player remains RED
+
+## Method: `void attack(TerritoryName from, TerritoryName to)`
+
+- **TC160: Attack sorts dice descending before comparing** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - ALASKA owned by RED (current player), armies = 4
+        - ALBERTA owned by BLUE, armies = 2
+        - ALASKA and ALBERTA are neighbors
+        - Random mocked so attacker dice are rolled out of order
+        - Random mocked so defender dice are rolled out of order
+    - **Expected output**:
+        - dice are compared from highest to lowest
+        - attack result matches sorted dice comparison
+
+- **TC161: Capturing territory exposes pending capture details** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - ALASKA owned by RED (current player), armies = 4
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - ALBERTA owned by RED
+        - capture movement is pending
+        - pending capture from == ALASKA
+        - pending capture to == ALBERTA
+        - minimum capture move and maximum capture move can be queried
+
+- **TC162: Capturing from two-army starting territory has minimum capture move 1** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK, isDraftComplete: true
+        - ALASKA owned by RED (current player), armies = 2
+        - ALBERTA owned by BLUE, armies = 1
+        - ALASKA and ALBERTA are neighbors
+        - Random mocked so attacker wins all dice
+    - **Expected output**:
+        - ALBERTA owned by RED
+        - capture movement is pending
+        - minimum capture move == 1
+        - maximum capture move == 1
+
+## Method: `void endTurn()`
+
+- **TC163: End turn with only current player active keeps same current player** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: FORTIFY
+        - current player: RED
+        - RED owns at least 1 territory
+        - every other player owns 0 territories
+    - **Expected output**:
+        - phase == ATTACK
+        - current player == RED
+
+## Method: `boolean isCaptureMovementPending()`
+
+- **TC164: No pending capture movement returns false** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - no territory has been captured this turn
+    - **Expected output**: false
+
+## Method: `boolean isUnclaimed(TerritoryName territory)`
+
+- **TC165: Owned territory is not unclaimed** ( :white_check_mark: )
+    - **State of the system**:
+        - ALASKA owned by RED
+    - **Expected output**: false
+
+## Method: `int getMinimumCaptureMove()`
+
+- **TC166: Get minimum capture move with no pending capture throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - no capture movement is pending
+    - **Expected output**: throw IllegalStateException
+
+## Method: `int getMaximumCaptureMove()`
+
+- **TC167: Get maximum capture move with no pending capture throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - no capture movement is pending
+    - **Expected output**: throw IllegalStateException
+
+## Method: `boolean canTradeCards(List<Card> cards)`
+
+- **TC168: Trade three cavalry cards is valid** ( :white_check_mark: )
+    - **State of the system**:
+        - cards contains 3 cavalry cards
+    - **Expected output**: true
+
+## Method: `void tradeCards(List<Card> cards)`
+
+- **TC169: Trade ninth valid set adds 30 draft armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in
+        - 8 card sets have already been traded in this game
+    - **Expected output**:
+        - RED receives 30 draft armies
+        - RED loses the 3 traded cards
+
+- **TC170: Trade before draft initialized includes continent bonus in draft total** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED controls South America
+        - RED owns the 3 cards passed in
+        - draft has not been initialized for this turn
+    - **Expected output**:
+        - draft armies include minimum territory armies
+        - draft armies include South America continent bonus
+        - draft armies include card trade bonus
+
+## Method: `void draftArmy(TerritoryName territory)`
+
+- **TC171: Drafting with South America bonus consumes all 5 draft armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED controls South America
+        - RED has not traded cards this turn
+    - **Expected output**:
+        - RED has 5 draft armies to place
+        - after drafting 5 armies, draft is complete
+
+## Method: `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)`
+
+- **TC172: Move armies after capture with mismatched source territory throws** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA to ALBERTA
+        - from: ALBERTA (does not match the pending capture's source territory)
+    - **Expected output**: throw IllegalStateException
+
+## Method: `boolean canTradeCards(List<Card> cards)`
+
+- **TC173: Trade three artillery cards is valid** ( :white_check_mark: )
+    - **State of the system**:
+        - cards contains 3 artillery cards
+    - **Expected output**: true
+
+- **TC174: Trade one infantry and two artillery is invalid** ( :white_check_mark: )
+    - **State of the system**:
+        - cards contains 1 infantry card and 2 artillery cards
+    - **Expected output**: false
+
+## Method: `void tradeCards(List<Card> cards)`
+
+- **TC175: Second trade in the same turn skips draft reinitialization** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 6 cards passed in across two trades made in the same turn
+        - draft was already initialized by the first trade
+    - **Expected output**:
+        - the second trade does not recompute the territory-based draft total
+        - RED's draft total reaches exactly 13 after both trades' bonuses are added
+        - draft is complete after drafting 13 armies
+
+- **TC176: Trading a set containing a wild card skips the territory bonus for the wild card** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - RED owns the 3 cards passed in: INFANTRY/ALASKA, CAVALRY/ALBERTA, WILD
+        - ALASKA owned by RED
+        - ALBERTA not owned by RED
+    - **Expected output**:
+        - ALASKA receives 2 bonus armies
+        - the WILD card contributes no territory bonus
+
+## Method: `RiskGame(Map<PlayerColor, String> playerInfo)` (constructor)
+
+- **TC177: Construct game with default random source** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo: {RED="Jonathan", BLUE="Justin", GREEN="Prashant"}
+        - constructed without supplying a Random
+    - **Expected output**: getPhase() == SCRAMBLE
+
+- **TC178: Construct game with null player info throws** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo: null
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `String getPlayerName(PlayerColor color)`
+
+- **TC179: Get name of a color in the game returns the assigned name** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo includes RED="Jonathan"
+    - **Expected output**: "Jonathan"
+
+- **TC180: Get name of a color not in the game throws** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo is the three-player map (RED, BLUE, GREEN only)
+        - color: ORANGE (not in this game)
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `PlayerColor getWinner()`
+
+- **TC181: Get winner before the game is over returns null** ( :white_check_mark: )
+    - **State of the system**: game has just been constructed, no winner determined
+    - **Expected output**: null
+
+## Method: `TerritoryName getPendingCaptureFrom()`
+
+- **TC182: Get pending capture source with no pending capture returns null** ( :white_check_mark: )
+    - **State of the system**: no attack has produced a pending capture
+    - **Expected output**: null
+
+## Method: `TerritoryName getPendingCaptureTo()`
+
+- **TC183: Get pending capture destination with no pending capture returns null** ( :white_check_mark: )
+    - **State of the system**: no attack has produced a pending capture
+    - **Expected output**: null
+
+## Method: `int getMinimumCaptureMove()`
+
+- **TC184: Get minimum capture move with a pending capture returns the minimum legal armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA (3 armies) to ALBERTA
+    - **Expected output**: 2
+
+## Method: `int getMaximumCaptureMove()`
+
+- **TC185: Get maximum capture move with a pending capture returns the maximum legal armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA (3 armies) to ALBERTA
+    - **Expected output**: 2
+
+## Method: `boolean isUnclaimed(TerritoryName territory)`
+
+- **TC186: Unclaimed territory is reported as unclaimed** ( :white_check_mark: )
+    - **State of the system**: ALASKA has not been claimed by any player
+    - **Expected output**: true
+
+## Method: `int getTerritoryCount(PlayerColor color)`
+
+- **TC187: Territory count for a player who owns no territories is zero** ( :white_check_mark: )
+    - **State of the system**: RED owns 0 territories (boundary: lower bound of territory ownership)
+    - **Expected output**: 0
+
+## Method: `void attack(TerritoryName from, TerritoryName to)`
+
+- **TC188: Capturing an unclaimed territory leaves capture movement pending** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA is unclaimed (not owned by RED, BLUE, or GREEN)
+        - dice rolls favor the attacker
+    - **Expected output**:
+        - ALBERTA is assigned to RED
+        - isCaptureMovementPending() == true
+
+## Method: `void setCurrentPlayer(PlayerColor color)`
+
+- **TC189: Set current player to a color not in the game leaves current player unchanged** ( :white_check_mark: )
+    - **State of the system**:
+        - current player: RED
+        - color passed: CYAN (not in the three-player game)
+    - **Expected output**: getCurrentPlayerColor() == RED
+
+## Method: `void attack(TerritoryName from, TerritoryName to)`
+
+- **TC190: Attacking with unplaced trade-bonus armies throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - draft was complete, then RED traded in a valid set of 3 cards mid-attack
+        - the resulting bonus armies have not yet been placed
     - **Expected output**: throw IllegalStateException

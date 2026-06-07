@@ -144,7 +144,8 @@ public class GameplayStepDefinitions {
 
     @When("{word} fortifies {int} army from {word} to {word}")
     @When("{word} fortifies {int} armies from {word} to {word}")
-    public void playerFortifiesArmies(String colorName, int armies, String fromName, String toName) {
+    public void playerFortifiesArmies(
+            String colorName, int armies, String fromName, String toName) {
         game.setCurrentPlayer(playerColor(colorName));
         runAction(() -> game.fortify(territory(fromName), territory(toName), armies));
     }
