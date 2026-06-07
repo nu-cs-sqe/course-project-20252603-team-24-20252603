@@ -205,8 +205,8 @@ public final class GameBoardController {
             return;
         }
         TerritoryName from = selectedAttackFrom;
-        int fromBefore = game.getArmies(from);
-        int toBefore = game.getArmies(territory);
+        final int fromBefore = game.getArmies(from);
+        final int toBefore = game.getArmies(territory);
         PlayerColor eliminated = null;
         PlayerColor defender = getOwner(territory);
         int defenderTerritoriesBefore = defender == null ? 0 : game.getTerritoryCount(defender);
@@ -440,12 +440,15 @@ public final class GameBoardController {
             if (game.isCaptureMovementPending()) {
                 statusLabel.setText("Move " + game.getMinimumCaptureMove() + "-"
                         + game.getMaximumCaptureMove()
-                        + " armies into " + formatName(game.getPendingCaptureTo().name()) + ".");
+                        + " armies into "
+                        + formatName(game.getPendingCaptureTo().name()) + ".");
             } else if (game.isDraftComplete()) {
                 if (selectedAttackFrom == null) {
-                    statusLabel.setText("Select one of your territories as the starting territory.");
+                    statusLabel.setText(
+                            "Select one of your territories as the starting territory.");
                 } else {
-                    statusLabel.setText("Select an enemy target or choose a different starting territory.");
+                    statusLabel.setText(
+                            "Select an enemy target or choose a different starting territory.");
                 }
             } else if (mustTradeBeforeDraft()) {
                 statusLabel.setText("Select a valid card set to trade before drafting.");
@@ -516,7 +519,9 @@ public final class GameBoardController {
 
     private void updateActionControls(GamePhase phase) {
         boolean capturePending = game != null && game.isCaptureMovementPending();
-        boolean attackPhase = phase == GamePhase.ATTACK && game != null && game.isDraftComplete();
+        final boolean attackPhase = phase == GamePhase.ATTACK
+                && game != null
+                && game.isDraftComplete();
         captureArmiesSpinner.setDisable(!capturePending);
         moveAfterCaptureButton.setDisable(!capturePending);
         if (capturePending) {
