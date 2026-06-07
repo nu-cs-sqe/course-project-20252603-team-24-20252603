@@ -7,9 +7,11 @@ import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
 import java.lang.ref.WeakReference;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
@@ -425,9 +427,12 @@ public final class GameBoardController {
         GamePhase phase = game.getPhase();
         syncSelectionsWithPhase(phase);
         updateCardHand();
-        phaseLabel.setText(phase.name());
-        playerLabel.setText(game.getCurrentPlayerName()
-                + " (" + game.getCurrentPlayerColor().name() + ")");
+        ResourceBundle bundle = LocaleManager.getBundle();
+        phaseLabel.setText(bundle.getString("phase." + phase.name()));
+        playerLabel.setText(MessageFormat.format(
+                bundle.getString("board.playerNameWithColor"),
+                game.getCurrentPlayerName(),
+                bundle.getString(colorKey(game.getCurrentPlayerColor()))));
 
         if (phase == GamePhase.SCRAMBLE) {
             armiesLabel.setText("Armies: " + game.getArmiesToPlace());
@@ -699,6 +704,25 @@ public final class GameBoardController {
         map.put("new_guinea", TerritoryName.NEW_GUINEA);
         map.put("indonesia", TerritoryName.INDONESIA);
         return java.util.Collections.unmodifiableMap(map);
+    }
+
+    private static String colorKey(PlayerColor color) {
+        switch (color) {
+            case RED:
+                return "color.red";
+            case BLUE:
+                return "color.blue";
+            case GREEN:
+                return "color.green";
+            case ORANGE:
+                return "color.orange";
+            case PINK:
+                return "color.pink";
+            case CYAN:
+                return "color.cyan";
+            default:
+                throw new IllegalArgumentException(color.toString());
+        }
     }
 
     private static Map<PlayerColor, String> buildColorMap() {
