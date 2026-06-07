@@ -1312,13 +1312,15 @@ further game actions are permitted once `GAME_OVER` is set.
         - ALBERTA gains 2 armies
         - RED receives the trade draft armies
 
-- **TC154: Trade cards after draft is complete throws IllegalStateException** ( :white_check_mark: )
+- **TC154: Trade cards after draft is complete reopens the draft with bonus armies** ( :white_check_mark: )
     - **State of the system**:
         - phase: ATTACK
         - current player: RED
         - draft is complete (all draft armies have been placed)
         - RED holds a valid tradeable set of 3 cards
-    - **Expected output**: throw IllegalStateException
+    - **Expected output**:
+        - the trade succeeds and RED receives the trade bonus armies
+        - isDraftComplete() == false (the new bonus armies must be placed)
 
 ## Actions additionally blocked in GAME_OVER phase
 
@@ -1618,3 +1620,13 @@ further game actions are permitted once `GAME_OVER` is set.
         - current player: RED
         - color passed: CYAN (not in the three-player game)
     - **Expected output**: getCurrentPlayerColor() == RED
+
+## Method: `void attack(TerritoryName from, TerritoryName to)`
+
+- **TC190: Attacking with unplaced trade-bonus armies throws IllegalStateException** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - draft was complete, then RED traded in a valid set of 3 cards mid-attack
+        - the resulting bonus armies have not yet been placed
+    - **Expected output**: throw IllegalStateException
