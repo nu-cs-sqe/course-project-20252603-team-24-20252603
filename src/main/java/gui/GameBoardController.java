@@ -250,34 +250,38 @@ public final class GameBoardController {
     }
 
     private void handleFortifyClick(TerritoryName territory) {
+        ResourceBundle bundle = LocaleManager.getBundle();
         PlayerColor current = game.getCurrentPlayerColor();
         if (!game.isOwnedBy(territory, current)) {
-            statusLabel.setText("Select territories owned by the current player.");
+            statusLabel.setText(bundle.getString("status.selectOwnedTerritories"));
             return;
         }
         if (selectedFortifyFrom == null || selectedFortifyTo != null) {
             selectedFortifyFrom = territory;
             selectedFortifyTo = null;
             updateFortifySpinner();
-            statusLabel.setText("Selected " + formatName(territory.name())
-                    + " as the territory to move from.");
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.selectedAsMoveSource"),
+                    formatName(territory.name())));
             return;
         }
         if (territory == selectedFortifyFrom) {
-            actionStatusMessage = "Select a different territory to fortify to.";
+            actionStatusMessage = bundle.getString("status.selectDifferentFortifyTarget");
             return;
         }
         selectedFortifyTo = territory;
         updateFortifySpinner();
-        statusLabel.setText("Selected " + formatName(territory.name())
-                + " as fortify destination.");
+        statusLabel.setText(MessageFormat.format(
+                bundle.getString("status.selectedAsFortifyDest"),
+                formatName(territory.name())));
     }
 
     @FXML
     private void handleEndAttack() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         try {
             if (game.isCaptureMovementPending()) {
-                statusLabel.setText("Move armies into the captured territory first.");
+                statusLabel.setText(bundle.getString("status.captureFirst"));
                 return;
             }
             clearAttackSelection();
@@ -286,35 +290,40 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.invalid"), e.getMessage()));
         }
     }
 
     @FXML
     private void handleMoveAfterCapture() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         try {
             if (!game.isCaptureMovementPending()) {
-                statusLabel.setText("No captured territory needs armies.");
+                statusLabel.setText(bundle.getString("status.noCapturedNeedsArmies"));
                 return;
             }
             TerritoryName from = game.getPendingCaptureFrom();
             TerritoryName to = game.getPendingCaptureTo();
             int armies = captureArmiesSpinner.getValue();
             game.moveArmiesAfterCapture(from, to, armies);
-            actionStatusMessage = "Moved " + armies + " armies from "
-                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
+            actionStatusMessage = MessageFormat.format(
+                    bundle.getString("status.movedArmiesBetween"),
+                    armies, formatName(from.name()), formatName(to.name()));
             updateMapColors();
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.invalid"), e.getMessage()));
         }
     }
 
     @FXML
     private void handleFortify() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         if (selectedFortifyFrom == null || selectedFortifyTo == null) {
-            statusLabel.setText("Select territories to move from and to before fortifying.");
+            statusLabel.setText(bundle.getString("status.selectMoveBeforeFortify"));
             return;
         }
         try {
@@ -323,18 +332,21 @@ public final class GameBoardController {
             TerritoryName to = selectedFortifyTo;
             game.fortify(selectedFortifyFrom, selectedFortifyTo, armies);
             clearFortifySelection();
-            actionStatusMessage = "Fortified " + armies + " from "
-                    + formatName(from.name()) + " to " + formatName(to.name()) + ".";
+            actionStatusMessage = MessageFormat.format(
+                    bundle.getString("status.fortifiedBetween"),
+                    armies, formatName(from.name()), formatName(to.name()));
             updateMapColors();
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.invalid"), e.getMessage()));
         }
     }
 
     @FXML
     private void handleTradeCards() {
+        ResourceBundle bundle = LocaleManager.getBundle();
         List<Card> selectedCards = getSelectedCards();
         try {
             int beforeDraftArmies = game.getDraftArmies();
@@ -348,15 +360,19 @@ public final class GameBoardController {
             game.tradeCards(selectedCards);
             int gainedArmies = game.getDraftArmies() - beforeDraftArmies;
             cardListView.getSelectionModel().clearSelection();
-            actionStatusMessage = "Traded cards for " + gainedArmies + " draft armies.";
+            actionStatusMessage = MessageFormat.format(
+                    bundle.getString("status.tradedForArmies"), gainedArmies);
             if (!territoryBonuses.isEmpty()) {
-                actionStatusMessage += " +2 on " + String.join(", ", territoryBonuses) + ".";
+                actionStatusMessage += " " + MessageFormat.format(
+                        bundle.getString("status.tradedTerritoryBonus"),
+                        String.join(", ", territoryBonuses));
             }
             updateMapColors();
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException | IllegalArgumentException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.invalid"), e.getMessage()));
         }
     }
 
@@ -370,7 +386,9 @@ public final class GameBoardController {
             updateCardHand();
             updateStatusBar();
         } catch (IllegalStateException e) {
-            statusLabel.setText("Invalid: " + e.getMessage());
+            statusLabel.setText(MessageFormat.format(
+                    LocaleManager.getBundle().getString("status.invalid"),
+                    e.getMessage()));
         }
     }
 
