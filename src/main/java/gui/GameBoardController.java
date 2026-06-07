@@ -435,42 +435,52 @@ public final class GameBoardController {
                 bundle.getString(colorKey(game.getCurrentPlayerColor()))));
 
         if (phase == GamePhase.SCRAMBLE) {
-            armiesLabel.setText("Armies: " + game.getArmiesToPlace());
-            statusLabel.setText("Click an unclaimed territory to claim it.");
+            armiesLabel.setText(MessageFormat.format(
+                    bundle.getString("board.armiesLabel"), game.getArmiesToPlace()));
+            statusLabel.setText(bundle.getString("status.clickUnclaimed"));
         } else if (phase == GamePhase.SETUP) {
-            armiesLabel.setText("Armies: " + game.getArmiesToPlace());
-            statusLabel.setText("Click one of your territories to place an army.");
+            armiesLabel.setText(MessageFormat.format(
+                    bundle.getString("board.armiesLabel"), game.getArmiesToPlace()));
+            statusLabel.setText(bundle.getString("status.clickToPlaceArmy"));
         } else if (phase == GamePhase.ATTACK) {
-            armiesLabel.setText("Draft: " + game.getDraftArmies());
+            armiesLabel.setText(MessageFormat.format(
+                    bundle.getString("board.draftLabel"), game.getDraftArmies()));
             if (game.isCaptureMovementPending()) {
-                statusLabel.setText("Move " + game.getMinimumCaptureMove() + "-"
-                        + game.getMaximumCaptureMove()
-                        + " armies into " + formatName(game.getPendingCaptureTo().name()) + ".");
+                statusLabel.setText(MessageFormat.format(
+                        bundle.getString("status.moveCaptureRange"),
+                        game.getMinimumCaptureMove(),
+                        game.getMaximumCaptureMove(),
+                        formatName(game.getPendingCaptureTo().name())));
             } else if (game.isDraftComplete()) {
                 if (selectedAttackFrom == null) {
-                    statusLabel.setText("Select one of your territories as the starting territory.");
+                    statusLabel.setText(bundle.getString("status.selectStartTerritory"));
                 } else {
-                    statusLabel.setText("Select an enemy target or choose a different starting territory.");
+                    statusLabel.setText(bundle.getString("status.selectEnemyOrChangeStart"));
                 }
             } else if (mustTradeBeforeDraft()) {
-                statusLabel.setText("Select a valid card set to trade before drafting.");
+                statusLabel.setText(bundle.getString("status.tradeCardsRequired"));
             } else {
-                statusLabel.setText("Click your territories to place draft armies.");
+                statusLabel.setText(bundle.getString("status.clickToDraft"));
             }
         } else if (phase == GamePhase.FORTIFY) {
             armiesLabel.setText("");
             if (selectedFortifyFrom == null) {
-                statusLabel.setText("Select one of your territories to fortify from.");
+                statusLabel.setText(bundle.getString("status.selectFortifyFrom"));
             } else if (selectedFortifyTo == null) {
-                statusLabel.setText("Select one of your territories to fortify to.");
+                statusLabel.setText(bundle.getString("status.selectFortifyTo"));
             } else {
-                statusLabel.setText("Choose army count, then fortify or end turn.");
+                statusLabel.setText(bundle.getString("status.chooseCountThenFortifyOrEnd"));
             }
         } else if (phase == GamePhase.GAME_OVER) {
             armiesLabel.setText("");
             PlayerColor winner = game.getWinner();
-            String winnerText = winner == null ? "Winner pending" : winner.name() + " wins";
-            statusLabel.setText("Game over! " + winnerText + ".");
+            String winnerText = winner == null
+                    ? ""
+                    : MessageFormat.format(
+                            bundle.getString("status.winner"),
+                            bundle.getString(colorKey(winner)));
+            statusLabel.setText(MessageFormat.format(
+                    bundle.getString("status.gameOver"), winnerText));
         }
 
         if (actionStatusMessage != null && phase != GamePhase.GAME_OVER) {
