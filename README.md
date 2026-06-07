@@ -22,27 +22,39 @@ from the **Language** dropdown at the top of the setup screen.
 
 ### Adding a new language
 
-To add a new locale, you do **not** need to change any existing Java code or
-FXML. Two steps:
+Adding a new locale requires **no Java or FXML changes** — only configuration
+files under `src/main/resources/i18n/`:
 
-1. **Add the resource bundle.** Create a copy of
-   `src/main/resources/i18n/labels.properties` and rename it to
-   `labels_<lang>.properties`, where `<lang>` is the IETF language tag
-   (e.g., `labels_fr.properties` for French, `labels_de.properties` for
-   German). Translate the values on the right side of the `=` while keeping
-   all keys and `{0}`, `{1}`, ... placeholders unchanged.
+1. **Copy the English bundle.** Duplicate
+   `src/main/resources/i18n/labels.properties` and rename the copy to
+   `labels_<lang>.properties`, where `<lang>` is the IETF BCP 47 language
+   tag (e.g., `labels_fr.properties` for French, `labels_de.properties` for
+   German, `labels_zh-CN.properties` for Simplified Chinese). Translate the
+   values on the right side of the `=` while keeping all keys and `{0}`,
+   `{1}`, ... placeholders unchanged.
 
-2. **Register the locale.** In
-   `src/main/java/gui/LocaleManager.java`, append the new `Locale` to the
-   `SUPPORTED_LOCALES` list, and add a `case` to `localeKey(Locale)` in
-   `GameSetupController.java` so the picker shows the language name in the
-   currently selected language (or add `locale.<lang>` keys to every existing
-   bundle).
+2. **Set the native display name.** In the new file, change
+   `locale.displayName` to the language's name **in its own language**
+   (e.g., `locale.displayName = Français`, `locale.displayName = Deutsch`).
+   This is what users see in the locale picker.
 
-The locale picker, all FXML labels, and all dynamic messages will then pick
-up the new translation automatically. The JavaFX `FXMLLoader` resolves
-`%key` references via `ResourceBundle.getBundle("i18n.labels", locale)`,
-and Java's `MessageFormat` handles parameterized strings.
+3. **Register the locale in the manifest.** Open
+   `src/main/resources/i18n/locales.properties` and append the language tag
+   to the comma-separated `locales = ...` list (e.g., `locales = en,es,fr`).
+
+That's it. The picker, FXML labels, and dynamic messages will pick up the
+new translation automatically. The JavaFX `FXMLLoader` resolves `%key`
+references via `ResourceBundle.getBundle("i18n.labels", locale)`, and
+Java's `MessageFormat` handles parameterized strings.
+
+### Architecture
+
+- `i18n/locales.properties` is the single source of truth for which
+  languages the UI offers. `LocaleManager` reads it at class-init time.
+- Each `labels_<lang>.properties` is fully self-contained: it includes its
+  own `locale.displayName` so the picker can show every language in its
+  native form without a central lookup table.
+- The first entry in the manifest is the default locale at app launch.
 
 ## Acknowledgements
 REFERENCES, SOURCE OF HELP ETC
