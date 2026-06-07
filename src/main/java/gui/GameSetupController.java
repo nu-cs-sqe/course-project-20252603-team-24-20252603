@@ -137,7 +137,7 @@ public final class GameSetupController {
             stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
             stage.getScene().setRoot(root);
         } catch (Exception e) {
-            showError("Failed to reload setup screen: " + e.getMessage());
+            showError(LocaleManager.getBundle().getString("setup.error.reload"));
         }
     }
 
@@ -187,7 +187,7 @@ public final class GameSetupController {
         try {
             game = new RiskGame(validatedPlayerInfo);
         } catch (IllegalArgumentException e) {
-            showError(e.getMessage());
+            showError(bundle.getString("setup.error.createGame"));
             return;
         }
 
@@ -217,8 +217,7 @@ public final class GameSetupController {
             stage.setMinWidth(900);
             stage.setMinHeight(600);
         } catch (Exception e) {
-            showError(MessageFormat.format(
-                    bundle.getString("setup.error.loadBoard"), e.getMessage()));
+            showError(bundle.getString("setup.error.loadBoard"));
         }
     }
 

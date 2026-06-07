@@ -697,7 +697,9 @@ public final class GameBoardController {
         try {
             java.net.URL svgUrl = getClass().getResource("/Risk_board.svg");
             if (svgUrl == null) {
-                return "<html><body>Error: Risk_board.svg not found in resources.</body></html>";
+                return "<html><body>"
+                        + LocaleManager.getBundle().getString("map.error.missing")
+                        + "</body></html>";
             }
             java.nio.file.Path svgPath = java.nio.file.Paths.get(svgUrl.toURI());
             String svgContent = java.nio.file.Files.readString(svgPath);
@@ -711,7 +713,9 @@ public final class GameBoardController {
                     + svgContent
                     + "</body></html>";
         } catch (Exception e) {
-            return "<html><body>Error loading map: " + e.getMessage() + "</body></html>";
+            return "<html><body>"
+                    + LocaleManager.getBundle().getString("map.error.load")
+                    + "</body></html>";
         }
     }
 
