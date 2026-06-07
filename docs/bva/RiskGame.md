@@ -1523,3 +1523,98 @@ further game actions are permitted once `GAME_OVER` is set.
     - **Expected output**:
         - ALASKA receives 2 bonus armies
         - the WILD card contributes no territory bonus
+
+## Method: `RiskGame(Map<PlayerColor, String> playerInfo)` (constructor)
+
+- **TC177: Construct game with default random source** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo: {RED="Jonathan", BLUE="Justin", GREEN="Prashant"}
+        - constructed without supplying a Random
+    - **Expected output**: getPhase() == SCRAMBLE
+
+- **TC178: Construct game with null player info throws** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo: null
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `String getPlayerName(PlayerColor color)`
+
+- **TC179: Get name of a color in the game returns the assigned name** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo includes RED="Jonathan"
+    - **Expected output**: "Jonathan"
+
+- **TC180: Get name of a color not in the game throws** ( :white_check_mark: )
+    - **State of the system**:
+        - playerInfo is the three-player map (RED, BLUE, GREEN only)
+        - color: ORANGE (not in this game)
+    - **Expected output**: throw IllegalArgumentException
+
+## Method: `PlayerColor getWinner()`
+
+- **TC181: Get winner before the game is over returns null** ( :white_check_mark: )
+    - **State of the system**: game has just been constructed, no winner determined
+    - **Expected output**: null
+
+## Method: `TerritoryName getPendingCaptureFrom()`
+
+- **TC182: Get pending capture source with no pending capture returns null** ( :white_check_mark: )
+    - **State of the system**: no attack has produced a pending capture
+    - **Expected output**: null
+
+## Method: `TerritoryName getPendingCaptureTo()`
+
+- **TC183: Get pending capture destination with no pending capture returns null** ( :white_check_mark: )
+    - **State of the system**: no attack has produced a pending capture
+    - **Expected output**: null
+
+## Method: `int getMinimumCaptureMove()`
+
+- **TC184: Get minimum capture move with a pending capture returns the minimum legal armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA (3 armies) to ALBERTA
+    - **Expected output**: 2
+
+## Method: `int getMaximumCaptureMove()`
+
+- **TC185: Get maximum capture move with a pending capture returns the maximum legal armies** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - capture movement is pending from ALASKA (3 armies) to ALBERTA
+    - **Expected output**: 2
+
+## Method: `boolean isUnclaimed(TerritoryName territory)`
+
+- **TC186: Unclaimed territory is reported as unclaimed** ( :white_check_mark: )
+    - **State of the system**: ALASKA has not been claimed by any player
+    - **Expected output**: true
+
+## Method: `int getTerritoryCount(PlayerColor color)`
+
+- **TC187: Territory count for a player who owns no territories is zero** ( :white_check_mark: )
+    - **State of the system**: RED owns 0 territories (boundary: lower bound of territory ownership)
+    - **Expected output**: 0
+
+## Method: `void attack(TerritoryName from, TerritoryName to)`
+
+- **TC188: Capturing an unclaimed territory leaves capture movement pending** ( :white_check_mark: )
+    - **State of the system**:
+        - phase: ATTACK
+        - current player: RED
+        - ALASKA owned by RED, armies = 3
+        - ALBERTA is unclaimed (not owned by RED, BLUE, or GREEN)
+        - dice rolls favor the attacker
+    - **Expected output**:
+        - ALBERTA is assigned to RED
+        - isCaptureMovementPending() == true
+
+## Method: `void setCurrentPlayer(PlayerColor color)`
+
+- **TC189: Set current player to a color not in the game leaves current player unchanged** ( :white_check_mark: )
+    - **State of the system**:
+        - current player: RED
+        - color passed: CYAN (not in the three-player game)
+    - **Expected output**: getCurrentPlayerColor() == RED
