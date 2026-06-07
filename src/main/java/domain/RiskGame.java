@@ -75,6 +75,11 @@ public final class RiskGame {
             TerritoryName.NEW_GUINEA,
             TerritoryName.INDONESIA
     );
+    private static final List<List<TerritoryName>> CONTINENTS = List.of(
+            NORTH_AMERICA, SOUTH_AMERICA, EUROPE, AFRICA, ASIA, AUSTRALIA);
+    private static final int[] CONTINENT_BONUSES = {
+            NORTH_AMERICA_BONUS, SOUTH_AMERICA_BONUS, EUROPE_BONUS,
+            AFRICA_BONUS, ASIA_BONUS, AUSTRALIA_BONUS};
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -318,29 +323,12 @@ public final class RiskGame {
     private int getContinentBonus() {
         Set<TerritoryName> owned = worldMap.getTerritoriesOwnedBy(getCurrentPlayerColor());
         int bonus = 0;
-        if (ownsAll(owned, NORTH_AMERICA)) {
-            bonus += NORTH_AMERICA_BONUS;
-        }
-        if (ownsAll(owned, SOUTH_AMERICA)) {
-            bonus += SOUTH_AMERICA_BONUS;
-        }
-        if (ownsAll(owned, EUROPE)) {
-            bonus += EUROPE_BONUS;
-        }
-        if (ownsAll(owned, AFRICA)) {
-            bonus += AFRICA_BONUS;
-        }
-        if (ownsAll(owned, ASIA)) {
-            bonus += ASIA_BONUS;
-        }
-        if (ownsAll(owned, AUSTRALIA)) {
-            bonus += AUSTRALIA_BONUS;
+        for (int i = 0; i < CONTINENTS.size(); i++) {
+            if (owned.containsAll(CONTINENTS.get(i))) {
+                bonus += CONTINENT_BONUSES[i];
+            }
         }
         return bonus;
-    }
-
-    private boolean ownsAll(Set<TerritoryName> owned, List<TerritoryName> territories) {
-        return owned.containsAll(territories);
     }
 
     private void advanceToNextActivePlayer() {
