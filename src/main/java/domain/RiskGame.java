@@ -393,7 +393,7 @@ public final class RiskGame {
                 || !pendingCaptureTo.equals(to)) {
             throw new IllegalStateException("no pending capture from the specified territories");
         }
-        int minMove = Math.min(3, worldMap.getArmies(from) - 1);
+        int minMove = Math.min(MAX_ATTACK_DICE, worldMap.getArmies(from) - 1);
         if (armies < minMove) {
             throw new IllegalArgumentException("armies must be at least " + minMove);
         }
@@ -422,7 +422,7 @@ public final class RiskGame {
         if (!isCaptureMovementPending()) {
             throw new IllegalStateException("no pending capture");
         }
-        return Math.min(3, worldMap.getArmies(pendingCaptureFrom) - 1);
+        return Math.min(MAX_ATTACK_DICE, worldMap.getArmies(pendingCaptureFrom) - 1);
     }
 
     public int getMaximumCaptureMove() {
