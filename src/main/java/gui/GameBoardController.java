@@ -396,6 +396,15 @@ public final class GameBoardController {
         }
     }
 
+    private void disposeMapView() {
+        if (engine != null) {
+            engine.load(null);
+            engine = null;
+        }
+        javaBridge = null;
+        game = null;
+    }
+
     @FXML
     private void handleNewGame() {
         try {
