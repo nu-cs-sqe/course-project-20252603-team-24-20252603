@@ -16,9 +16,8 @@ import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -408,20 +407,15 @@ public final class GameBoardController {
     @FXML
     private void handleNewGame() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/game-setup-view.fxml"));
-            Parent root = loader.load();
-
             Stage stage = (Stage) phaseLabel.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
-            stage.setWidth(520);
-            stage.setHeight(420);
-            stage.setMinWidth(480);
-            stage.setMinHeight(360);
+            disposeMapView();
+            GuiSceneNavigation.showSetupScreen(stage);
         } catch (Exception e) {
-            statusLabel.setText(LocaleManager.getBundle().getString("setup.error.reload"));
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle(LocaleManager.getBundle().getString("setup.errorTitle"));
+            alert.setHeaderText(null);
+            alert.setContentText(LocaleManager.getBundle().getString("setup.error.reload"));
+            alert.showAndWait();
         }
     }
 
