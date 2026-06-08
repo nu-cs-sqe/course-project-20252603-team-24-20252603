@@ -211,11 +211,12 @@ public final class GameSetupController {
             controller.initGame(game);
 
             Stage stage = (Stage) headingLabel.getScene().getWindow();
-            Scene scene = new Scene(root, 1100, 750);
+            Scene scene = new Scene(root,
+                    RiskApplication.BOARD_WIDTH, RiskApplication.BOARD_HEIGHT);
             stage.setScene(scene);
             stage.setTitle(bundle.getString("window.title.game"));
-            stage.setMinWidth(900);
-            stage.setMinHeight(600);
+            stage.setMinWidth(RiskApplication.BOARD_MIN_WIDTH);
+            stage.setMinHeight(RiskApplication.BOARD_MIN_HEIGHT);
         } catch (Exception e) {
             showError(bundle.getString("setup.error.loadBoard"));
         }
