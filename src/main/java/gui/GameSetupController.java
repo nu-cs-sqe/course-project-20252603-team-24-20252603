@@ -129,13 +129,8 @@ public final class GameSetupController {
 
     private void reloadSetupScene() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/game-setup-view.fxml"),
-                    LocaleManager.getBundle());
-            Parent root = loader.load();
             Stage stage = (Stage) headingLabel.getScene().getWindow();
-            stage.setTitle(LocaleManager.getBundle().getString("window.title.setup"));
-            stage.getScene().setRoot(root);
+            GuiSceneNavigation.showSetupScreen(stage);
         } catch (Exception e) {
             showError(LocaleManager.getBundle().getString("setup.error.reload"));
         }
