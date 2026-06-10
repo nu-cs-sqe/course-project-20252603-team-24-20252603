@@ -241,6 +241,14 @@ public final class RiskGame {
     }
 
     public void attack(TerritoryName from, TerritoryName to) {
+        validateAttack(from, to);
+        resolveBattle(from, to);
+        if (worldMap.getArmies(to) == 0) {
+            captureTerritory(from, to);
+        }
+    }
+
+    private void validateAttack(TerritoryName from, TerritoryName to) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
@@ -260,6 +268,9 @@ public final class RiskGame {
         if (worldMap.getArmies(from) < MIN_ARMIES_TO_ATTACK) {
             throw new IllegalArgumentException("must have at least 2 armies to attack");
         }
+    }
+
+    private void resolveBattle(TerritoryName from, TerritoryName to) {
         pendingCaptureFrom = null;
         pendingCaptureTo = null;
         while (worldMap.getArmies(from) > 1 && worldMap.getArmies(to) > 0) {
@@ -275,9 +286,6 @@ public final class RiskGame {
                     worldMap.removeArmies(from, 1);
                 }
             }
-        }
-        if (worldMap.getArmies(to) == 0) {
-            captureTerritory(from, to);
         }
     }
 
