@@ -10,6 +10,7 @@ import java.util.Set;
 
 public final class RiskGame {
     private static final int MIN_DRAFT_ARMIES = 3;
+    private static final int TERRITORIES_PER_DRAFT_ARMY = 3;
     private static final int MAX_ATTACK_DICE = 3;
     private static final int MAX_DEFEND_DICE = 2;
     private static final int MIN_ARMIES_TO_ATTACK = 2;
@@ -206,8 +207,12 @@ public final class RiskGame {
         if (isDraftInitialized) {
             return draftArmiesRemaining;
         }
+        return initialDraftArmies();
+    }
+
+    private int initialDraftArmies() {
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-        return Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+        return Math.max(MIN_DRAFT_ARMIES, owned / TERRITORIES_PER_DRAFT_ARMY) + getContinentBonus();
     }
 
     public void draftArmy(TerritoryName territory) {
@@ -218,8 +223,7 @@ public final class RiskGame {
             throw new IllegalStateException("must trade cards before drafting");
         }
         if (draftArmiesRemaining == 0 && !isDraftInitialized) {
-            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+            draftArmiesRemaining = initialDraftArmies();
             isDraftInitialized = true;
         }
         if (!worldMap.isOwnedBy(territory, getCurrentPlayerColor())) {
@@ -535,8 +539,7 @@ public final class RiskGame {
                 : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
                         + TRADE_BONUS_INCREMENT * (tradeSetCount - TRADE_BONUS_TABLE.length);
         if (!isDraftInitialized) {
-            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+            draftArmiesRemaining = initialDraftArmies();
             isDraftInitialized = true;
         }
         draftArmiesRemaining += bonus;
