@@ -3,9 +3,6 @@ package gui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-/**
- * Launches the Risk game setup window (JavaFX + FXML).
- */
 public final class RiskApplication extends Application {
 
     static final int BOARD_WIDTH = 1100;

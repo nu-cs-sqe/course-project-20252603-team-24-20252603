@@ -37,7 +37,9 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 /**
- * FXML controller for the interactive Risk board (scramble and setup phases).
+ * Controller for the game board. Shows the map in a WebView and handles the
+ * player's turn actions (draft, attack, fortify, trade cards, end turn) by
+ * calling into {@link domain.RiskGame}.
  */
 public final class GameBoardController {
 

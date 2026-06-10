@@ -43,12 +43,12 @@ public final class LocaleManager {
     private LocaleManager() {
     }
 
-    /** Returns the currently selected display locale. */
+    /** Current UI locale. Never null; starts as the first supported locale. */
     public static Locale getCurrentLocale() {
         return currentLocale;
     }
 
-    /** Updates the currently selected display locale. */
+    /** Switches the UI locale. Throws IllegalArgumentException on null. */
     public static void setCurrentLocale(Locale locale) {
         if (locale == null) {
             throw new IllegalArgumentException("locale cannot be null");
@@ -56,7 +56,10 @@ public final class LocaleManager {
         currentLocale = locale;
     }
 
-    /** Returns the bundle for the currently selected display locale. */
+    /**
+     * Bundle for the current locale. Re-read each call so a language switch
+     * applies right away.
+     */
     public static ResourceBundle getBundle() {
         return ResourceBundle.getBundle(BUNDLE_BASE_NAME, currentLocale);
     }
