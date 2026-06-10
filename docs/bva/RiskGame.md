@@ -531,18 +531,18 @@ Ends the current player's turn. Advances to the next player and returns to `ATTA
     - **Expected output**:
         - getDraftArmies() == 4 (floor(12/3) = 4, computed for BLUE)
 
-## Method: `PlayerColor getWinner()`
+## Method: `Optional<PlayerColor> getWinner()`
 
-Returns the `PlayerColor` of the player who owns all 42 territories, or `null` if no winner yet.
+Returns an `Optional<PlayerColor>` of the player who owns all 42 territories, or an empty `Optional` if no winner yet.
 
 - **TC69: No winner — territories distributed among multiple players** ( :white_check_mark: )
     - **State of the system**: territories distributed among at least 2 players
-    - **Expected output**: null
+    - **Expected output**: empty Optional (`Optional.empty()`)
 
 - **TC70: One player owns all 42 territories** ( :white_check_mark: )
     - **State of the system**:
         - RED owns all 42 territories
-    - **Expected output**: RED
+    - **Expected output**: Optional containing RED (`Optional.of(RED)`)
 
 ---
 
@@ -1552,23 +1552,23 @@ further game actions are permitted once `GAME_OVER` is set.
         - color: ORANGE (not in this game)
     - **Expected output**: throw IllegalArgumentException
 
-## Method: `PlayerColor getWinner()`
+## Method: `Optional<PlayerColor> getWinner()`
 
-- **TC181: Get winner before the game is over returns null** ( :white_check_mark: )
+- **TC181: Get winner before the game is over returns an empty Optional** ( :white_check_mark: )
     - **State of the system**: game has just been constructed, no winner determined
-    - **Expected output**: null
+    - **Expected output**: empty Optional (`Optional.empty()`)
 
 ## Method: `TerritoryName getPendingCaptureFrom()`
 
-- **TC182: Get pending capture source with no pending capture returns null** ( :white_check_mark: )
+- **TC182: Get pending capture source with no pending capture throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**: no attack has produced a pending capture
-    - **Expected output**: null
+    - **Expected output**: throw IllegalStateException
 
 ## Method: `TerritoryName getPendingCaptureTo()`
 
-- **TC183: Get pending capture destination with no pending capture returns null** ( :white_check_mark: )
+- **TC183: Get pending capture destination with no pending capture throws IllegalStateException** ( :white_check_mark: )
     - **State of the system**: no attack has produced a pending capture
-    - **Expected output**: null
+    - **Expected output**: throw IllegalStateException
 
 ## Method: `int getMinimumCaptureMove()`
 

@@ -538,7 +538,7 @@ public final class GameBoardController {
             }
         } else if (phase == GamePhase.GAME_OVER) {
             armiesLabel.setText("");
-            PlayerColor winner = game.getWinner();
+            PlayerColor winner = game.getWinner().orElse(null);
             String winnerText = winner == null
                     ? ""
                     : MessageFormat.format(
@@ -561,12 +561,12 @@ public final class GameBoardController {
         if (engine == null || game == null) {
             return;
         }
-        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner() == null) {
+        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner().isEmpty()) {
             engine.executeScript("var overlay = document.getElementById('game-over-overlay');"
                     + "if (overlay) { overlay.remove(); }");
             return;
         }
-        PlayerColor winner = game.getWinner();
+        PlayerColor winner = game.getWinner().orElseThrow();
         String winnerName = game.getPlayerName(winner);
         String winnerColor = PLAYER_COLORS.get(winner);
         String text = escapeJs(MessageFormat.format(

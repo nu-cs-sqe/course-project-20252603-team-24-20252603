@@ -185,8 +185,8 @@ GUI controllers interact with.
 | `void attack(TerritoryName from, TerritoryName to)` | Active player attacks an adjacent enemy territory. The draft must be complete. The method auto-rolls dice in a loop: each iteration the attacker rolls `min(MAX_ATTACK_DICE, fromArmies - 1)` dice and the defender rolls `min(MAX_DEFEND_DICE, toArmies)` dice; dice are compared highest-to-highest, ties go to the defender, and the loser of each comparison loses 1 army. The loop continues until the defender reaches 0 armies (capture) or the attacker cannot attack any more (fewer than 2 armies on `from`). On capture, ownership is transferred via `WorldMap.assignTerritory`, the capture is recorded as `pendingCaptureFrom` / `pendingCaptureTo`, the current player is marked to receive a card at end of turn, and if the defeated player has zero territories left, all of their cards are transferred to the attacker. If the current player now owns all 42 territories the phase transitions to `GAME_OVER`. Throws `IllegalStateException` if the phase is not `ATTACK` or the draft is not complete. Throws `IllegalArgumentException` if `from` is not owned by the current player, `to` is owned by the current player, the territories are not neighbors, or `from` has fewer than 2 armies. |
 | `void moveArmiesAfterCapture(TerritoryName from, TerritoryName to, int armies)` | After a successful capture, moves armies from the attacking territory into the captured territory. `armies` must be at least `min(3, fromArmies - 1)` and at most `fromArmies - 1` (the attacker must always leave 1 army on the source). Clears the pending capture. Throws `IllegalStateException` if the phase is not `ATTACK` or `(from, to)` does not match the pending capture. Throws `IllegalArgumentException` if the army count is out of range. |
 | `boolean isCaptureMovementPending()` | Returns true if a capture just happened and the active player still needs to move armies into the captured territory. |
-| `TerritoryName getPendingCaptureFrom()` | Returns the source of the pending capture, or null if no capture is pending. |
-| `TerritoryName getPendingCaptureTo()` | Returns the destination of the pending capture, or null if no capture is pending. |
+| `TerritoryName getPendingCaptureFrom()` | Returns the source of the pending capture. Throws `IllegalStateException` if no capture is pending. |
+| `TerritoryName getPendingCaptureTo()` | Returns the destination of the pending capture. Throws `IllegalStateException` if no capture is pending. |
 | `int getMinimumCaptureMove()` | Returns the minimum number of armies the active player must move into the captured territory: `min(3, fromArmies - 1)`. Throws `IllegalStateException` if no capture is pending. |
 | `int getMaximumCaptureMove()` | Returns the maximum number of armies the active player may move into the captured territory: `fromArmies - 1` (must leave 1 army behind). Throws `IllegalStateException` if no capture is pending. |
 | `void endAttack()` | Ends the attack step and transitions to `FORTIFY`. The draft must be complete. Clears any pending capture state. Throws `IllegalStateException` if the phase is not `ATTACK` or the draft is not complete. |
@@ -213,7 +213,7 @@ GUI controllers interact with.
 | `int getArmies(TerritoryName territory)` | Pass-through to `WorldMap.getArmies`. |
 | `int getTerritoryCount(PlayerColor color)` | Pass-through to `WorldMap.countTerritoriesOwnedBy`. |
 | `List<Card> getCards(PlayerColor color)` | Returns a copy of the given player's card hand. Throws `IllegalArgumentException` if `color` is not in the game. |
-| `PlayerColor getWinner()` | Returns the color of the player who owns all 42 territories, or null if no winner yet. |
+| `Optional<PlayerColor> getWinner()` | Returns the player who owns all 42 territories, or an empty `Optional` if no winner yet. |
 
 ## GUI
 

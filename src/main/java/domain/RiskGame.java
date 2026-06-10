@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -298,7 +299,7 @@ public final class RiskGame {
         if (defenderColor != null && worldMap.countTerritoriesOwnedBy(defenderColor) == 0) {
             transferCards(defenderColor, getCurrentPlayerColor());
         }
-        if (getWinner() != null) {
+        if (getWinner().isPresent()) {
             phase = GamePhase.GAME_OVER;
         }
     }
@@ -408,10 +409,16 @@ public final class RiskGame {
     }
 
     public TerritoryName getPendingCaptureFrom() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
         return pendingCaptureFrom;
     }
 
     public TerritoryName getPendingCaptureTo() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
         return pendingCaptureTo;
     }
 
@@ -429,13 +436,13 @@ public final class RiskGame {
         return worldMap.getArmies(pendingCaptureFrom) - 1;
     }
 
-    public PlayerColor getWinner() {
+    public Optional<PlayerColor> getWinner() {
         for (Player p : players) {
             if (worldMap.countTerritoriesOwnedBy(p.getColor()) == GameConstants.TOTAL_TERRITORIES) {
-                return p.getColor();
+                return Optional.of(p.getColor());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void endTurn() {
