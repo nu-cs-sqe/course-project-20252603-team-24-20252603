@@ -521,6 +521,24 @@ public final class RiskGame {
     }
 
     public void tradeCards(List<Card> cards) {
+        validateTrade(cards);
+        Player current = players.get(currentPlayerIndex);
+        current.removeCards(cards);
+        deck.discard(cards);
+        tradeSetCount++;
+        int bonus = tradeSetCount <= TRADE_BONUS_TABLE.length
+                ? TRADE_BONUS_TABLE[tradeSetCount - 1]
+                : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
+                        + TRADE_BONUS_INCREMENT * (tradeSetCount - TRADE_BONUS_TABLE.length);
+        if (!isDraftInitialized) {
+            draftArmiesRemaining = initialDraftArmies();
+            isDraftInitialized = true;
+        }
+        draftArmiesRemaining += bonus;
+        applyTerritoryBonuses(cards);
+    }
+
+    private void validateTrade(List<Card> cards) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only trade cards during ATTACK phase");
         }
@@ -535,22 +553,12 @@ public final class RiskGame {
         if (!canTradeCards(cards)) {
             throw new IllegalArgumentException("invalid card set");
         }
-        Player current = players.get(currentPlayerIndex);
-        if (!current.hasCards(cards)) {
+        if (!players.get(currentPlayerIndex).hasCards(cards)) {
             throw new IllegalArgumentException("player does not own all specified cards");
         }
-        current.removeCards(cards);
-        deck.discard(cards);
-        tradeSetCount++;
-        int bonus = tradeSetCount <= TRADE_BONUS_TABLE.length
-                ? TRADE_BONUS_TABLE[tradeSetCount - 1]
-                : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
-                        + TRADE_BONUS_INCREMENT * (tradeSetCount - TRADE_BONUS_TABLE.length);
-        if (!isDraftInitialized) {
-            draftArmiesRemaining = initialDraftArmies();
-            isDraftInitialized = true;
-        }
-        draftArmiesRemaining += bonus;
+    }
+
+    private void applyTerritoryBonuses(List<Card> cards) {
         for (Card card : cards) {
             if (!card.isWild()
                     && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
