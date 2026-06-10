@@ -3,13 +3,13 @@ package domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import org.easymock.EasyMock;
@@ -1192,7 +1192,7 @@ public class RiskGameTests {
         EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(14);
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
-        assertNull(game.getWinner());
+        assertTrue(game.getWinner().isEmpty());
         EasyMock.verify(mockMap);
     }
 
@@ -1205,7 +1205,7 @@ public class RiskGameTests {
         EasyMock.expect(mockMap.countTerritoriesOwnedBy(PlayerColor.GREEN)).andStubReturn(0);
         EasyMock.replay(mockMap);
         game.provideWorldMap(mockMap);
-        assertEquals(PlayerColor.RED, game.getWinner());
+        assertEquals(Optional.of(PlayerColor.RED), game.getWinner());
         EasyMock.verify(mockMap);
     }
 
@@ -1256,7 +1256,7 @@ public class RiskGameTests {
         game.setDraftComplete();
         game.attack(TerritoryName.ALASKA, TerritoryName.ALBERTA);
         assertEquals(GamePhase.GAME_OVER, game.getPhase());
-        assertEquals(PlayerColor.RED, game.getWinner());
+        assertEquals(Optional.of(PlayerColor.RED), game.getWinner());
         EasyMock.verify(mockMap);
     }
 
@@ -2980,19 +2980,19 @@ public class RiskGameTests {
     @Test
     public void GetWinner_BeforeGameOver_ReturnsNull() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-        assertNull(game.getWinner());
+        assertTrue(game.getWinner().isEmpty());
     }
 
     @Test
     public void GetPendingCaptureFrom_NoPendingCapture_ReturnsNull() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-        assertNull(game.getPendingCaptureFrom());
+        assertThrows(IllegalStateException.class, () -> game.getPendingCaptureFrom());
     }
 
     @Test
     public void GetPendingCaptureTo_NoPendingCapture_ReturnsNull() {
         final RiskGame game = new RiskGame(threePlayerMap(), stubbedRandom(0));
-        assertNull(game.getPendingCaptureTo());
+        assertThrows(IllegalStateException.class, () -> game.getPendingCaptureTo());
     }
 
     private WorldMap captureSetupMock() {

@@ -7,8 +7,15 @@ import domain.PlayerColor;
 import domain.RiskGame;
 import domain.TerritoryName;
 import java.lang.ref.WeakReference;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -30,7 +37,9 @@ import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
 /**
- * FXML controller for the interactive Risk board (scramble and setup phases).
+ * Controller for the game board. Shows the map in a WebView and handles the
+ * player's turn actions (draft, attack, fortify, trade cards, end turn) by
+ * calling into {@link domain.RiskGame}.
  */
 public final class GameBoardController {
 
@@ -247,7 +256,7 @@ public final class GameBoardController {
             if (eliminated != null) {
                 actionStatusMessage += " " + MessageFormat.format(
                         bundle.getString("status.eliminated"),
-                        bundle.getString(colorKey(eliminated)));
+                        bundle.getString(PlayerColors.colorKey(eliminated)));
             }
         } else {
             actionStatusMessage = MessageFormat.format(
@@ -488,7 +497,7 @@ public final class GameBoardController {
         playerLabel.setText(MessageFormat.format(
                 bundle.getString("board.playerNameWithColor"),
                 game.getCurrentPlayerName(),
-                bundle.getString(colorKey(game.getCurrentPlayerColor()))));
+                bundle.getString(PlayerColors.colorKey(game.getCurrentPlayerColor()))));
 
         if (phase == GamePhase.SCRAMBLE) {
             armiesLabel.setText(MessageFormat.format(
@@ -529,12 +538,12 @@ public final class GameBoardController {
             }
         } else if (phase == GamePhase.GAME_OVER) {
             armiesLabel.setText("");
-            PlayerColor winner = game.getWinner();
+            PlayerColor winner = game.getWinner().orElse(null);
             String winnerText = winner == null
                     ? ""
                     : MessageFormat.format(
                             bundle.getString("status.winner"),
-                            bundle.getString(colorKey(winner)));
+                            bundle.getString(PlayerColors.colorKey(winner)));
             statusLabel.setText(MessageFormat.format(
                     bundle.getString("status.gameOver"), winnerText));
         }
@@ -552,12 +561,12 @@ public final class GameBoardController {
         if (engine == null || game == null) {
             return;
         }
-        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner() == null) {
+        if (game.getPhase() != GamePhase.GAME_OVER || game.getWinner().isEmpty()) {
             engine.executeScript("var overlay = document.getElementById('game-over-overlay');"
                     + "if (overlay) { overlay.remove(); }");
             return;
         }
-        PlayerColor winner = game.getWinner();
+        PlayerColor winner = game.getWinner().orElseThrow();
         String winnerName = game.getPlayerName(winner);
         String winnerColor = PLAYER_COLORS.get(winner);
         String text = escapeJs(MessageFormat.format(
@@ -727,14 +736,14 @@ public final class GameBoardController {
 
     private String buildMapHtml() {
         try {
-            java.net.URL svgUrl = getClass().getResource("/Risk_board.svg");
+            URL svgUrl = getClass().getResource("/Risk_board.svg");
             if (svgUrl == null) {
                 return "<html><body>"
                         + LocaleManager.getBundle().getString("map.error.missing")
                         + "</body></html>";
             }
-            java.nio.file.Path svgPath = java.nio.file.Paths.get(svgUrl.toURI());
-            String svgContent = java.nio.file.Files.readString(svgPath);
+            Path svgPath = Paths.get(svgUrl.toURI());
+            String svgContent = Files.readString(svgPath);
             svgContent = svgContent.replaceFirst("<\\?xml[^?]*\\?>", "");
             return "<!DOCTYPE html><html><head><style>"
                     + "* { margin: 0; padding: 0; box-sizing: border-box; }"
@@ -752,7 +761,7 @@ public final class GameBoardController {
     }
 
     private static Map<String, TerritoryName> buildIdMap() {
-        Map<String, TerritoryName> map = new java.util.HashMap<>();
+        Map<String, TerritoryName> map = new HashMap<>();
         map.put("alaska", TerritoryName.ALASKA);
         map.put("northwest_territory", TerritoryName.NORTHWEST_TERRITORY);
         map.put("greenland", TerritoryName.GREENLAND);
@@ -795,36 +804,17 @@ public final class GameBoardController {
         map.put("western_australia", TerritoryName.WESTERN_AUSTRALIA);
         map.put("new_guinea", TerritoryName.NEW_GUINEA);
         map.put("indonesia", TerritoryName.INDONESIA);
-        return java.util.Collections.unmodifiableMap(map);
-    }
-
-    private static String colorKey(PlayerColor color) {
-        switch (color) {
-            case RED:
-                return "color.red";
-            case BLUE:
-                return "color.blue";
-            case GREEN:
-                return "color.green";
-            case ORANGE:
-                return "color.orange";
-            case PINK:
-                return "color.pink";
-            case CYAN:
-                return "color.cyan";
-            default:
-                throw new IllegalArgumentException(color.toString());
-        }
+        return Collections.unmodifiableMap(map);
     }
 
     private static Map<PlayerColor, String> buildColorMap() {
-        Map<PlayerColor, String> map = new java.util.EnumMap<>(PlayerColor.class);
+        Map<PlayerColor, String> map = new EnumMap<>(PlayerColor.class);
         map.put(PlayerColor.RED, "#e05555");
         map.put(PlayerColor.BLUE, "#5588dd");
         map.put(PlayerColor.GREEN, "#44aa66");
         map.put(PlayerColor.ORANGE, "#ee8833");
         map.put(PlayerColor.PINK, "#dd66aa");
         map.put(PlayerColor.CYAN, "#44bbcc");
-        return java.util.Collections.unmodifiableMap(map);
+        return Collections.unmodifiableMap(map);
     }
 }

@@ -6,9 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-/**
- * Shared scene transitions between setup and game board views.
- */
 final class GuiSceneNavigation {
 
     private static final String SETUP_FXML = "/game-setup-view.fxml";

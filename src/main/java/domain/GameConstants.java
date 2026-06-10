@@ -1,7 +1,8 @@
 package domain;
 
 /**
- * Numeric constants for Risk setup and board size.
+ * Fixed Risk rule values: player count limits, territory count, and starting
+ * armies per player count.
  */
 public final class GameConstants {
 

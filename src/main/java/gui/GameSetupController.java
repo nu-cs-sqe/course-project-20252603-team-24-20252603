@@ -45,6 +45,10 @@ import javafx.util.StringConverter;
 public final class GameSetupController {
 
     private static final int DEFAULT_PLAYERS = 3;
+    private static final int HEADING_FONT_SIZE = 18;
+    private static final int SWATCH_SIZE = 20;
+    private static final int LABEL_WIDTH = 64;
+    private static final int ROW_SPACING = 8;
 
     /** Last successfully validated start payload; {@code null} until a valid start. */
     private Map<PlayerColor, String> validatedPlayerInfo;
@@ -67,7 +71,7 @@ public final class GameSetupController {
     private void initialize() {
         ResourceBundle bundle = LocaleManager.getBundle();
         headingLabel.setText(bundle.getString("setup.heading"));
-        headingLabel.setFont(Font.font(null, FontWeight.BOLD, 18));
+        headingLabel.setFont(Font.font(null, FontWeight.BOLD, HEADING_FONT_SIZE));
 
         initializeLocalePicker();
 
@@ -206,11 +210,12 @@ public final class GameSetupController {
             controller.initGame(game);
 
             Stage stage = (Stage) headingLabel.getScene().getWindow();
-            Scene scene = new Scene(root, 1100, 750);
+            Scene scene = new Scene(root,
+                    RiskApplication.BOARD_WIDTH, RiskApplication.BOARD_HEIGHT);
             stage.setScene(scene);
             stage.setTitle(bundle.getString("window.title.game"));
-            stage.setMinWidth(900);
-            stage.setMinHeight(600);
+            stage.setMinWidth(RiskApplication.BOARD_MIN_WIDTH);
+            stage.setMinHeight(RiskApplication.BOARD_MIN_HEIGHT);
         } catch (Exception e) {
             showError(bundle.getString("setup.error.loadBoard"));
         }
@@ -230,25 +235,25 @@ public final class GameSetupController {
             PlayerColor color = colors[i - 1];
 
             Region swatch = new Region();
-            swatch.setMinSize(20, 20);
-            swatch.setPrefSize(20, 20);
-            swatch.setMaxSize(20, 20);
+            swatch.setMinSize(SWATCH_SIZE, SWATCH_SIZE);
+            swatch.setPrefSize(SWATCH_SIZE, SWATCH_SIZE);
+            swatch.setMaxSize(SWATCH_SIZE, SWATCH_SIZE);
             String hex = toCssHex(fxColor(color));
             swatch.setStyle(
                     "-fx-background-color: " + hex + "; "
                             + "-fx-border-color: #333333; -fx-border-width: 1px;");
 
             Label colorLabel = new Label(displayName(color));
-            colorLabel.setPrefWidth(64);
+            colorLabel.setPrefWidth(LABEL_WIDTH);
 
             Label slotLabel = new Label(MessageFormat.format(slotPattern, i));
-            slotLabel.setPrefWidth(64);
+            slotLabel.setPrefWidth(LABEL_WIDTH);
 
             TextField field = new TextField(MessageFormat.format(defaultNamePattern, i));
             HBox.setHgrow(field, Priority.ALWAYS);
             nameFields.add(field);
 
-            HBox row = new HBox(8, swatch, colorLabel, slotLabel, field);
+            HBox row = new HBox(ROW_SPACING, swatch, colorLabel, slotLabel, field);
             row.setAlignment(Pos.CENTER_LEFT);
             row.setPrefWidth(Double.MAX_VALUE);
             nameFieldsContainer.getChildren().add(row);
@@ -275,26 +280,7 @@ public final class GameSetupController {
     }
 
     private static String displayName(PlayerColor color) {
-        return LocaleManager.getBundle().getString(colorKey(color));
-    }
-
-    private static String colorKey(PlayerColor color) {
-        switch (color) {
-            case RED:
-                return "color.red";
-            case BLUE:
-                return "color.blue";
-            case GREEN:
-                return "color.green";
-            case ORANGE:
-                return "color.orange";
-            case PINK:
-                return "color.pink";
-            case CYAN:
-                return "color.cyan";
-            default:
-                throw new IllegalArgumentException(color.toString());
-        }
+        return LocaleManager.getBundle().getString(PlayerColors.colorKey(color));
     }
 
     private static String toCssHex(Color color) {

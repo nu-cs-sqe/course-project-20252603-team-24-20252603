@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 
@@ -242,7 +243,7 @@ public class GameplayStepDefinitions {
 
     @Then("the winner is {word}")
     public void winnerIs(String colorName) {
-        assertEquals(playerColor(colorName), game.getWinner());
+        assertEquals(Optional.of(playerColor(colorName)), game.getWinner());
     }
 
     @Then("the action fails with IllegalStateException")

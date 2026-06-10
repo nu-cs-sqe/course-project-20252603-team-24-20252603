@@ -5,21 +5,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
 public final class RiskGame {
-    private static final int MIN_PLAYERS = 3;
-    private static final int MAX_PLAYERS = 6;
-    private static final int ARMIES_THREE_PLAYERS = 35;
-    private static final int ARMIES_FOUR_PLAYERS = 30;
-    private static final int ARMIES_FIVE_PLAYERS = 25;
-    private static final int ARMIES_SIX_PLAYERS = 20;
-    private static final int TOTAL_TERRITORIES = 42;
     private static final int MIN_DRAFT_ARMIES = 3;
-    private static final int MIN_ATTACK_DICE = 1;
+    private static final int TERRITORIES_PER_DRAFT_ARMY = 3;
     private static final int MAX_ATTACK_DICE = 3;
     private static final int MAX_DEFEND_DICE = 2;
+    private static final int MIN_ARMIES_TO_ATTACK = 2;
     private static final int DIE_SIDES = 6;
     private static final int NORTH_AMERICA_BONUS = 5;
     private static final int SOUTH_AMERICA_BONUS = 2;
@@ -27,6 +22,11 @@ public final class RiskGame {
     private static final int AFRICA_BONUS = 3;
     private static final int ASIA_BONUS = 7;
     private static final int AUSTRALIA_BONUS = 2;
+    private static final int[] TRADE_BONUS_TABLE = {4, 6, 8, 10, 12, 15};
+    private static final int TRADE_BONUS_INCREMENT = 5;
+    private static final int CARDS_PER_TRADE_SET = 3;
+    private static final int MANDATORY_TRADE_THRESHOLD = 5;
+    private static final int CARD_TERRITORY_BONUS = 2;
     private static final List<TerritoryName> NORTH_AMERICA = List.of(
             TerritoryName.ALASKA,
             TerritoryName.NORTHWEST_TERRITORY,
@@ -81,6 +81,11 @@ public final class RiskGame {
             TerritoryName.NEW_GUINEA,
             TerritoryName.INDONESIA
     );
+    private static final List<List<TerritoryName>> CONTINENTS = List.of(
+            NORTH_AMERICA, SOUTH_AMERICA, EUROPE, AFRICA, ASIA, AUSTRALIA);
+    private static final int[] CONTINENT_BONUSES = {
+        NORTH_AMERICA_BONUS, SOUTH_AMERICA_BONUS, EUROPE_BONUS,
+        AFRICA_BONUS, ASIA_BONUS, AUSTRALIA_BONUS};
 
     private GamePhase phase;
     private WorldMap worldMap;
@@ -112,7 +117,6 @@ public final class RiskGame {
         this.currentPlayerIndex = random.nextInt(players.size());
         this.firstSetupPlayerIndex = currentPlayerIndex;
         this.phase = GamePhase.SCRAMBLE;
-        this.territoriesClaimed = 0;
     }
 
     public GamePhase getPhase() {
@@ -123,12 +127,8 @@ public final class RiskGame {
         if (playerInfo == null) {
             throw new IllegalArgumentException("playerInfo cannot be null");
         }
-        // The `> MAX_PLAYERS` branch is structurally unreachable because
-        // PlayerColor only defines 6 values, so a Map<PlayerColor, String>
-        // can never have more than 6 entries. Kept as a defensive guard in
-        // case PlayerColor ever grows. JaCoCo flags it as a missed branch;
-        // see README "Coverage exceptions" for the equivalent-mutant note.
-        if (playerInfo.size() < MIN_PLAYERS || playerInfo.size() > MAX_PLAYERS) {
+        if (playerInfo.size() < GameConstants.MIN_PLAYERS
+                || playerInfo.size() > GameConstants.MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
         }
     }
@@ -142,10 +142,10 @@ public final class RiskGame {
 
     private int getStartingArmies(int playerCount) {
         switch (playerCount) {
-            case 3: return ARMIES_THREE_PLAYERS;
-            case 4: return ARMIES_FOUR_PLAYERS;
-            case 5: return ARMIES_FIVE_PLAYERS;
-            default: return ARMIES_SIX_PLAYERS;
+            case 3: return GameConstants.ARMIES_THREE_PLAYERS;
+            case 4: return GameConstants.ARMIES_FOUR_PLAYERS;
+            case 5: return GameConstants.ARMIES_FIVE_PLAYERS;
+            default: return GameConstants.ARMIES_SIX_PLAYERS;
         }
     }
 
@@ -158,7 +158,7 @@ public final class RiskGame {
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
         territoriesClaimed++;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-        if (territoriesClaimed == TOTAL_TERRITORIES) {
+        if (territoriesClaimed == GameConstants.TOTAL_TERRITORIES) {
             phase = GamePhase.SETUP;
             firstSetupPlayerIndex = currentPlayerIndex;
         }
@@ -180,7 +180,7 @@ public final class RiskGame {
         }
         worldMap.addArmies(territory, 1);
         players.get(currentPlayerIndex).decreaseArmiesToPlace(1);
-        advanceToNextPlayer();
+        advanceSetupTurn();
     }
 
     public boolean isSetupComplete() {
@@ -208,20 +208,23 @@ public final class RiskGame {
         if (isDraftInitialized) {
             return draftArmiesRemaining;
         }
+        return initialDraftArmies();
+    }
+
+    private int initialDraftArmies() {
         int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-        return Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+        return Math.max(MIN_DRAFT_ARMIES, owned / TERRITORIES_PER_DRAFT_ARMY) + getContinentBonus();
     }
 
     public void draftArmy(TerritoryName territory) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only draft armies during ATTACK phase");
         }
-        if (players.get(currentPlayerIndex).getCardCount() >= 5) {
+        if (players.get(currentPlayerIndex).getCardCount() >= MANDATORY_TRADE_THRESHOLD) {
             throw new IllegalStateException("must trade cards before drafting");
         }
         if (draftArmiesRemaining == 0 && !isDraftInitialized) {
-            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
+            draftArmiesRemaining = initialDraftArmies();
             isDraftInitialized = true;
         }
         if (!worldMap.isOwnedBy(territory, getCurrentPlayerColor())) {
@@ -239,6 +242,14 @@ public final class RiskGame {
     }
 
     public void attack(TerritoryName from, TerritoryName to) {
+        validateAttack(from, to);
+        resolveBattle(from, to);
+        if (worldMap.getArmies(to) == 0) {
+            captureTerritory(from, to);
+        }
+    }
+
+    private void validateAttack(TerritoryName from, TerritoryName to) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only attack during ATTACK phase");
         }
@@ -255,9 +266,12 @@ public final class RiskGame {
         if (!worldMap.areNeighbors(from, to)) {
             throw new IllegalArgumentException("territories are not neighbors");
         }
-        if (worldMap.getArmies(from) < 2) {
+        if (worldMap.getArmies(from) < MIN_ARMIES_TO_ATTACK) {
             throw new IllegalArgumentException("must have at least 2 armies to attack");
         }
+    }
+
+    private void resolveBattle(TerritoryName from, TerritoryName to) {
         pendingCaptureFrom = null;
         pendingCaptureTo = null;
         while (worldMap.getArmies(from) > 1 && worldMap.getArmies(to) > 0) {
@@ -274,9 +288,6 @@ public final class RiskGame {
                 }
             }
         }
-        if (worldMap.getArmies(to) == 0) {
-            captureTerritory(from, to);
-        }
     }
 
     private void captureTerritory(TerritoryName from, TerritoryName to) {
@@ -288,7 +299,7 @@ public final class RiskGame {
         if (defenderColor != null && worldMap.countTerritoriesOwnedBy(defenderColor) == 0) {
             transferCards(defenderColor, getCurrentPlayerColor());
         }
-        if (getWinner() != null) {
+        if (getWinner().isPresent()) {
             phase = GamePhase.GAME_OVER;
         }
     }
@@ -324,29 +335,12 @@ public final class RiskGame {
     private int getContinentBonus() {
         Set<TerritoryName> owned = worldMap.getTerritoriesOwnedBy(getCurrentPlayerColor());
         int bonus = 0;
-        if (ownsAll(owned, NORTH_AMERICA)) {
-            bonus += NORTH_AMERICA_BONUS;
-        }
-        if (ownsAll(owned, SOUTH_AMERICA)) {
-            bonus += SOUTH_AMERICA_BONUS;
-        }
-        if (ownsAll(owned, EUROPE)) {
-            bonus += EUROPE_BONUS;
-        }
-        if (ownsAll(owned, AFRICA)) {
-            bonus += AFRICA_BONUS;
-        }
-        if (ownsAll(owned, ASIA)) {
-            bonus += ASIA_BONUS;
-        }
-        if (ownsAll(owned, AUSTRALIA)) {
-            bonus += AUSTRALIA_BONUS;
+        for (int i = 0; i < CONTINENTS.size(); i++) {
+            if (owned.containsAll(CONTINENTS.get(i))) {
+                bonus += CONTINENT_BONUSES[i];
+            }
         }
         return bonus;
-    }
-
-    private boolean ownsAll(Set<TerritoryName> owned, List<TerritoryName> territories) {
-        return owned.containsAll(territories);
     }
 
     private void advanceToNextActivePlayer() {
@@ -365,10 +359,6 @@ public final class RiskGame {
     private int[] rollDiceDescending(int count) {
         Integer[] rolls = new Integer[count];
         for (int i = 0; i < count; i++) {
-            // Pitest flags the `+ 1` as a surviving mutant (replaced with
-            // `- 1`). Dice values are only compared to one another, so a
-            // constant offset is unobservable; equivalent mutant. See
-            // README "Coverage exceptions".
             rolls[i] = random.nextInt(DIE_SIDES) + 1;
         }
         Arrays.sort(rolls, Collections.reverseOrder());
@@ -401,7 +391,7 @@ public final class RiskGame {
                 || !pendingCaptureTo.equals(to)) {
             throw new IllegalStateException("no pending capture from the specified territories");
         }
-        int minMove = Math.min(3, worldMap.getArmies(from) - 1);
+        int minMove = Math.min(MAX_ATTACK_DICE, worldMap.getArmies(from) - 1);
         if (armies < minMove) {
             throw new IllegalArgumentException("armies must be at least " + minMove);
         }
@@ -419,10 +409,16 @@ public final class RiskGame {
     }
 
     public TerritoryName getPendingCaptureFrom() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
         return pendingCaptureFrom;
     }
 
     public TerritoryName getPendingCaptureTo() {
+        if (!isCaptureMovementPending()) {
+            throw new IllegalStateException("no pending capture");
+        }
         return pendingCaptureTo;
     }
 
@@ -430,7 +426,7 @@ public final class RiskGame {
         if (!isCaptureMovementPending()) {
             throw new IllegalStateException("no pending capture");
         }
-        return Math.min(3, worldMap.getArmies(pendingCaptureFrom) - 1);
+        return Math.min(MAX_ATTACK_DICE, worldMap.getArmies(pendingCaptureFrom) - 1);
     }
 
     public int getMaximumCaptureMove() {
@@ -440,13 +436,13 @@ public final class RiskGame {
         return worldMap.getArmies(pendingCaptureFrom) - 1;
     }
 
-    public PlayerColor getWinner() {
+    public Optional<PlayerColor> getWinner() {
         for (Player p : players) {
-            if (worldMap.countTerritoriesOwnedBy(p.getColor()) == TOTAL_TERRITORIES) {
-                return p.getColor();
+            if (worldMap.countTerritoriesOwnedBy(p.getColor()) == GameConstants.TOTAL_TERRITORIES) {
+                return Optional.of(p.getColor());
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public void endTurn() {
@@ -468,7 +464,6 @@ public final class RiskGame {
         if (phase != GamePhase.FORTIFY) {
             throw new IllegalStateException("can only fortify during FORTIFY phase");
         }
-
         if (hasFortifiedThisTurn) {
             throw new IllegalStateException("can only fortify once per turn");
         }
@@ -498,7 +493,7 @@ public final class RiskGame {
         if (cards == null) {
             return false;
         }
-        if (cards.size() != 3) {
+        if (cards.size() != CARDS_PER_TRADE_SET) {
             return false;
         }
         for (Card card : cards) {
@@ -516,11 +511,6 @@ public final class RiskGame {
             } else if (card.getType() == CardType.INFANTRY) {
                 infantry++;
             } else if (card.getType() == CardType.CAVALRY) {
-                // Pitest flags negating this conditional as a surviving
-                // mutant. The downstream checks are symmetric in cavalry
-                // and artillery, so swapping their counts produces the
-                // same return value; equivalent mutant. See README
-                // "Coverage exceptions".
                 cavalry++;
             } else {
                 artillery++;
@@ -529,18 +519,33 @@ public final class RiskGame {
         if (wildcards > 0) {
             return true;
         }
-        if (infantry == 3 || cavalry == 3 || artillery == 3) {
+        if (infantry == CARDS_PER_TRADE_SET
+                || cavalry == CARDS_PER_TRADE_SET
+                || artillery == CARDS_PER_TRADE_SET) {
             return true;
         }
-        // At this point cards.size() == 3 (checked above) and wildcards == 0,
-        // so infantry + cavalry + artillery == 3. If infantry == 1 and
-        // cavalry == 1, then artillery == 1 necessarily; the false-branch of
-        // the third condition is structurally unreachable. JaCoCo flags this
-        // as a missed branch; see README "Coverage exceptions".
         return infantry == 1 && cavalry == 1 && artillery == 1;
     }
 
     public void tradeCards(List<Card> cards) {
+        validateTrade(cards);
+        Player current = players.get(currentPlayerIndex);
+        current.removeCards(cards);
+        deck.discard(cards);
+        tradeSetCount++;
+        int bonus = tradeSetCount <= TRADE_BONUS_TABLE.length
+                ? TRADE_BONUS_TABLE[tradeSetCount - 1]
+                : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
+                        + TRADE_BONUS_INCREMENT * (tradeSetCount - TRADE_BONUS_TABLE.length);
+        if (!isDraftInitialized) {
+            draftArmiesRemaining = initialDraftArmies();
+            isDraftInitialized = true;
+        }
+        draftArmiesRemaining += bonus;
+        applyTerritoryBonuses(cards);
+    }
+
+    private void validateTrade(List<Card> cards) {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only trade cards during ATTACK phase");
         }
@@ -555,43 +560,22 @@ public final class RiskGame {
         if (!canTradeCards(cards)) {
             throw new IllegalArgumentException("invalid card set");
         }
-        Player current = players.get(currentPlayerIndex);
-        if (!current.hasCards(cards)) {
+        if (!players.get(currentPlayerIndex).hasCards(cards)) {
             throw new IllegalArgumentException("player does not own all specified cards");
         }
-        current.removeCards(cards);
-        deck.discard(cards);
-        tradeSetCount++;
-        int[] bonusTable = {4, 6, 8, 10, 12, 15};
-        // Pitest flags the boundary mutation `<= 6` -> `< 6` as a
-        // surviving mutant. `bonusTable[5] == 15` matches the formula
-        // evaluated at the boundary (`15 + 5 * (6 - 6) == 15`), so the
-        // two branches produce identical output at every tradeSetCount;
-        // equivalent mutant. See README "Coverage exceptions".
-        int bonus = tradeSetCount <= 6
-                ? bonusTable[tradeSetCount - 1]
-                : 15 + 5 * (tradeSetCount - 6);
-        if (!isDraftInitialized) {
-            int owned = worldMap.countTerritoriesOwnedBy(getCurrentPlayerColor());
-            draftArmiesRemaining = Math.max(MIN_DRAFT_ARMIES, owned / 3) + getContinentBonus();
-            isDraftInitialized = true;
-        }
-        draftArmiesRemaining += bonus;
+    }
+
+    private void applyTerritoryBonuses(List<Card> cards) {
         for (Card card : cards) {
             if (!card.isWild()
                     && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
-                worldMap.addArmies(card.getTerritory(), 2);
+                worldMap.addArmies(card.getTerritory(), CARD_TERRITORY_BONUS);
             }
         }
     }
 
     public List<Card> getCards(PlayerColor color) {
-        for (Player p : players) {
-            if (p.getColor() == color) {
-                return p.getCards();
-            }
-        }
-        throw new IllegalArgumentException("player color not in game");
+        return getPlayer(color).getCards();
     }
 
     public boolean isOwnedBy(TerritoryName territory, PlayerColor color) {
@@ -610,19 +594,12 @@ public final class RiskGame {
         return worldMap.countTerritoriesOwnedBy(color);
     }
 
-    private void advanceToNextPlayer() {
+    private void advanceSetupTurn() {
         if (isSetupComplete()) {
             currentPlayerIndex = firstSetupPlayerIndex;
             phase = GamePhase.ATTACK;
             return;
         }
-        // The loop always returns from inside before the natural exit
-        // condition `i > players.size()` becomes true: isSetupComplete() was
-        // false just above, so at least one player still has armies and the
-        // `if` inside will fire within one full rotation. The implicit
-        // fallthrough on the closing brace is structurally unreachable.
-        // JaCoCo flags it as a missed branch and missed line; see README
-        // "Coverage exceptions".
         for (int i = 1; i <= players.size(); i++) {
             int candidateIndex = (currentPlayerIndex + i) % players.size();
             if (players.get(candidateIndex).hasArmiesToPlace()) {
