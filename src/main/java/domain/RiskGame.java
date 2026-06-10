@@ -12,6 +12,7 @@ public final class RiskGame {
     private static final int MIN_DRAFT_ARMIES = 3;
     private static final int MAX_ATTACK_DICE = 3;
     private static final int MAX_DEFEND_DICE = 2;
+    private static final int MIN_ARMIES_TO_ATTACK = 2;
     private static final int DIE_SIDES = 6;
     private static final int NORTH_AMERICA_BONUS = 5;
     private static final int SOUTH_AMERICA_BONUS = 2;
@@ -21,6 +22,9 @@ public final class RiskGame {
     private static final int AUSTRALIA_BONUS = 2;
     private static final int[] TRADE_BONUS_TABLE = {4, 6, 8, 10, 12, 15};
     private static final int TRADE_BONUS_INCREMENT = 5;
+    private static final int CARDS_PER_TRADE_SET = 3;
+    private static final int MANDATORY_TRADE_THRESHOLD = 5;
+    private static final int CARD_TERRITORY_BONUS = 2;
     private static final List<TerritoryName> NORTH_AMERICA = List.of(
             TerritoryName.ALASKA,
             TerritoryName.NORTHWEST_TERRITORY,
@@ -210,7 +214,7 @@ public final class RiskGame {
         if (phase != GamePhase.ATTACK) {
             throw new IllegalStateException("can only draft armies during ATTACK phase");
         }
-        if (players.get(currentPlayerIndex).getCardCount() >= 5) {
+        if (players.get(currentPlayerIndex).getCardCount() >= MANDATORY_TRADE_THRESHOLD) {
             throw new IllegalStateException("must trade cards before drafting");
         }
         if (draftArmiesRemaining == 0 && !isDraftInitialized) {
@@ -249,7 +253,7 @@ public final class RiskGame {
         if (!worldMap.areNeighbors(from, to)) {
             throw new IllegalArgumentException("territories are not neighbors");
         }
-        if (worldMap.getArmies(from) < 2) {
+        if (worldMap.getArmies(from) < MIN_ARMIES_TO_ATTACK) {
             throw new IllegalArgumentException("must have at least 2 armies to attack");
         }
         pendingCaptureFrom = null;
@@ -470,7 +474,7 @@ public final class RiskGame {
         if (cards == null) {
             return false;
         }
-        if (cards.size() != 3) {
+        if (cards.size() != CARDS_PER_TRADE_SET) {
             return false;
         }
         for (Card card : cards) {
@@ -496,7 +500,9 @@ public final class RiskGame {
         if (wildcards > 0) {
             return true;
         }
-        if (infantry == 3 || cavalry == 3 || artillery == 3) {
+        if (infantry == CARDS_PER_TRADE_SET
+                || cavalry == CARDS_PER_TRADE_SET
+                || artillery == CARDS_PER_TRADE_SET) {
             return true;
         }
         return infantry == 1 && cavalry == 1 && artillery == 1;
@@ -537,7 +543,7 @@ public final class RiskGame {
         for (Card card : cards) {
             if (!card.isWild()
                     && worldMap.isOwnedBy(card.getTerritory(), getCurrentPlayerColor())) {
-                worldMap.addArmies(card.getTerritory(), 2);
+                worldMap.addArmies(card.getTerritory(), CARD_TERRITORY_BONUS);
             }
         }
     }
