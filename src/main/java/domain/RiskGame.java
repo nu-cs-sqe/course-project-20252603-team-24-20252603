@@ -83,8 +83,8 @@ public final class RiskGame {
     private static final List<List<TerritoryName>> CONTINENTS = List.of(
             NORTH_AMERICA, SOUTH_AMERICA, EUROPE, AFRICA, ASIA, AUSTRALIA);
     private static final int[] CONTINENT_BONUSES = {
-            NORTH_AMERICA_BONUS, SOUTH_AMERICA_BONUS, EUROPE_BONUS,
-            AFRICA_BONUS, ASIA_BONUS, AUSTRALIA_BONUS};
+        NORTH_AMERICA_BONUS, SOUTH_AMERICA_BONUS, EUROPE_BONUS,
+        AFRICA_BONUS, ASIA_BONUS, AUSTRALIA_BONUS};
 
     private GamePhase phase;
     private WorldMap worldMap;
