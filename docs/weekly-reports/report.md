@@ -65,8 +65,19 @@
 **Planning and Progress Tracking**:
 1. [done] David: BVA for multiple turns phase
 2. [in progress] Jonathan: TDD for multple turns phase
-3. [done] Prashant, Jonathan: GUI for one turn + multiple turns phase
+3. [in progress] Prashant, Jonathan: GUI for one turn + multiple turns phase
 4. [in progress] Justin: Design doc for multiple turn phase + win condition
 6. [not started] Jonathan: BVA for win condition
 7. [not started] David: TDD for win condition
-8. [done] Prashant: GUI for win condition
+8. [in progress] Prashant: GUI for win condition
+
+# Week 11 (06/08/2026-06/10/2026)
+**Planning and Progress Tracking**:
+1. [done] Justin: Design doc for full game
+2. [done] Justin: Add i18n
+3. [done] Jonathan: BVA and TDD for multple turns phase + win condition
+4. [done] Jonathan: add BDD and integration tests
+5. [done] Jonathan: GUI for one turn + multiple turns phases + win condition
+6. [done] David, Jonathan: review and fix checkstyle, spotbugs, jacoco, pitest warnings and errors
+7. [done] David, Jonathan: refactor code to meet clean code standards
+8. [done] Prashant: GUI for new game feature
