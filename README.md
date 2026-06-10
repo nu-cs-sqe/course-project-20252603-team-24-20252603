@@ -15,6 +15,19 @@
 - JUnit 5.10
 - Gradle 8.10
 
+## Attacking
+
+Attacks work like Risk: Global Domination, not the classic one-roll-at-a-time
+version. You pick the territory you attack from and the one you attack, and the
+backend resolves the whole fight in a single call.
+
+It is still normal Risk dice underneath. Each round the attacker rolls up to 3
+dice and the defender up to 2, the highest dice are compared in order, and ties
+go to the defender. It keeps rolling rounds until the defender has no armies
+left (you capture the territory) or the attacker is down to 1 army (the attack
+stops). Same odds as rolling by hand, you just do not click through every
+round.
+
 ## Localization
 
 The UI supports English (default) and Spanish. The active language is chosen
