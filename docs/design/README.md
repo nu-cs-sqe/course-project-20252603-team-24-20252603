@@ -64,7 +64,7 @@ ownership.
 | `boolean isOwnedBy(PlayerColor color)` | Returns true if owned by the given player. |
 | `boolean isUnclaimed()` | Returns true if no player owns this territory. |
 | `void claim(PlayerColor color)` | Assigns the initial owner. Throws `IllegalStateException` if the territory is already claimed. |
-| `void assignTerritory(PlayerColor color)` | Forcibly reassigns ownership without checking prior ownership. Used by `WorldMap.assignTerritory` during territory capture. |
+| `void transferOwner(PlayerColor color)` | Forcibly reassigns ownership without checking prior ownership. Used by `WorldMap.assignTerritory` during territory capture. |
 | `void addArmies(int count)` | Adds armies. Throws `IllegalArgumentException` if `count < 1`. |
 | `void removeArmies(int count)` | Removes armies. Throws `IllegalArgumentException` if `count < 1` or removing would drop armies below 0. |
 
@@ -151,18 +151,21 @@ in `RiskGame`.
 GUI controllers interact with.
 
 #### Private constants
-- Player count: `MIN_PLAYERS = 3`, `MAX_PLAYERS = 6`
-- Starting army count: `ARMIES_THREE_PLAYERS = 35`, `ARMIES_FOUR_PLAYERS = 30`,
-  `ARMIES_FIVE_PLAYERS = 25`, `ARMIES_SIX_PLAYERS = 20`
-- Board: `TOTAL_TERRITORIES = 42`
-- Draft / dice: `MIN_DRAFT_ARMIES = 3`, `MIN_ATTACK_DICE = 1`,
-  `MAX_ATTACK_DICE = 3`, `MAX_DEFEND_DICE = 2`, `DIE_SIDES = 6`
+- Player count, starting armies, and the board size live in `GameConstants`
+  (so the GUI can share them) and are read as `GameConstants.MIN_PLAYERS`,
+  `GameConstants.ARMIES_THREE_PLAYERS`, `GameConstants.TOTAL_TERRITORIES`, etc.
+- Draft / dice: `MIN_DRAFT_ARMIES = 3`, `TERRITORIES_PER_DRAFT_ARMY = 3`,
+  `MAX_ATTACK_DICE = 3`, `MAX_DEFEND_DICE = 2`, `MIN_ARMIES_TO_ATTACK = 2`,
+  `DIE_SIDES = 6`
+- Card trading: `CARDS_PER_TRADE_SET = 3`, `MANDATORY_TRADE_THRESHOLD = 5`,
+  `CARD_TERRITORY_BONUS = 2`, `TRADE_BONUS_TABLE = {4, 6, 8, 10, 12, 15}`,
+  `TRADE_BONUS_INCREMENT = 5`
 - Continent bonuses: `NORTH_AMERICA_BONUS = 5`, `SOUTH_AMERICA_BONUS = 2`,
   `EUROPE_BONUS = 5`, `AFRICA_BONUS = 3`, `ASIA_BONUS = 7`,
   `AUSTRALIA_BONUS = 2`
-- Continent membership lists: `NORTH_AMERICA`, `SOUTH_AMERICA`, `EUROPE`,
-  `AFRICA`, `ASIA`, `AUSTRALIA` (the canonical Risk territory groupings
-  used to award continent bonuses).
+- Continent membership lists `NORTH_AMERICA` through `AUSTRALIA`, grouped into
+  `CONTINENTS` with the matching `CONTINENT_BONUSES`, used to award continent
+  bonuses.
 
 #### Construction and setup
 
