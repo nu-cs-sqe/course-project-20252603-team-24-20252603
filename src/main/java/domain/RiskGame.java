@@ -121,11 +121,6 @@ public final class RiskGame {
         if (playerInfo == null) {
             throw new IllegalArgumentException("playerInfo cannot be null");
         }
-        // The `> MAX_PLAYERS` branch is structurally unreachable because
-        // PlayerColor only defines 6 values, so a Map<PlayerColor, String>
-        // can never have more than 6 entries. Kept as a defensive guard in
-        // case PlayerColor ever grows. JaCoCo flags it as a missed branch;
-        // see README "Coverage exceptions" for the equivalent-mutant note.
         if (playerInfo.size() < GameConstants.MIN_PLAYERS
                 || playerInfo.size() > GameConstants.MAX_PLAYERS) {
             throw new IllegalArgumentException("player count must be between 3 and 6");
@@ -347,10 +342,6 @@ public final class RiskGame {
     private int[] rollDiceDescending(int count) {
         Integer[] rolls = new Integer[count];
         for (int i = 0; i < count; i++) {
-            // Pitest flags the `+ 1` as a surviving mutant (replaced with
-            // `- 1`). Dice values are only compared to one another, so a
-            // constant offset is unobservable; equivalent mutant. See
-            // README "Coverage exceptions".
             rolls[i] = random.nextInt(DIE_SIDES) + 1;
         }
         Arrays.sort(rolls, Collections.reverseOrder());
@@ -497,11 +488,6 @@ public final class RiskGame {
             } else if (card.getType() == CardType.INFANTRY) {
                 infantry++;
             } else if (card.getType() == CardType.CAVALRY) {
-                // Pitest flags negating this conditional as a surviving
-                // mutant. The downstream checks are symmetric in cavalry
-                // and artillery, so swapping their counts produces the
-                // same return value; equivalent mutant. See README
-                // "Coverage exceptions".
                 cavalry++;
             } else {
                 artillery++;
@@ -513,11 +499,6 @@ public final class RiskGame {
         if (infantry == 3 || cavalry == 3 || artillery == 3) {
             return true;
         }
-        // At this point cards.size() == 3 (checked above) and wildcards == 0,
-        // so infantry + cavalry + artillery == 3. If infantry == 1 and
-        // cavalry == 1, then artillery == 1 necessarily; the false-branch of
-        // the third condition is structurally unreachable. JaCoCo flags this
-        // as a missed branch; see README "Coverage exceptions".
         return infantry == 1 && cavalry == 1 && artillery == 1;
     }
 
@@ -543,11 +524,6 @@ public final class RiskGame {
         current.removeCards(cards);
         deck.discard(cards);
         tradeSetCount++;
-        // Pitest flags the boundary mutation `<= TRADE_BONUS_TABLE.length`
-        // -> `< TRADE_BONUS_TABLE.length` as a surviving mutant.
-        // At the boundary, TRADE_BONUS_TABLE[length - 1] equals the formula
-        // result (increment * 0 == 0), so both branches produce identical
-        // output; equivalent mutant. See README "Coverage exceptions".
         int bonus = tradeSetCount <= TRADE_BONUS_TABLE.length
                 ? TRADE_BONUS_TABLE[tradeSetCount - 1]
                 : TRADE_BONUS_TABLE[TRADE_BONUS_TABLE.length - 1]
@@ -592,13 +568,6 @@ public final class RiskGame {
             phase = GamePhase.ATTACK;
             return;
         }
-        // The loop always returns from inside before the natural exit
-        // condition `i > players.size()` becomes true: isSetupComplete() was
-        // false just above, so at least one player still has armies and the
-        // `if` inside will fire within one full rotation. The implicit
-        // fallthrough on the closing brace is structurally unreachable.
-        // JaCoCo flags it as a missed branch and missed line; see README
-        // "Coverage exceptions".
         for (int i = 1; i <= players.size(); i++) {
             int candidateIndex = (currentPlayerIndex + i) % players.size();
             if (players.get(candidateIndex).hasArmiesToPlace()) {
