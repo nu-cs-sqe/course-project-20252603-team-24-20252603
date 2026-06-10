@@ -284,7 +284,7 @@
 - **TC42: Broken owned chain is not connected** ( :white_check_mark: )
     - **State of the system**:
         - ALASKA owned by RED
-        - NORTHWEST_TERRITORY owned by BLUE
+        - NORTHWEST_TERRITORY unclaimed (not owned by RED)
         - ONTARIO owned by RED
         - from: ALASKA
         - to: ONTARIO

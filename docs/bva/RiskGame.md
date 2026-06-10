@@ -246,7 +246,7 @@ the draft complete. The returned value decrements as `draftArmy()` is called.
     - **State of the system**:
         - phase: ATTACK, start of turn
         - current player owns all 42 territories
-    - **Expected output**: 14 (floor(42/3) = 14 — maximum possible)
+    - **Expected output**: 38 (14 territory armies (floor(42/3)) + 24 continent bonuses, since owning all 42 territories means owning every continent)
 
 ## Method: `void draftArmy(TerritoryName territory)`
 
